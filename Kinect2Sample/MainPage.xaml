@@ -7,6 +7,25 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d">
 
-    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}" >
+        <Grid Margin="30">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="70"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="100"/>
+            </Grid.RowDefinitions>
+            <TextBlock Grid.Row="0" Style="{StaticResource SubheaderTextBlockStyle}"
+                       Text="Kinect For Windows 2"/>
+            <StackPanel Grid.Row="0" Orientation="Horizontal" 
+                        HorizontalAlignment="Right" VerticalAlignment="Bottom">
+                <TextBlock Text="Kinect Status:  "/>
+                <TextBlock Text="{Binding StatusText}"/>
+                <TextBlock Text=", FrameWidth =  "/>
+                <TextBlock Text="{Binding CurrentFrameDescription.Width}"/>
+                <TextBlock Text=", FrameHeight =  "/>
+                <TextBlock Text="{Binding CurrentFrameDescription.Height}"/>
+            </StackPanel>
+            <Image x:Name="FrameDisplayImage" Grid.Row="1" Stretch="Uniform"/>
+        </Grid>
     </Grid>
 </Page>
