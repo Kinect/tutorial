@@ -1,0 +1,582 @@
+<!DOCTYPE html>
+<html>
+	<head>
+	  <meta charset="utf-8">
+	  <meta http-equiv="X-UA-Compatible" content="chrome=1">
+	  <title>Kinect 2 for Windows - Hands On Lab 5</title>
+	  <link rel="stylesheet" href="../stylesheets/styles.css">
+	  <link rel="stylesheet" href="../stylesheets/pygment_trac.css">
+	  <link rel="stylesheet" href="http://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.min.css">
+	  <script src="../javascripts/scale.fix.js"></script>
+	  <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+	<!--[if lt IE 9]>
+		<script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+		<![endif]-->
+	</head>
+<body>
+<div class="wrapper">
+      <header>
+        <h1 class="header">Kinect 2 for Windows Demo App</h1>
+        <p class="header">The Hands On Labs to complete a sample application for Windows 8.1 and the Kinect 2 for Windows</p>
+        <ul>
+		  <li ><a class="buttons home" href="../index.html">Home</a></li>
+		  <li class="download"><a class="buttons" href="https://github.com/MicrosoftKinect2/ms-Kinect2Demo-Win81/zipball/master">Complete App</a></li>
+          <li><a class="buttons github" href="https://github.com/MicrosoftKinect2/ms-Kinect2Demo-Win81">View On GitHub</a></li>
+        </ul>
+      </header>
+      <section>
+	  
+<div>  
+<nav id="labs_dropdown">
+<ul>
+  <li><a style="padding: 0px;"><h3 style="color:#FFF; padding: 10px;">Lab 05 - Body Mask<i style="float:right; font-size: 16px; padding-top: 0.5%;" class="fa fa-chevron-down"></i></h3></a>
+    <ul>
+		<li class="download"><a href="../Lab01/index.html">1 - Project Setup</a></li>
+		<li class="download"><a href="../Lab02/index.html">2 - Infrared Data</a></li>
+		<li class="download"><a href="../Lab03/index.html">3 - Color Data</a></li>
+		<li class="download"><a href="../Lab04/index.html">4 - Depth Data</a></li>
+		<li class="download"><a href="index.html">5 - Body Mask</a></li>
+		<li class="download"><a href="../Lab06/index.html">6 - Body Data</a></li>
+		<li class="download"><a href="../Lab07/index.html">7 - Background Removal</a></li>
+		<li class="download"><a href="../Lab08/index.html">8 - Face Tracking</a></li>
+		<li class="download"><a href="../Lab09/index.html">9 - Face Game</a></li>
+		<li class="download"><a href="../Lab10/index.html">10 - Hand Cursor</a></li>
+		<li class="download"><a href="../Lab11/index.html">11 - Kinect Studio</a></li>
+		<li class="download"><a href="../Lab12/index.html">12 - Gesture Builder</a></li>
+		<li class="download"><a href="../Lab13/index.html">13 - Bing Speech</a></li>
+		<li class="download"><a href="../Lab14/index.html">14 - Tracking Strategies</a></li>
+	</ul>
+</ul>
+</div>
+
+<h1><a id="kinect-2-hands-on-labs" class="anchor" href="#kinect-2-hands-on-labs" aria-hidden="true"><span class="octicon octicon-link"></span></a>Kinect 2 Hands On Labs</h1>
+
+<h2>
+<img style="width: 100%;" alt="Body Image" src="images/lab05img02.png">
+<a id="lab-5-Displaying-Body-Mask" class="anchor" href="#lab-5-Displaying-Body-Mask" aria-hidden="true"><span class="octicon octicon-link"></span></a>Lab 5: Displaying Body Mask</h2>
+<p><strong>Estimated Time to Complete</strong>: 20min</p>
+<p>This lab is part of a series of hands on labs which teach you how to create a Windows 8.1 Store Application using almost every available feature of the Kinect 2. 
+This is the fifth lab in the series, and it teaches you how to assemble a body mask from the Kinect, along with the feeds from the previous labs.</p>
+<p>This lab will explain the following:
+<ul>
+<li>How to get the BodyIndexFrame from the Kinect.
+<li>How to use to CoOrdinateMapper to map the depth to color.
+<li>How to use unsafe code to manipulate pixel data for a faster framerate.
+</ul></p>
+<p>This lab comes with a starting point code solution and a completed code 
+solution of the exercises.</p>
+
+<h1>
+<a id="exercise-1---Displaying-the-Body-Mask" class="anchor" href="#exercise-1---Displaying-the-Depth-Frame" aria-hidden="true"><span class="octicon octicon-link"></span></a>Exercise 1 - Displaying the Body Mask</h1>
+<p>This exercise will teach you how to create a body mask in a Kinect for Windows 2 application for Windows 8.1. 
+This lab and all subsequent labs in this series are built using C# and assumes you have a fundamental knowledge of the C# language.</p>
+<p>
+The screenshots here are from Visual Studio Pro 2013 Update 2 but Community Edition is identical.
+</p>
+<p>
+This lab builds upon the previous lab, which integrated the multi-source frame reader. 
+</p>
+<p>
+The Kinect 2 is good at recognizing bodies by internally processing the depth and infrared feeds together. 
+It’s possible to retrieve a special frame from the Kinect 2 which is aware of exact co-ordinates in an image where a known body is visible. This is called the <strong>Body Index Frame</strong>. 
+This lab describes how to create a <strong>Body Mask</strong> with this frame, the depth, and color frames. This mask will then be used to determine which pixels should be shown and which should be made invisible, 
+so that only the recognized bodies are showing in the resulting feed.
+</p>
+<p>
+To create a <strong>Body Mask</strong> from the Kinect 2 using the MultisourceFrameReader, follow the steps below:
+</p>
+<ol>
+  <li>
+    <p>Open the existing <strong>Kinect 2 Sample</strong> solution in Visual Studio, or the copy you have from the end of the previous lab.</p>
+  </li>
+  <li>
+    <p>To begin add a new <strong>DisplayFrameType</strong> to the enum, then new color mapping data arrays to handle the data conversion,
+	and finally a co-ordinate mapper, which is explained later. Open the <strong>MainPage.xaml.cs</strong> file from the Solution Explorer. 
+	Copy the following highlighted code to setup the variables required in this lab:
+<pre>
+namespace Kinect2Sample
+{
+    public enum DisplayFrameType
+    {
+        Infrared,
+        Color,
+        Depth<hi>,</hi>
+        <hi>BodyMask</hi>
+    }
+
+    public sealed partial class MainPage : Page, INotifyPropertyChanged
+    {
+        //...
+        private MultiSourceFrameReader multiSourceFrameReader = null;
+        <hi>private CoordinateMapper coordinateMapper = null;</hi>
+        //...
+        //Depth Frame
+        private ushort[] depthFrameData = null;
+        private byte[] depthPixels = null;
+
+        <hi>//BodyMask Frames</hi>
+        <hi>private DepthSpacePoint[] colorMappedToDepthPoints = null;</hi>
+
+        public event PropertyChangedEventHandler PropertyChanged;
+        //...
+    }
+}
+</pre>
+  </li>
+  <li>
+    <p>You should initialize those variables in the <strong>SetupCurrentDisplay</strong> method, which is called every time the current display changes. 
+	 There is a switch statement which uses the <strong>currentDisplayFrameType</strong> to determine <strong>what to initialize</strong> and the <strong>size of the bitmap</strong>. 
+	You should add a new case for the <strong>BodyMask</strong> in this switch statement. To do this, copy the highlighted code below:
+	</p>
+	<pre>
+private void SetupCurrentDisplay(DisplayFrameType newDisplayFrameType)
+{
+    currentDisplayFrameType = newDisplayFrameType;
+    <hi>// Frames used by more than one type are declared outside the switch</hi>
+    <hi>FrameDescription colorFrameDescription = null;</hi>
+    switch (currentDisplayFrameType)
+    {
+        case DisplayFrameType.Infrared:
+            //...
+            break;
+
+        case DisplayFrameType.Color:
+            <hi>colorFrameDescription = </hi>
+              <hi>this.kinectSensor.ColorFrameSource.FrameDescription;</hi>
+            //...
+            break;
+
+        case DisplayFrameType.Depth:
+            //...
+            break;
+
+        <hi>case DisplayFrameType.BodyMask:</hi>
+            <hi>colorFrameDescription = </hi>
+              <hi>this.kinectSensor.ColorFrameSource.FrameDescription;</hi>
+            <hi>this.CurrentFrameDescription = colorFrameDescription;</hi>
+            <hi>// allocate space to put the pixels being </hi>
+            <hi>// received and converted</hi>
+            <hi>this.colorMappedToDepthPoints = </hi>
+                <hi>new DepthSpacePoint[colorFrameDescription.Width * </hi>
+                <hi>colorFrameDescription.Height];</hi>
+            <hi>this.bitmap = new WriteableBitmap(</hi>
+                <hi>colorFrameDescription.Width, </hi>
+                <hi>colorFrameDescription.Height);</hi>
+            <hi>break;</hi>
+
+        default:
+            break;
+    }
+}
+</pre>
+	<p>
+		Notice how the <strong>FrameDescription</strong> for color has moved to be declared outside the switch statement. 
+		Now the <strong>colorFrameDescription</strong> is being used by more than one type of display, it needs to be accessed for either display type.
+	</p>
+	<p>
+Add the new <strong>FrameSourceType</strong> when the <strong>MultiSourceFrameReader</strong> is opened. In the <strong>MainPage</strong> constructor add the FrameSourceTypes.BodyIndex to the following line.
+As well as the new <strong>FrameSourceType</strong>, you should initialize the <strong>Co-ordinate Mapper</strong> in the constructor also. Copy the highlighted code below to do this:
+	</p>
+	<pre><hi>this.coordinateMapper = this.kinectSensor.CoordinateMapper;</hi>
+
+this.multiSourceFrameReader = 
+  this.kinectSensor.OpenMultiSourceFrameReader(
+          FrameSourceTypes.Infrared 
+        | FrameSourceTypes.Color 
+        | FrameSourceTypes.Depth
+    <hi>| FrameSourceTypes.BodyIndex);</hi>
+
+	</pre>
+  </li>
+  <li>
+    <p>Now that the frame variables are initialized, you can setup the logic for frame arrival within <strong>Reader_MultiSourceFrameArrived</strong>. 
+	Once again, there is a switch statement here to handle the other frame types.
+The other frame types are disposed of through utilization of the using pattern, which will automatically collect and dispose the object which was initialized in the using statement. 
+The Kinect 2 should deliver frames at a rate of ~30fps so it’s important to free up memory where possible. Also because it’s processor intensive to manipulate frames at this frequency, you want to limit the work done each time a new frame arrives.
+The Body Mask display requires three frame types from the <strong>MultiSourceFrame</strong>: the Depth Frame, the Body Index Frame, and the Color Frame. 
+To use these and dispose of them all at once it’s more appropriate to use a <strong>try, finally</strong> pattern. In the <strong>finally</strong> section, all the used objects can be disposed of at once.
+<p>
+</p>
+As in the previous step, some of the frames are now being used by multiple cases so they must be initialized outside of the switch statement.
+There is a lot to do here so you should start with this simple refactor of existing code, and add the new case with a <strong>try, finally clause</strong>, and more code will be added later:
+To do this copy the highlighted code below:
+</p>
+	<pre>
+private void Reader_MultiSourceFrameArrived(MultiSourceFrameReader sender, MultiSourceFrameArrivedEventArgs e)
+{
+    //...
+    // If the Frame has expired by the time we process this event, return.
+    if (multiSourceFrame == null)
+    {
+        return;
+    }
+    <hi>DepthFrame depthFrame = null;</hi>
+    <hi>ColorFrame colorFrame = null;</hi>
+    <hi>InfraredFrame infraredFrame = null;</hi>
+    <hi>BodyIndexFrame bodyIndexFrame = null;</hi>
+
+    switch (currentDisplayFrameType)
+    {
+        case DisplayFrameType.Infrared:
+            using (<hi>infraredFrame</hi> = 
+              multiSourceFrame.InfraredFrameReference.AcquireFrame())
+            //...
+            break;
+        case DisplayFrameType.Color:
+            using (<hi>colorFrame</hi> = 
+              multiSourceFrame.ColorFrameReference.AcquireFrame())
+            //...
+            break;
+        case DisplayFrameType.Depth:
+            using (<hi>depthFrame</hi> = 
+              multiSourceFrame.DepthFrameReference.AcquireFrame())
+            //...
+            break;
+        <hi>case DisplayFrameType.BodyMask:</hi>
+            <hi>// Put in a try catch to utilise finally() and </hi>
+            <hi>// clean up frames</hi>
+            <hi>try</hi>
+            <hi>{</hi>
+            <hi>}</hi>
+            <hi>finally</hi>
+            <hi>{</hi>
+            <hi>}</hi>
+            <hi>break;</hi>
+        default:
+            break;
+    }
+}
+</pre>
+ </li>
+  <li>Initialize the Depth, BodyIndex and Color frames at the same time, and dispose of them manually in the finally block, like so:
+	</p>
+<pre>
+switch (currentDisplayFrameType)
+{
+    //...
+    case DisplayFrameType.BodyMask:
+        // Put in a try catch to utilise finally() and clean up frames
+        try
+        {
+              <hi>depthFrame = </hi>
+                <hi>multiSourceFrame.DepthFrameReference.AcquireFrame();</hi>
+              <hi>bodyIndexFrame = </hi>
+                <hi>multiSourceFrame.BodyIndexFrameReference.AcquireFrame();</hi>
+              <hi>colorFrame = </hi>
+                <hi>multiSourceFrame.ColorFrameReference.AcquireFrame();</hi>
+              <hi>if ((depthFrame == null) </hi>
+                <hi>|| (colorFrame == null) </hi>
+                <hi>|| (bodyIndexFrame == null))</hi>
+              <hi>{</hi>
+                  <hi>return;</hi>
+              <hi>}</hi>
+
+        }
+        finally
+        {
+              <hi>if (depthFrame != null)</hi>
+              <hi>{</hi>
+                  <hi>depthFrame.Dispose();</hi>
+              <hi>}</hi>
+              <hi>if (colorFrame != null)</hi>
+              <hi>{</hi>
+                  <hi>colorFrame.Dispose();</hi>
+              <hi>}</hi>
+              <hi>if (bodyIndexFrame != null)</hi>
+              <hi>{</hi>
+                  <hi>bodyIndexFrame.Dispose();</hi>
+              <hi>}</hi>
+
+        }
+        break;
+    //...
+}
+</pre>
+  <li>
+    <p>You will use these three frames together to get the data which will show the color frame and the depth frame together as one mapped frame. 
+	This means that for each color pixel, there is a relevant depth pixel. If these feeds were from the same camera with the same type, 
+	there would be no need to map as they would already be naturally relative to one another. But the resolutions of the feeds are 
+	different so there is a helper class within the Kinect 2 SDK called the <strong>Co-ordinate Mapper</strong>:
+	<p>
+	</p>
+The Co-ordinate Mapper can skew and scale both the depth and color feed to force them to become relative to one another. 
+There is a method which does this called <strong>MapColorFrameToDepthSpace()</strong> which takes a ulong[] of the known depth data. 
+Mapping the color data and the depth data together is a demanding task. To maintain an acceptable framerate in this application, 
+you will use another method in the Co-ordinate Mapper: <strong>MapColorFrameToDepthSpaceUsingIBuffer()</strong> which will do the same thing with an Ibuffer instead of a ulong[] (
+for better memory management and less copying internally).
+Now it’s time to use the co-ordinate mapper to finish setting up the frame, and the buffer to be calculated in a new method. The work here results in a method called ShowMappedBodyFrame
+which will be created next. To do this copy the highlighted code below:
+	</p>
+	<pre>
+<hi>using Windows.Storage.Streams;</hi>
+//...
+// In Reader_MultiSourceFrameArrived()...
+<hi>BodyIndexFrame bodyIndexFrame = null;</hi>
+<hi>IBuffer depthFrameDataBuffer = null;</hi>
+<hi>IBuffer bodyIndexFrameData = null;</hi>
+<hi>// Com interface for unsafe byte manipulation</hi>
+<hi>IBufferByteAccess bodyIndexByteAccess = null;</hi>
+
+switch (currentDisplayFrameType)
+{
+    //...
+    case DisplayFrameType.BodyMask:
+        // Put in a try catch to utilise finally() and clean up frames
+        try
+        {
+              depthFrame = 
+                multiSourceFrame.DepthFrameReference.AcquireFrame();
+              bodyIndexFrame = 
+                multiSourceFrame.BodyIndexFrameReference.AcquireFrame();
+              colorFrame = 
+                multiSourceFrame.ColorFrameReference.AcquireFrame();
+              if ((depthFrame == null) 
+                || (colorFrame == null) 
+                || (bodyIndexFrame == null))
+              {
+                  return;
+              }
+
+           <hi>// Access the depth frame data directly via </hi>
+          <hi>//LockImageBuffer to avoid making a copy</hi>
+             <hi>depthFrameDataBuffer = depthFrame.LockImageBuffer();</hi>
+             <hi>this.coordinateMapper.MapColorFrameToDepthSpaceUsingIBuffer(</hi>
+                <hi>depthFrameDataBuffer,</hi>
+                <hi>this.colorMappedToDepthPoints);</hi>
+             <hi>// Process Color</hi>
+             <hi>colorFrame.CopyConvertedFrameDataToBuffer(</hi>
+                <hi>this.bitmap.PixelBuffer, </hi>
+                <hi>ColorImageFormat.Bgra);</hi>
+             <hi>// Access the body index frame data directly via </hi>
+             <hi>// LockImageBuffer to avoid making a copy</hi>
+             <hi>bodyIndexFrameData = bodyIndexFrame.LockImageBuffer();</hi>
+             <hi>ShowMappedBodyFrame(depthFrame.FrameDescription.Width, </hi>
+                    <hi>depthFrame.FrameDescription.Height, </hi>
+                    <hi>bodyIndexFrameData, bodyIndexByteAccess);</hi>
+        }
+        finally
+        {
+           // ... disposing of depth, color and bodyIndex frames ...
+             <hi>if (depthFrameDataBuffer != null)</hi>
+             <hi>{</hi>
+                 <hi>// We must force a release of the IBuffer in order to  </hi>
+                 <hi>// ensure that we have dropped all references to it.</hi>
+                 <hi>System.Runtime.InteropServices.Marshal.ReleaseComObject</hi>
+                  <hi>(depthFrameDataBuffer);</hi>
+             <hi>}</hi>
+             <hi>if (bodyIndexFrameData != null)</hi>
+             <hi>{</hi>
+                 <hi>System.Runtime.InteropServices.Marshal.ReleaseComObject</hi>
+                     <hi>(bodyIndexFrameData);</hi>
+             <hi>}</hi>
+             <hi>if (bodyIndexByteAccess != null)</hi>
+             <hi>{</hi>
+                 <hi>System.Runtime.InteropServices.Marshal.ReleaseComObject</hi>
+                     <hi>(bodyIndexByteAccess);</hi>
+             <hi>}</hi>
+        }
+        break;
+    //...
+}
+</pre>
+  </li>
+  <li>Now you will manipulate the actual pixel data in the buffer to make a resulting bitmap image in the new ShowMappedBodyFrame method. 
+  This method will be performing direct byte manipulation using fixed pointers. Using pointers in C# is also known as <strong>unsafe</strong> code because the memory management is done manually. 
+  Unsafe code must be allowed by the project settings before it can build. Unsafe code generally performs better, but only when used correctly and optimized during the build. 
+  Open the <strong>Properties</strong> of the project by <strong>Right Clicking Kinect2Sample (Windows 8.1)</strong> in the <strong>Solution Explorer</strong> and checking 
+  the two boxes in the Build Tab: <strong>Allow unsafe code</strong>, and <strong>Optimize code</strong>:
+  </li>
+  <p>
+  </p>
+  <img style="width: 100%;" alt="Body Image" src="images/lab05img01.png">
+  <p>
+  Do this for both x64 and x86 configurations.
+  </p>
+  <li>
+    <p>To expose and manipulate the buffer behind the destination bitmap, you can use a Com interface called <strong>IBufferByteAccess</strong> through interop services. 
+	Add the following method at the bottom of the <strong>MainPage</strong> Class:</p>
+	<pre>
+<hi>using System.Runtime.InteropServices;</hi>
+//...
+
+namespace Kinect2Sample
+{
+    //...
+    public sealed partial class MainPage : Page, INotifyPropertyChanged
+    {
+        //...
+        <hi>[Guid("905a0fef-bc53-11df-8c49-001e4fc686da"), </hi>
+                 <hi>InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]</hi>
+        <hi>interface IBufferByteAccess</hi>
+        <hi>{</hi>
+            <hi>unsafe void Buffer(out byte* pByte);</hi>
+        <hi>}</hi>
+    }
+}
+	</pre>
+</li>
+<li>Finally, let’s make the <strong>ShowMappedBodyFrame()</strong> method. Put it in <strong>MainPage</strong> above the other <strong>Show***Frame()</strong> methods.
+ Here the bitmap is accessed through a pointer to its buffer, and the color data and body index data is compared for every pixel to see if that pixel is a body or not. 
+ If the pixel is in a body, it keeps its color, but if it is not, it is made transparent. 
+Finally the bitmap is made invalid so the UI thread is aware that the bitmap buffer has changed and will reload it when required. 
+<pre>
+<hi>unsafe private void ShowMappedBodyFrame(int depthWidth, </hi>
+                 <hi>int depthHeight, IBuffer bodyIndexFrameData,</hi>
+                 <hi>IBufferByteAccess bodyIndexByteAccess)</hi>
+<hi>{</hi>
+    <hi>bodyIndexByteAccess = (IBufferByteAccess)bodyIndexFrameData;</hi>
+    <hi>byte* bodyIndexBytes = null;</hi>
+    <hi>bodyIndexByteAccess.Buffer(out bodyIndexBytes);</hi>
+
+    <hi>fixed (DepthSpacePoint* colorMappedToDepthPointsPointer = </hi>
+        <hi>this.colorMappedToDepthPoints)</hi>
+    <hi>{</hi>
+        <hi>IBufferByteAccess bitmapBackBufferByteAccess = </hi>
+            <hi>(IBufferByteAccess)this.bitmap.PixelBuffer;</hi>
+
+       <hi> byte* bitmapBackBufferBytes = null;</hi>
+        <hi>bitmapBackBufferByteAccess.Buffer(out bitmapBackBufferBytes);</hi>
+
+        <hi>// Treat the color data as 4-byte pixels</hi>
+        <hi>uint* bitmapPixelsPointer = (uint*)bitmapBackBufferBytes;</hi>
+
+        <hi>// Loop over each row and column of the color image</hi>
+        <hi>// Zero out any pixels that don't correspond to a body index</hi>
+        <hi>int colorMappedLength = this.colorMappedToDepthPoints.Length;</hi>
+        <hi>for (int colorIndex = 0; </hi>
+                 <hi>colorIndex < colorMappedLength; </hi>
+                 <hi>++colorIndex)</hi>
+        <hi>{</hi>
+            <hi>float colorMappedToDepthX = </hi>
+                 <hi>colorMappedToDepthPointsPointer[colorIndex].X;</hi>
+            <hi>float colorMappedToDepthY = </hi>
+                 <hi>colorMappedToDepthPointsPointer[colorIndex].Y;</hi>
+
+            <hi>// The sentinel value is -inf, -inf, </hi>
+            <hi>// meaning that no depth pixel corresponds to</hi>
+            <hi>// this color pixel.</hi>
+            <hi>if (!float.IsNegativeInfinity(colorMappedToDepthX) &&</hi>
+                <hi>!float.IsNegativeInfinity(colorMappedToDepthY))</hi>
+            <hi>{</hi>
+                <hi>// Make sure the depth pixel maps to a valid </hi>
+                <hi>// point in color space</hi>
+                <hi>int depthX = (int)(colorMappedToDepthX + 0.5f);</hi>
+                <hi>int depthY = (int)(colorMappedToDepthY + 0.5f);</hi>
+
+                <hi>// If the point is not valid, there is </hi>
+                <hi>// no body index there.</hi>
+                <hi>if ((depthX >= 0) </hi>
+                 <hi>&& (depthX < depthWidth) </hi>
+                 <hi>&& (depthY >= 0) </hi>
+                 <hi>&& (depthY < depthHeight))</hi>
+                <hi>{</hi>
+                    <hi>int depthIndex = (depthY * depthWidth) + depthX;</hi>
+
+                    <hi>// If we are tracking a body for the current pixel,</hi>
+                    <hi>// do not zero out the pixel</hi>
+                    <hi>if (bodyIndexBytes[depthIndex] != 0xff)</hi>
+                    <hi>{</hi>
+                        <hi>// this bodyIndexByte is good and is a body,</hi>
+                        <hi>// loop again.</hi>
+                        <hi>continue;</hi>
+                    <hi>}</hi>
+                <hi>}</hi>
+            <hi>}</hi>
+            <hi>// this pixel does not correspond to a body </hi>
+            <hi>// so make it black and transparent</hi>
+            <hi>bitmapPixelsPointer[colorIndex] = 0;</hi>
+        <hi>}</hi>
+    <hi>}</hi>
+
+    <hi>this.bitmap.Invalidate();</hi>
+    <hi>FrameDisplayImage.Source = this.bitmap;</hi>
+<hi>}</hi>
+</pre>
+<p>
+</p>
+</li>
+<li>
+<p>Add a button to turn on the Body Mask. Open the <strong>MainPage.xaml</strong> and add a new button called <strong>Body Mask</strong>, with a click event, like so:
+</p>
+<pre>
+&ltScrollViewer Grid.Row="2" ScrollViewer.HorizontalScrollBarVisibility="Auto" 
+              ScrollViewer.VerticalScrollBarVisibility="Auto"&gt
+    &ltStackPanel Orientation="Horizontal"&gt
+        &ltButton Content="Infrared" Style="{StaticResource FrameSelectorButtonStyle}"
+                Click="InfraredButton_Click"/&gt
+        &ltButton Content="Color" Style="{StaticResource FrameSelectorButtonStyle}" 
+                Click="ColorButton_Click"/&gt
+        &ltButton Content="Depth" Style="{StaticResource FrameSelectorButtonStyle}"
+                Click="DepthButton_Click"/&gt
+        <hi>&ltButton Style="{StaticResource FrameSelectorButtonStyle}"</hi>
+                <hi>Click="BodyMask_Click"&gt</hi>
+            <hi>&ltTextBlock Text="Body Mask" TextWrapping="Wrap"/&gt</hi>
+        <hi>&lt/Button&gt</hi>
+    &lt/StackPanel&gt
+&lt/ScrollViewer&gt
+</pre>
+<p>
+Then open the code behind file: <strong>MainPage.xaml.cs</strong> and add the <strong>BodyMaskButton_Click</strong> method:
+</p>
+<pre>
+<hi>private void BodyMask_Click(object sender, RoutedEventArgs e)</hi>
+<hi>{</hi>
+    <hi>SetupCurrentDisplay(DisplayFrameType.BodyMask);</hi>
+<hi>}</hi>
+</pre>
+</li>
+<li>
+<p><strong>Build and Run</strong> the application. Click the <strong>Body Mask</strong> button and stand up so the Kinect 2 can recognize your whole body, and the body is masked with the rest of the image removed!
+</p>
+</li>
+<img style="width: 100%;" alt="Body Image" src="images/lab05img02.png">
+<p>
+</p>
+<li>
+<p>But there is an issue, the framerate is very bad when viewing the body mask. This is because the attached debugger is doing a lot of work to make the unsafe code manageable in a
+debugging context. To get an idea of the live framerate of the release version, run the program without the attached debugger by selecting <strong>DEBUG</strong>, 
+then <strong>Start Without Debugging</strong>, or press <strong>Ctrl + F5</strong>. Now the framerate is smooth because the program is allowed to run optimized code, unhindered by the debugger.
+</p>
+</li>
+<li>
+<p>You may have noticed some funny looking activity when sitting very close to the Kinect, having a dramatic depth difference between parts of your body, or something covering the color camera. 
+Depending on the cameras position, it can seem like the camera can see your body outline through objects, like XRAY vision. For example, my hand in this photo under the desk:
+</p>
+<img style="width: 100%;" alt="Body Image" src="images/lab05img03.png">
+<p>
+That’s because the color camera is not the camera which decides if something is a body part or not, the depth array does. Both feeds are mapped together so they appear as one camera view but this is deceptive because on the Kinect unit, the depth array beams are in the center of the device, while the color camera is on the left. So even if you cover the color camera lens with something, the depth array can see a body and this comes through in the BodyIndexFrame, then the color is rendered where that body is, even if it’s not a realistic color. 
+This is not an issue when the Kinect 2 is a normal distance from the user and the view is unimpeded (as in most lounge rooms), yet it is interesting nonetheless. It also clearly shows the distinction between frame types and how the co-ordinate mapper successfully allows many feeds to appear as one. 
+</p>
+</li>
+</ol>
+
+<h2>
+<a id="summary" class="anchor" href="#summary" aria-hidden="true"><span class="octicon octicon-link"></span></a>Summary</h2>
+<p>This lab taught you how to <strong>retrieve and use the Body Index Frame and others</strong> from the <strong>MultiSourceFrameReader</strong>, and <strong>use that frame data to cut out known bodies in a bitmap image</strong>.</p>
+<p>
+The Co-ordinate Mapper is used for almost every useful function of the Kinect relating to super-imposing, or the use of multiple frame types at once. 
+It’s important to familiarize yourself with how the co-ordinate mapper works. 
+This example used the IBuffer and the color to body index frames, but there are many other mapping methods available through the co-ordinate mapper.
+</p>
+<p>The Body Index Frame shows which parts of a single frame are a body or not, and which of the six possible bodies each pixel is a part of. 
+The body index is useful but there are more advanced things you will want from the Kinect 2 sensor like Joints and orientations of joints for each body.
+</p>
+<p>
+In the next lab, you will implement a new visual into the application, the Skeleton from Body Data.
+</p>
+<p>
+There is code available which is the completed solution from the work in this lab. The next lab will begin from this code.
+</p>
+	<li class="button">
+	<a class="buttons tag" href="https://github.com/Kinect/Tutorial/archive/lab05.zip">This Lab Code</a> 
+	</li>
+    <li class="button">
+	<a class="buttons feedback" href="https://github.com/Kinect/Tutorial/issues/">View Issues</a> </li>
+    <li class="button">
+	<a class="buttons feedback" href="https://github.com/Kinect/Tutorial/issues/new?labels=Body_Mask">Give Feedback</a> </li>
+<a href="#" class="back-to-top"><i class="fa fa-chevron-up"> Back to Top</i></a>
+<footer> </footer>
+</div>
+
+<!--[if !IE]><script>fixScale(document);</script><![endif]-->
+</section></html>

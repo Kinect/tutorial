@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html>
+	<head>
+	  <meta charset="utf-8">
+	  <meta http-equiv="X-UA-Compatible" content="chrome=1">
+	  <title>Kinect 2 for Windows - Hands On Lab 3</title>
+	  <link rel="stylesheet" href="../stylesheets/styles.css">
+	  <link rel="stylesheet" href="../stylesheets/pygment_trac.css">
+	  <link rel="stylesheet" href="http://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.min.css">
+	  <script src="../javascripts/scale.fix.js"></script>
+	  <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+	<!--[if lt IE 9]>
+		<script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+		<![endif]-->
+	</head>
+<body>
+<div class="wrapper">
+      <header>
+        <h1 class="header">Kinect 2 for Windows Demo App</h1>
+        <p class="header">The Hands On Labs to complete a sample application for Windows 8.1 and the Kinect 2 for Windows</p>
+        <ul>
+		  <li ><a class="buttons home" href="../index.html">Home</a></li>
+		  <li class="download"><a class="buttons" href="https://github.com/MicrosoftKinect2/ms-Kinect2Demo-Win81/zipball/master">Complete App</a></li>
+          <li><a class="buttons github" href="https://github.com/MicrosoftKinect2/ms-Kinect2Demo-Win81">View On GitHub</a></li>
+        </ul>
+      </header>
+      <section>
+	  
+<div>  
+<nav id="labs_dropdown">
+<ul>
+  <li><a style="padding: 0px;"><h3 style="color:#FFF; padding: 10px;">Lab 03 - Color Data<i style="float:right; font-size: 16px; padding-top: 0.5%;" class="fa fa-chevron-down"></i></h3></a>
+    <ul>
+		<li class="download"><a href="../Lab01/index.html">1 - Project Setup</a></li>
+		<li class="download"><a href="../Lab02/index.html">2 - Infrared Data</a></li>
+		<li class="download"><a href="index.html">3 - Color Data</a></li>
+		<li class="download"><a href="../Lab04/index.html">4 - Depth Data</a></li>
+		<li class="download"><a href="../Lab05/index.html">5 - Body Mask</a></li>
+		<li class="download"><a href="../Lab06/index.html">6 - Body Data</a></li>
+		<li class="download"><a href="../Lab07/index.html">7 - Background Removal</a></li>
+		<li class="download"><a href="../Lab08/index.html">8 - Face Tracking</a></li>
+		<li class="download"><a href="../Lab09/index.html">9 - Face Game</a></li>
+		<li class="download"><a href="../Lab10/index.html">10 - Hand Cursor</a></li>
+		<li class="download"><a href="../Lab11/index.html">11 - Kinect Studio</a></li>
+		<li class="download"><a href="../Lab12/index.html">12 - Gesture Builder</a></li>
+		<li class="download"><a href="../Lab13/index.html">13 - Bing Speech</a></li>
+		<li class="download"><a href="../Lab14/index.html">14 - Tracking Strategies</a></li>
+	</ul>
+</ul>
+</div>
+
+<h1><a id="kinect-2-hands-on-labs" class="anchor" href="#kinect-2-hands-on-labs" aria-hidden="true"><span class="octicon octicon-link"></span></a>Kinect 2 Hands On Labs</h1>
+<h2>
+<img style="width: 100%;" alt="Color Image" src="images/lab03img01.png">
+<a id="lab-3-Displaying-Color-Data" class="anchor" href="#lab-3-Displaying-Color-Data" aria-hidden="true"><span class="octicon octicon-link"></span></a>Lab 3: Displaying Color Data</h2>
+<p><strong>Estimated Time to Complete</strong>: 20min</p>
+<p>This lab is part of a series of hands on labs which teach you how to create a Windows 8.1 Store Application which uses almost every available feature of the Kinect 2. 
+This is the third lab in the series, and it describes how to get the color feed from the Kinect sensor, as well as the Infrared feed from the previous lab.</p>
+<p>This lab will explain the following:
+<ul>
+<li>How to open the Multi Source Frame Reader on the Kinect Sensor in code.
+<li>How to receive the Multi Source Frame when it is ready.
+<li>How to receive the Multi Source Frame when it is ready.
+<li>How to get the currently selected frame type from the Multi Source Frame.
+<li>How to convert the Color Frame data to a color bitmap
+</ul></p>
+<p>This lab comes with a starting point solution and a completed
+solution of the covered exercises if required.</p>
+
+<h1>
+<a id="exercise-1---Displaying-the-Color-Frame" class="anchor" href="#exercise-1---Displaying-the-Color-Frame" aria-hidden="true"><span class="octicon octicon-link"></span></a>Exercise 1 - Displaying the Color Frame</h1>
+<p>This exercise will teach you how to retrieve a color frame in a Kinect for Windows 2 application for Windows 8.1. 
+This lab and all subsequent labs in this series are built using C# and assume you have a fundamental knowledge of the C# language.</p>
+<p>
+The screenshots in this lab are from Visual Studio Pro 2013 Update 2, Community Edition is identical.
+</p>
+<p>
+This lab builds upon the previous lab, which integrated an infrared frame reader. This lab will allow the user to switch between feeds in the user interface. 
+Switching frames or using multiple kinds of frames for anything requires a new kind of frame reader: 
+the <strong>MultiSourceFrameReader</strong>, which will give you both the color and infrared feeds.
+</p>
+<p>
+To retrieve and use color frames from the Kinect 2 using the <strong>MultisourceFrameReader</strong>, follow the steps below:
+</p>
+<ol>
+  <li>
+    <p>Open the existing <strong>Kinect 2 Sample</strong> solution in Visual Studio, or the copy you have from the end of the previous lab.</p>
+  </li>
+
+  <li>
+    <p>Create an enum to define the currently selected frame type. Open the <strong>MainPage.xaml.cs</strong> file from the <strong>Solution Explorer</strong>. 
+		The code will now need to handle both color and infrared frames, so you must make sure that each frame type is initialized with the appropriate size. 
+		First, create the new enum, then make a const variable which is the default frame type, finally make a class level variable which will store the current choice. 
+		Copy the following highlighted code to do this:
+<pre>
+namespace Kinect2Sample
+{
+    <hi>public enum DisplayFrameType</hi>
+    <hi>{</hi>
+        <hi>Infrared,</hi>
+        <hi>Color</hi>
+    <hi>}</hi>
+
+    public sealed partial class MainPage : Page, INotifyPropertyChanged
+    {
+        <hi>private const DisplayFrameType DEFAULT_DISPLAYFRAMETYPE = </hi>
+            <hi>DisplayFrameType.Color;</hi>
+        //...
+        <hi>private FrameDescription currentFrameDescription;</hi>
+        <hi>private DisplayFrameType currentDisplayFrameType;</hi>
+        //...
+    }
+}
+</pre>
+  </li>
+  <li>
+    <p>You can use the currently selected state to initialize the bitmap with the right size. Create a new method to do this, called <strong>SetupCurrentDisplay()</strong>. 
+	In the MainPage constructor, remove all the code which initialized the <strong>InfraredFrame</strong>, it will move to the <strong>SetupCurrentDisplay</strong> method. 
+	Then add the the new code to setup the <strong>ColorFrame</strong>. 
+	To do this copy the highlighted code below:
+	</p>
+	<pre>
+public MainPage()
+{
+    // one sensor is currently supported
+    this.kinectSensor = KinectSensor.GetDefault();
+
+    <hi>SetupCurrentDisplay(DEFAULT_DISPLAYFRAMETYPE);</hi>
+
+    // open the reader for the infrared frames
+    this.infraredFrameReader = this.kinectSensor.InfraredFrameSource.OpenReader();
+    //...
+}
+
+<hi>private void SetupCurrentDisplay(DisplayFrameType newDisplayFrameType)</hi>
+<hi>{</hi>
+    <hi>currentDisplayFrameType = newDisplayFrameType;</hi>
+    <hi>switch (currentDisplayFrameType)</hi>
+    <hi>{</hi>
+        <hi>case DisplayFrameType.Infrared:</hi>
+            <hi>FrameDescription infraredFrameDescription =</hi>
+                 <hi>this.kinectSensor.InfraredFrameSource.FrameDescription;</hi>
+            <hi>this.CurrentFrameDescription = infraredFrameDescription;</hi>
+            <hi>// allocate space to put the pixels being </hi>
+            <hi>// received and converted</hi>
+            <hi>this.infraredFrameData = </hi>
+                <hi>new ushort[infraredFrameDescription.Width * </hi>
+ 		         <hi>infraredFrameDescription.Height];</hi>
+            <hi>this.infraredPixels = </hi>
+                <hi>new byte[infraredFrameDescription.Width * </hi>
+ 		         <hi>infraredFrameDescription.Height * BytesPerPixel];</hi>
+            <hi>this.bitmap = </hi>
+                <hi>new WriteableBitmap(infraredFrameDescription.Width, </hi>
+ 		         <hi>infraredFrameDescription.Height);</hi>
+            <hi>break;</hi>
+
+        <hi>case DisplayFrameType.Color:</hi>
+            <hi>FrameDescription colorFrameDescription = </hi>
+ 		<hi>this.kinectSensor.ColorFrameSource.FrameDescription;</hi>
+            <hi>this.CurrentFrameDescription = colorFrameDescription;</hi>
+            <hi>// create the bitmap to display</hi>
+            <hi>this.bitmap = </hi>
+                <hi>new WriteableBitmap(colorFrameDescription.Width, </hi>
+ 		<hi>colorFrameDescription.Height);</hi>
+            <hi>break;</hi>
+
+        <hi>default:</hi>
+            <hi>break;</hi>
+    <hi>}</hi>
+<hi>}</hi>
+</pre>
+	<p>
+		The InfraredFrame initialization logic here is the same as in the previous lab. 
+		The ColorFrame does not need an array for the data, or an array for its pixels, 
+		so it simply sets the bitmap to the right resolution matching the colorFrameDescription.
+	</p>
+  </li>
+  <li>
+    <p>Next replace the <strong>InfraredFrameReader</strong> with a <strong>MultisourceFrameReader</strong> to switch between frame types. A new class variable is needed for the <strong>MultiSourceFrameReader</strong>, 
+		and it needs to be initialized in the MainPage constructor. 
+		To do this, copy the highlighted code below (also remove the references to the <strong>infraredFrameReader</strong> as they are no longer necessary):</p>
+	<pre>
+    private DisplayFrameType currentDisplayFrameType;
+    <hi>private MultiSourceFrameReader multiSourceFrameReader = null;</hi>
+
+    //Infrared Frame 
+    private ushort[] infraredFrameData = null;
+    //...
+    public MainPage()
+    {
+        // one sensor is currently supported
+        this.kinectSensor = KinectSensor.GetDefault();
+
+        SetupCurrentDisplay(DEFAULT_DISPLAYFRAMETYPE);
+
+        <hi>this.multiSourceFrameReader = </hi>
+            <hi>this.kinectSensor.OpenMultiSourceFrameReader(</hi>
+            <hi> FrameSourceTypes.Infrared | FrameSourceTypes.Color);</hi>
+
+        <hi>this.multiSourceFrameReader.MultiSourceFrameArrived += </hi>
+            <hi>this.Reader_MultiSourceFrameArrived;</hi>
+
+        // set IsAvailableChanged event notifier
+        this.kinectSensor.IsAvailableChanged += this.Sensor_IsAvailableChanged;
+
+        // use the window object as the view model in this simple example
+        this.DataContext = this;
+
+        // open the sensor
+        this.kinectSensor.Open();
+
+        this.InitializeComponent();
+    }
+
+    <hi>private void Reader_MultiSourceFrameArrived(</hi>
+                <hi>MultiSourceFrameReader sender,</hi>
+                <hi>MultiSourceFrameArrivedEventArgs e)</hi>
+    <hi>{</hi>
+
+    <hi>}</hi>
+</pre>
+<p>
+The <strong>MultiSourceFrameReader</strong> is initialized with the <strong>FrameSourceTypes</strong> which will be used, so it is important to remember that to add new frame types, 
+the <strong>MultiSourceFrameReader</strong> must be created appropriately.
+<br><br>
+Please make sure to remove the previous <strong>InfraredFrameReader</strong> from the <strong>MainPage</strong> constructor.
+</p>
+  </li>
+  <li>
+    <p>The <strong>MultiSourceFrameReader</strong> works in a similar way to the <strong>InfraredFrameReader</strong> in that it raises an event when a new frame is ready. 
+	The difference is that the <strong>MultiSourceFrameReader</strong> carries frames of many types, depending on its construction. 
+	The frame types within the <strong>MultiSourceFrameReader</strong> are extracted through a <strong>multiSourceFrame</strong>, which contains each specific frame. 
+	The <strong>Reader_MultiSourceFrameArrived()</strong> method will extract these frames, to be used in other methods. To do this copy the code below:
+	</p>
+<pre>
+private void Reader_MultiSourceFrameArrived(MultiSourceFrameReader sender,
+MultiSourceFrameArrivedEventArgs e)
+{
+    <hi>MultiSourceFrame multiSourceFrame = e.FrameReference.AcquireFrame();</hi>
+
+    <hi>// If the Frame has expired by the time we process this event, return.</hi>
+    <hi>if (multiSourceFrame == null)</hi>
+    <hi>{</hi>
+       <hi>return;</hi>
+    <hi>}</hi>
+
+    <hi>switch (currentDisplayFrameType)</hi>
+    <hi>{</hi>
+        <hi>case DisplayFrameType.Infrared:</hi>
+            <hi>using (InfraredFrame infraredFrame = </hi>
+ 		<hi>multiSourceFrame.InfraredFrameReference.AcquireFrame())</hi>
+            <hi>{</hi>
+                <hi>ShowInfraredFrame(infraredFrame);</hi>
+            <hi>}</hi>
+            <hi>break;</hi>
+        <hi>case DisplayFrameType.Color:</hi>
+            <hi>using (ColorFrame colorFrame = </hi>
+ 		<hi>multiSourceFrame.ColorFrameReference.AcquireFrame())</hi>
+            <hi>{</hi>
+                <hi>ShowColorFrame(colorFrame);</hi>
+            <hi>}</hi>
+            <hi>break;</hi>
+        <hi>default:</hi>
+            <hi>break;</hi>
+    <hi>}</hi>
+}
+</pre>
+<p>
+As you can see, this method reacts to the <strong>currentDisplayFrameType</strong> to perform different actions with the frame received. 
+<strong>ShowInfraredFrame</strong> and <strong>ShowColorFrame</strong> are new methods which will be created next.
+</p>
+  <li>
+    <p><strong>ShowInfraredFrame</strong> is similar to the <strong>Reader_InfraredFrameArrived</strong> method in the previous lab. 
+	The difference is that the method now receives the frame as a parameter. 
+	Copy the new method below, you could also refactor the old method to look like this new one:
+	</p>
+	<pre>
+<hi>private void ShowInfraredFrame(InfraredFrame infraredFrame)</hi>
+<hi>{</hi>
+    bool infraredFrameProcessed = false;
+
+    if (infraredFrame != null)
+    {
+        FrameDescription infraredFrameDescription =
+        infraredFrame.FrameDescription;
+
+        // verify data and write the new infrared frame data to the display bitmap
+        if (((infraredFrameDescription.Width * infraredFrameDescription.Height)
+        == this.infraredFrameData.Length) &&
+            (infraredFrameDescription.Width == this.bitmap.PixelWidth) &&
+        (infraredFrameDescription.Height == this.bitmap.PixelHeight))
+        {
+            // Copy the pixel data from the image to a temporary array
+            infraredFrame.CopyFrameDataToArray(this.infraredFrameData);
+
+            infraredFrameProcessed = true;
+        }
+    }
+
+    // we got a frame, convert and render
+    if (infraredFrameProcessed)
+    {
+        this.ConvertInfraredDataToPixels();
+        this.RenderPixelArray(this.infraredPixels);
+    }
+<hi>}</hi>
+</pre>
+  </li>
+  <li>
+    <p>Now you can create the <strong>ShowColorFrame</strong> method. This method takes the color data from the frame and copies it to the bitmap which is used in the xaml.
+	Depending on which frame types the multiSourceFrameReader is set up to retrieve, the colorFrame may arrive with a different colorFormat to Bgra, 
+	in this case it is formatted before it is copied into the bitmap. 
+	Copy this new method as below:
+<pre>
+<hi>private void ShowColorFrame(ColorFrame colorFrame)</hi>
+<hi>{</hi>
+    <hi>bool colorFrameProcessed = false;</hi>
+
+    <hi>if (colorFrame != null)</hi>
+    <hi>{</hi>
+        <hi>FrameDescription colorFrameDescription = </hi>
+            <hi>colorFrame.FrameDescription;</hi>
+
+        <hi>// verify data and write the new color frame data to </hi>
+        <hi>// the Writeable bitmap</hi>
+        <hi>if ((colorFrameDescription.Width == </hi>
+            <hi>this.bitmap.PixelWidth) && </hi>
+ 	<hi>(colorFrameDescription.Height == this.bitmap.PixelHeight))</hi>
+        <hi>{</hi>
+            <hi>if (colorFrame.RawColorImageFormat == ColorImageFormat.Bgra)</hi>
+            <hi>{</hi>
+                <hi>colorFrame.CopyRawFrameDataToBuffer(</hi>
+                    <hi>this.bitmap.PixelBuffer);</hi>
+            <hi>}</hi>
+            <hi>else</hi>
+            <hi>{</hi>
+                <hi>colorFrame.CopyConvertedFrameDataToBuffer(</hi>
+                    <hi>this.bitmap.PixelBuffer, </hi>
+ 		<hi>ColorImageFormat.Bgra);</hi>
+            <hi>}</hi>
+
+            <hi>colorFrameProcessed = true;</hi>
+        <hi>}</hi>
+    <hi>}</hi>
+
+    <hi>if (colorFrameProcessed)</hi>
+    <hi>{</hi>
+        <hi>this.bitmap.Invalidate();</hi>
+        <hi>FrameDisplayImage.Source = this.bitmap;</hi>
+    <hi>}</hi>
+<hi>}</hi>
+</pre>
+</p>
+</li>
+<li><strong>Build and Run</strong> the application to make sure there are no errors. The application should show the infrared frame as in the previous lab.
+</li>
+<li>
+<p>
+</p>
+<p>Next you will add some buttons to the xaml which will allow the user to switch the <strong>currentDisplayFrameType</strong> and therefore change the frame retrieved and the resulting bitmap. 
+Open the <strong>MainPage.xaml</strong> file by double clicking it in the <strong>Solution Explorer</strong> or pressing <strong>Shift + F7</strong> while the code behind is open. Add the following xaml within 
+the main grid in the MainPage (there is a simple button style also):
+</p>
+<pre>
+&ltPage
+    x:Class="Kinect2Sample.MainPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:Kinect2Sample"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"&gt
+    <hi>&ltPage.Resources&gt</hi>
+        <hi>&ltLinearGradientBrush x:Key="ButtonGradientBrush" </hi>
+                <hi>StartPoint="0,0" EndPoint="0,1" &gt</hi>
+            <hi>&ltGradientStopCollection&gt</hi>
+                <hi>&ltGradientStop Offset="0.0" Color="#3B78C8"/&gt</hi>
+                <hi>&ltGradientStop Offset="1.0" Color="#2C6199"/&gt</hi>
+            <hi>&lt/GradientStopCollection&gt</hi>
+        <hi>&lt/LinearGradientBrush&gt</hi>
+        <hi>&ltSolidColorBrush x:Key="ButtonBorderBrush" Color="#3B78C8"/&gt</hi>
+        <hi>&ltStyle x:Key="FrameSelectorButtonStyle" TargetType="Button"&gt</hi>
+            <hi>&ltSetter Property="Background" </hi>
+                <hi>Value="{StaticResource ButtonGradientBrush}"/&gt</hi>
+            <hi>&ltSetter Property="BorderBrush" </hi>
+                <hi>Value="{StaticResource ButtonBorderBrush}"/&gt</hi>
+            <hi>&ltSetter Property="BorderThickness" Value="2"/&gt</hi>
+            <hi>&ltSetter Property="Padding" Value="12,4,12,4"/&gt</hi>
+            <hi>&ltSetter Property="Width" Value="120"/&gt</hi>
+            <hi>&ltSetter Property="Height" Value="80"/&gt</hi>
+            <hi>&ltSetter Property="Margin" Value="6"/&gt</hi>
+            <hi>&ltSetter Property="FontSize" Value="20"/&gt</hi>
+        <hi>&lt/Style&gt</hi>
+    <hi>&lt/Page.Resources&gt</hi>
+
+    &ltGrid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}" &gt
+        &ltGrid Margin="30"&gt
+        &lt!--...--&gt
+        &ltImage x:Name="FrameDisplayImage" Grid.Row="1" 
+            Stretch="Uniform"/&gt
+        <hi>&ltScrollViewer Grid.Row="2" </hi>
+            <hi>ScrollViewer.HorizontalScrollBarVisibility="Auto" </hi>
+            <hi>ScrollViewer.VerticalScrollBarVisibility="Auto"&gt</hi>
+            <hi>&ltStackPanel Orientation="Horizontal"&gt</hi>
+                <hi>&ltButton Content="Infrared" Style="{StaticResource </hi>
+ 			<hi>FrameSelectorButtonStyle}"</hi>
+                        <hi>Click="InfraredButton_Click"/&gt</hi>
+                <hi>&ltButton Content="Color" Style="{StaticResource </hi>
+                        <hi>FrameSelectorButtonStyle}" </hi>
+                        <hi>Click="ColorButton_Click"/&gt</hi>
+            <hi>&lt/StackPanel&gt</hi>
+        <hi>&lt/ScrollViewer&gt</hi>
+        &lt/Grid&gt
+    &lt/Grid&gt
+&lt/Page&gt
+</pre>
+<p>
+Two new buttons should appear on the bottom row of the app, which are <strong>Infrared</strong> and <strong>Color</strong>, both with click events attached.
+<p/>
+<li>Finally, respond to the click event from the buttons to change the <strong>currentDisplayFrameType</strong> using the <strong>SetupCurrentDisplay()</strong> method.
+Open the <strong>MainPage.xaml.cs</strong> and add the following two event handler methods:
+<pre>
+private void InfraredButton_Click(object sender, RoutedEventArgs e)
+{
+    SetupCurrentDisplay(DisplayFrameType.Infrared);
+}
+
+private void ColorButton_Click(object sender, RoutedEventArgs e)
+{
+    SetupCurrentDisplay(DisplayFrameType.Color);
+}
+</pre>
+</li>
+<li><strong>Build and Run</strong> the application. Press the Color button and see the color feed show!
+<img style="width: 100%;" alt="Color Image" src="images/lab03img01.png">
+</li>
+</li>
+</ol>
+
+<h2>
+<a id="summary" class="anchor" href="#summary" aria-hidden="true"><span class="octicon octicon-link"></span></a>Summary</h2>
+<p>This lab taught you how to <strong>retrieve and use an infrared frame and a color frame</strong> from the <strong>MultiSourceFrameReader</strong>. You then <strong>use that frame data to create a visible bitmap</strong> which is<strong>rendered in xaml</strong>. You also enabled the user to switch between the two feeds with buttons.</p>
+<p>
+You should have noticed the difference in resolution between the <strong>ColorFrame</strong> and the <strong>InfraredFrame</strong>. The <strong>ColorFrame</strong> is <strong>1920 by 1080</strong> (HD) 
+while the <strong>InfraredFrame</strong> is <strong>512 by 424</strong>. 
+The color feed is expected to be used more for visualizing the current scene for users, 
+and for this reason it is given a much higher resolution. A high resolution color feed means full screen applications can look great on any modern HD television.
+</p>
+<p>
+In the next lab, you will implement a new feed into the application, the DepthFrame.
+</p>
+<p>
+There is code available which is the completed solution from the work in this lab. The next lab will begin from this code.
+</p>
+	<li class="button">
+	<a class="buttons tag" href="https://github.com/Kinect/Tutorial/archive/lab03.zip">This Lab Code</a> 
+	</li>
+    <li class="button">
+	<a class="buttons feedback" href="https://github.com/Kinect/Tutorial/issues/">View Issues</a> </li>
+    <li class="button">
+	<a class="buttons feedback" href="https://github.com/Kinect/Tutorial/issues/new?labels=Color_Data">Give Feedback</a> </li>
+<a href="#" class="back-to-top"><i class="fa fa-chevron-up"> Back to Top</i></a>
+<footer> </footer>
+</div>
+
+<!--[if !IE]><script>fixScale(document);</script><![endif]-->
+</section></html>

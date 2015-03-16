@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html>
+	<head>
+	  <meta charset="utf-8">
+	  <meta http-equiv="X-UA-Compatible" content="chrome=1">
+	  <title>Kinect 2 for Windows - Hands On Lab 12</title>
+	  <link rel="stylesheet" href="../stylesheets/styles.css">
+	  <link rel="stylesheet" href="../stylesheets/pygment_trac.css">
+	  <link rel="stylesheet" href="http://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.min.css">
+	  <script src="../javascripts/scale.fix.js"></script>
+	  <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+	<!--[if lt IE 9]>
+		<script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+		<![endif]-->
+	</head>
+<body>
+<div class="wrapper">
+      <header>
+        <h1 class="header">Kinect 2 for Windows Demo App</h1>
+        <p class="header">The Hands On Labs to complete a sample application for Windows 8.1 and the Kinect 2 for Windows</p>
+        <ul>
+		  <li ><a class="buttons home" href="../index.html">Home</a></li>
+		  <li class="download"><a class="buttons" href="https://github.com/MicrosoftKinect2/ms-Kinect2Demo-Win81/zipball/master">Complete App</a></li>
+          <li><a class="buttons github" href="https://github.com/MicrosoftKinect2/ms-Kinect2Demo-Win81">View On GitHub</a></li>
+        </ul>
+      </header>
+      <section>
+	  
+<div>  
+<nav id="labs_dropdown">
+<ul>
+  <li><a style="padding: 0px;"><h3 style="color:#FFF; padding: 10px;">Lab 12 - Gesture Builder<i style="float:right; font-size: 16px; padding-top: 0.5%;" class="fa fa-chevron-down"></i></h3></a>
+    <ul>
+		<li class="download"><a href="../Lab01/index.html">1 - Project Setup</a></li>
+		<li class="download"><a href="../Lab02/index.html">2 - Infrared Data</a></li>
+		<li class="download"><a href="../Lab03/index.html">3 - Color Data</a></li>
+		<li class="download"><a href="../Lab04/index.html">4 - Depth Data</a></li>
+		<li class="download"><a href="../Lab05/index.html">5 - Body Mask</a></li>
+		<li class="download"><a href="../Lab06/index.html">6 - Body Data</a></li>
+		<li class="download"><a href="../Lab07/index.html">7 - Background Removal</a></li>
+		<li class="download"><a href="../Lab08/index.html">8 - Face Tracking</a></li>
+		<li class="download"><a href="../Lab09/index.html">9 - Face Game</a></li>
+		<li class="download"><a href="../Lab10/index.html">10 - Hand Cursor Interactions</a></li>
+		<li class="download"><a href="../Lab11/index.html">11 - Kinect Studio</a></li>
+		<li class="download"><a href="index.html">12 - Gesture Builder</a></li>
+		<li class="download"><a href="../Lab13/index.html">13 - Bing Speech</a></li>
+		<li class="download"><a href="../Lab14/index.html">14 - Tracking Strategies</a></li>
+	</ul>
+</ul>
+</div>
+
+<h1><a id="kinect-2-hands-on-labs" class="anchor" href="#kinect-2-hands-on-labs" aria-hidden="true"><span class="octicon octicon-link"></span></a>Kinect 2 Hands On Labs</h1>
+<h2>
+<a id="lab-12-gesture-builder" class="anchor" href="#lab-12-gesture-builder" aria-hidden="true"><span class="octicon octicon-link"></span></a>Lab 12: Gesture Builder</h2>
+<img style="width: 96%;" alt="Monitor" src="images/lab12img06.png">
+<br>
+<p><strong>Estimated Time to Complete</strong>: 40min</p>
+<p>This lab is part of a series of hands on labs which teach you how to use almost every available feature of the Kinect 2. 
+This is the twelfth lab in the series, and it teaches you how to record, tag, and compile a gesture database, using the <strong>Visual Gesture Builder</strong> application.
+This lab also describes how to import existing tagged clips into the project and take a screenshot in your application using a gesture.</p>
+
+<p>This lab will explain the following:
+<ol>
+<li>Recording, tagging and compiling a gesture database
+<li>Importing existing tagged clips into the project
+<li>Take a screen shot with a gesture in Kinect 2 application
+</ol></p>
+
+<p>
+This lab comes with a code solution for the start point, and a completed code solution of the exercises covered.
+</p>
+
+<h1>
+<a id="exercise-1---recording-tagging-and-compiling-the-gesture-database" class="anchor" href="#exercise-1---recording-tagging-and-compiling-the-gesture-database" aria-hidden="true"><span class="octicon octicon-link"></span></a>Exercise 1 - Recording, tagging and compiling a gesture database</h1>
+<p>This exercise will teach you how to use Visual Gesture Builder to record, tag, and compile a gesture database.
+<p></p>
+<ol>
+<li>
+<p>
+As you learned in the previous Kinect Studio lab, <strong>record a feed where you make a gesture</strong>. To create a gesture database file, the color feed is not needed, so for the interest of this lab, <strong>you will not need to record color data</strong>, this will keep the file size smaller.
+<br>
+Make it a simple gesture such as <strong>Hands on knees</strong> or <strong>Hands above head</strong> or <strong>Sitting down</strong>. 
+You should also record some negative gestures. Negative gestures are gestures which are not the gesture you want to use but some other action. Negative Gestures can be recorded in the same clip.
+</p>
+<li>
+<p>
+Open <strong>Visual Gesture Builder</strong> (VGB). It will be found with the other Kinect Tools in a folder simliar to this: C:\Program Files\Microsoft SDKs\Kinect\v2.0_1409\Tools\KinectStudio\VisualGestureBuilder.exe 
+</p>
+</li>
+<li>
+<p>
+Click <strong>File - > New Solution</strong>, make a folder for your VGB solutions, then create a folder for this gesture. Enter the name for the solution that represents your gesture.
+</p>
+</li>
+<li>
+<p>
+<strong>Right click the solution</strong> in the explorer window and click Create New Project With Wizard.
+</p>
+<p>
+<img style="width: 40%;" alt="ProjectWizard" src="images/lab12img01.png">
+</p>
+</li>
+<li>
+<p>
+The Wizard helps create gestures by taking you through selectable options for the hand states, 
+joint mask, gesture symmetry and more. The Wizard is a much simpler and faster way to create a gesture. <strong>Complete the wizard</strong> using the options which reflect the gesture you have chosen and recorded.
+</p>
+</li>
+<li>
+<p>
+<strong>Right click and Add Clip</strong> and find the recorded Kinect Studio .xef that you created.
+</p>
+<p>
+<img style="width: 40%;" alt="ProjectWizard" src="images/lab12img02.png">
+</p>
+</li>
+<li>
+<p>
+If you click on the recorded clip in the explorer of VGB, you will be able to see the clip.
+</p>
+</li>
+<li>
+<p>
+Controls for the VGB tagging timeline are at the bottom of the screen and may require you to resize the layout. 
+There are shortcuts at the bottom of the screen under the Control window, you must have that window selected in order to use the shortcuts. The shortcuts you will use are:
+<ul>
+<li><strong>Enter</strong> – to <strong>tag</strong> key frames true
+<li><strong>Left and right arrow</strong> – to <strong>cycle</strong> key frames
+<li><strong>Shift + left and right arrow</strong> – to <strong>group</strong> select key frames.
+</ul>
+</li>
+</p>
+</li>
+<li>
+<p>
+<strong>Navigate through the clip to the the start</strong> of your gesture, where you would like the gesture to start. 
+</p>
+<p>
+<img style="width: 60%;" alt="ProjectWizard" src="images/lab12img03.png">
+</p>
+</li>
+<li>
+<p>
+Once you are sure this is where you want the <strong>gesture to begin</strong>, <strong>group select</strong> key frames until you reach a point where you want the gesture to end, and then <strong>press enter</strong>. 
+<br>
+<br>
+<strong>A blue line is shown where the gesture is selected. </strong>By default all frames are false and have no line and you don’t need to set every other frame to false.
+</p>
+</li>
+<li>
+<p>
+Once you have tagged your clip <strong>Right click the database and click Build</strong>. You will be able to see the progress in the Output window at the bottom.
+</p>
+</li>
+<li>
+<p>
+<strong>Right click the Analysis and click Add Clip</strong>. Add your recorded clip.
+</p>
+<p>
+<img style="width: 30%;" alt="ProjectWizard" src="images/lab12img04.png">
+</p>
+</li>
+<li>
+<p>
+<strong>Right click the Analysis again and click Analyze</strong>. 
+<br>
+<strong>Select your .gbd</strong> file.
+</p>
+</li>
+<li>
+<p>
+Select the <strong>Clip</strong> inside <strong>Analysis</strong>, and you will be able to see the confidence of the Gesture and whether it is marked as true or false (valid or not valid). 
+If you are not happy with the confidence of the Gesture, you can go back and  edit your key frames.
+</p>
+</li>
+<li>
+<p>
+Make sure to save the Database with any changes you make and <strong>build</strong> and <strong>analyze</strong> the frames to make sure you are happy.
+</p>
+</li>
+<li>
+<p>
+Once you are happy with the confidence you can check if your gesture works using <strong>VGB View</strong>.
+</p>
+</li>
+<li>
+<p>
+Make sure your Kinect is plugged in, select <strong>File</strong>, <strong>Live Preview</strong> and select your .gdb file. You can test to see if your gesture is working against your database file.
+</p>
+</li>
+</ol>
+
+<h1>
+<a id="exercise-2---Importing-existing-tagged-clips-into-the-project" class="anchor" href="#exercise-2---Importing-existing-tagged-clips-into-the-project" aria-hidden="true"><span class="octicon octicon-link"></span></a>Exercise 2 - Importing existing tagged clips into a project</h1>
+<p>This exercise will teach you how to import existing tagged clips into a database then add that database to the Kinect2Sample solution. <strong>Using more clips for gesture accuracy is important for larger projects</strong>.
+
+<ol>
+
+<li><p>To import existing tagged clips into the database, locate your solution with the database you want, for this exercise you will use the pre-existing database.
+<li><p><strong>Right click</strong> the database and add your tagged clip into the solution under the database.
+<li><p>Once your tagged clips are in the database, you can build the solution, instead of just the database, you do this by right clicking the solution and select <strong>Build</strong>.
+<p><img style="width: 40%;" alt="ProjectWizard" src="images/lab12img05.png">
+<li><p>Once the database has been rebuilt you can use this database in your code with more tagged clips.
+<li><p>Open the <strong>Kinect 2 Sample</strong>.
+<li><p><strong>Create a new folder called Database</strong>, inside the <strong>Kinect2Sample</strong> project.
+<li><p>Open that folder in windows file explorer and <strong>copy the gesture database</strong> (.gbd) that you made last exercise into this new folder.
+<li><p>Return to Visual Studio and <strong>right click on the project</strong> and <strong>click Add Folder...</strong>,then select the Database folder and click Add.
+<li><p>Right Click the Database folder in the Solution Explorer and select <strong>Add -> existing item...</strong>.
+<li><p>Click on the database inside the solution and set its <strong>Copy to Output Directory</strong> property to <strong>Copy always</strong> and <strong>Build Action</strong> property to <strong>Content</strong>.
+
+
+<h1>
+<a id="exercise-3---Test-your-app-with-a-recording" class="anchor" href="#exercise-3---Importing-existing-tagged-clips-into-the-project" aria-hidden="true"><span class="octicon octicon-link"></span></a>Exercise 3 - Test your app with a recording</h1>
+<p>This exercise will teach you how to use your Visual Gesture Database in your application to take a screenshot.
+<ol>
+<li><p>Download the <strong>GestureDetector.cs</strong> and <strong>GestureResultView.cs</strong>, from the links below, and add them to the <strong>Kinect2Sample</strong> by <strong>copying them</strong> to the same directory as the <strong>Kinect2Sample.csproj</strong> file. Then <strong>Right Click the project</strong> in the Solution Explorer and select <strong>Add Existing Item...</strong> and add the two new files.
+<ol><a href="data/GestureDetector.cs">GestureDetector.cs</a></ol>
+<ol><a href="data/GestureResultView.cs">GestureResultView.cs</a></ol>
+
+<li><p>In the <strong>GestureDetector.cs</strong> file there are two strings, both are <strong>critical</strong> to this exercise working. The variable names for these string are <strong>gestureDatabase</strong> and <strong>handsAboveHeadGestureName</strong>, and value for these string variables need to match the Gesture Database name and the Gesture name that you created with the Visual Gesture Builder.
+<li><p>If you wish to add more than one database you will need to open the <strong>GestureDetector</strong> and add another for loop that checks for your gesture by name. An example of this can be seen in constructor within the <strong>GestureDetector.cs</strong> file.
+
+In order to support multiple gestures, you also need to navigate to the <strong>Reader_GestureFrameArrived</strong> handler method and find the commented code twoards the end of the method. You will need to edit the commented code to check for the relevant gesture names.
+<li><p>Add a reference to the <strong>VisualGestureBuilder</strong> in the porject. Right click the References folder, select Add Reference | Windows 8.1 | Extensions and add VisualGestureBuilder.
+<li><p>Add the capability for your application to access the pictures library. Open your <strong>Package.appxmanifest</strong> and navigate to the Capabilities tab and check Pictures Library.
+<li><p>Open the <strong>MainPage.xaml.cs</strong> and add these using statements at the top;
+<pre>
+<hi>using Windows.Storage.Pickers;
+using Windows.Graphics.Imaging;
+using Windows.Graphics.Display;
+using Windows.Storage;</hi>
+</pre>
+<li><p>Add new variables to the file as per this highlighted code below.
+<pre>
+//Face Orientation Shaping
+private double prevPitch = 0.0f;
+private double prevYaw = 0.0f;
+
+<hi>/// &ltsummary&gt List of gesture detectors, </hi>
+<hi>///there will be one detector created for each potential body</hi>
+<hi>/// (max of 6) &lt/summary&gt</hi>
+<hi>private List<GestureDetector> gestureDetectorList = null;</hi>
+<hi>public bool isTakingScreenshot = false;</hi>
+
+public event PropertyChangedEventHandler PropertyChanged; 
+
+</pre>
+<li><p>Add code to the end of the <strong>MainPage() constructor</strong>,
+to initialize the <strong>GestureDetectors</strong> and the <strong>GestureResultViews</strong>. There is a distinct <strong>GestureDetector for each possible body (6).</strong> Each detector will be updated with relevant Body Id's later, as they are paused/resumed. The detectors are initialized with an empty view until then. 
+<br>
+<br>
+Register for the <strong>GestureResultView PropertyChanged</strong> to easily determine when anything has changed regarding any gesture.
+<pre>
+<hi>// Initialize the gesture detection objects for our gestures</hi>
+<hi>this.gestureDetectorList = new List<GestureDetector>();</hi>
+
+<hi>// Create a gesture detector for each body (6 bodies => 6 detectors)</hi>
+<hi>int maxBodies = this.kinectSensor.BodyFrameSource.BodyCount;</hi>
+<hi>for (int i = 0; i < maxBodies; ++i)</hi>
+<hi>{</hi>
+	<hi>GestureResultView result =</hi>
+		<hi> new GestureResultView(i, false, false, 0.0f);</hi>
+	<hi>GestureDetector detector = </hi>
+		<hi>new GestureDetector(this.kinectSensor, result);</hi>
+	<hi>result.PropertyChanged += GestureResult_PropertyChanged;</hi>
+	<hi>this.gestureDetectorList.Add(detector);</hi>
+<hi>}</hi>
+</pre>
+<li><p>Add code to the <strong>Reader_MultiSourceFrameArrived</strong> handler method before the <strong>switch(CurrentDisplayFrameType)</strong>, to use the bodyFrame to register a gesture across all of our frames.
+<pre>
+<hi>using (bodyFrame = multiSourceFrame.BodyFrameReference.AcquireFrame())</hi>
+<hi>{</hi>
+	<hi>RegisterGesture(bodyFrame);</hi>
+<hi>}</hi>
+</pre>
+<li><p>Add code after the <strong>Reader_MultiSourceFrameArrived</strong> method to handle the confidence of the gesture as well as the visual.
+<pre>
+<hi>void GestureResult_PropertyChanged(object sender, </hi>
+		<hi>PropertyChangedEventArgs e)</hi>
+<hi>{</hi>
+	<hi>GestureResultView result = sender as GestureResultView;</hi>
+	<hi>if (result.Confidence > 0.8)</hi>
+	<hi>{</hi>
+		<hi>Screenshot();</hi>
+	<hi>}</hi>
+<hi>}</hi>
+</pre>
+<li><p>It would be good to respond to the confidence of the result. You can <a href=""></a>achieve this by adding this code to the MainPage.xaml right above the <strong>FullScreenBackButton</strong>
+<pre>
+<hi>&ltTextBlock x:Name="GestureVisual"</hi>
+	<hi>Grid.Row="1"</hi>
+	<hi>Text="Detecting Gesture"</hi>
+	<hi>FontSize="30"</hi>
+	<hi>Foreground="White"</hi>
+	<hi>HorizontalAlignment="Right"</hi>
+	<hi>VerticalAlignment="Top"</hi>
+	<hi>Opacity="0.0"&gt</hi>
+<hi>&lt/TextBlock&gt</hi>
+</pre>
+<li><p>Add the highlighted code in the <strong>GestureResult_PropertyChanged</strong>
+<pre>
+GestureResultView result = sender as GestureResultView; 
+<hi>this.GestureVisual.Opacity = result.Confidence;</hi>
+if (result.Confidence > 0.8)
+</pre>
+<li><p>Add this code right after <strong>GestureRecognized</strong> to capture the screenshot to a file.
+<pre>
+<hi>async private void Screenshot()</hi>
+<hi>{</hi>
+	<hi>// Thread protetction on FileIO actions</hi>
+	<hi>if (!isTakingScreenshot)</hi>
+	<hi>{</hi>
+	<hi>isTakingScreenshot = true;</hi>
+        <hi>RenderTargetBitmap renderTargetBitmap = </hi>
+        	<hi>new RenderTargetBitmap();</hi>
+        <hi>await renderTargetBitmap.RenderAsync(RootGrid);</hi>
+        <hi>var pixelBuffer = await renderTargetBitmap.GetPixelsAsync();</hi>
+
+        <hi>var savePicker = new FileSavePicker();</hi>
+        <hi>savePicker.DefaultFileExtension = ".png";</hi>
+        <hi>savePicker.SuggestedStartLocation = </hi>
+        	<hi>PickerLocationId.PicturesLibrary;</hi>
+        <hi>savePicker.SuggestedFileName = "snapshot.png";</hi>
+
+        <hi>// Prompt the user to select a file</hi>
+        <hi>var saveFile = await savePicker.PickSaveFileAsync();</hi>
+
+        <hi>// Verify the user selected a file</hi>
+        <hi>if (saveFile != null)</hi>
+        <hi>{</hi>
+	<hi>// Encode the image to the selected file on disk</hi>
+            <hi>using (var fileStream = </hi>
+            	<hi>await saveFile.OpenAsync(FileAccessMode.ReadWrite))</hi>
+            <hi>{</hi>
+		<hi>var encoder = </hi>
+			<hi>await BitmapEncoder.CreateAsync(</hi>
+			  	<hi>BitmapEncoder.PngEncoderId, </hi>
+			  	<hi>fileStream);</hi>
+            <hi>encoder.SetPixelData(</hi>
+		    	<hi>BitmapPixelFormat.Bgra8,</hi>
+                <hi>BitmapAlphaMode.Ignore,</hi>
+                <hi>(uint)renderTargetBitmap.PixelWidth,</hi>
+                <hi>(uint)renderTargetBitmap.PixelHeight,</hi>
+                <hi>DisplayInformation.GetForCurrentView().LogicalDpi,</hi>
+                <hi>DisplayInformation.GetForCurrentView().LogicalDpi,</hi>
+                <hi>pixelBuffer.ToArray());</hi>
+                <hi>await encoder.FlushAsync();</hi>
+            <hi>}</hi>
+        <hi>}</hi>
+        <hi>isTakingScreenshot = false;</hi>
+ 	<hi>}</hi>
+<hi>}</hi>
+</pre>
+<li><p>Lastly add this RegisterGesture method
+<pre>
+<hi>private void RegisterGesture(BodyFrame bodyFrame)</hi>
+<hi>{</hi>
+   <hi>bool dataReceived = false;</hi>
+   <hi>Body[] bodies = null;</hi>
+
+   <hi>if (bodyFrame != null)</hi>
+   <hi>{</hi>
+	<hi>if (bodies == null)</hi>
+	<hi>{</hi>
+	   <hi>// Creates an array of 6 bodies, which is the max </hi>
+	   <hi>// number of bodies the Kinect can track simultaneously</hi>
+	   <hi>bodies = new Body[bodyFrame.BodyCount];</hi>
+	<hi>}</hi>
+
+	<hi>// The first time GetAndRefreshBodyData is called, </hi>
+	<hi>// allocate each Body in the array.</hi>
+	<hi>// As long as those body objects are not disposed and </hi>
+	<hi>// not set to null in the array,</hi>
+	<hi>// those body objects will be re-used.</hi>
+	<hi>bodyFrame.GetAndRefreshBodyData(bodies);</hi>
+	<hi>dataReceived = true;</hi>
+   <hi>}</hi>
+
+   <hi>if (dataReceived)</hi>
+   <hi>{</hi>
+	<hi>// We may have lost/acquired bodies, </hi>
+	<hi>// so update the corresponding gesture detectors</hi>
+	<hi>if (bodies != null)</hi>
+	<hi>{</hi>
+	   <hi>// Loop through all bodies to see if any </hi>
+	   <hi>// of the gesture detectors need to be updated</hi>
+	   <hi>for (int i = 0; i < bodyFrame.BodyCount; ++i)</hi>
+	   <hi>{</hi>
+	      <hi>Body body = bodies[i];</hi>
+	      <hi>ulong trackingId = body.TrackingId;</hi>
+
+	      <hi>// If the current body TrackingId changed, </hi>
+	      <hi>// update the corresponding gesture detector with </hi>
+	      <hi>// the new value</hi>
+	      <hi>if (trackingId != </hi>
+	      	<hi>this.gestureDetectorList[i].TrackingId)</hi>
+	      <hi>{</hi>
+	         <hi>this.gestureDetectorList[i].TrackingId = trackingId;</hi>
+
+	         <hi>// If the current body is tracked, unpause its </hi>
+	         <hi>// detector to get </hi>
+	         <hi>// VisualGestureBuilderFrameArrived events</hi>
+	         <hi>// If the current body is NOT tracked, pause its</hi>
+	         <hi>// detector so we don't waste resources trying to get </hi>
+	     	 <hi>// invalid gesture results</hi>
+	         <hi>this.gestureDetectorList[i].IsPaused =</hi>
+	         	<hi> trackingId == 0;</hi>
+	      <hi>}</hi>
+	   <hi>}</hi>
+	<hi>}</hi>
+   <hi>}</hi>
+<hi>}</hi>
+</pre>
+<li><p><strong>Build and Run</strong> the lab, complete the gesture in any of the frames and the screenshot dialogue will be displayed. 
+<p>Once you start your gesture, you will see the words <strong>Detecting Gesture</strong> at the top right of your screen. The opacity of the text will change based on the confidence of the gesture.
+</p>
+<p>
+<p><img style="width: 100%;" alt="ProjectWizard" src="images/lab12img06.png">
+<p>Below is the save dialogue that is displayed up after you have completed your gesture.
+<p><img style="width: 100%;" alt="ProjectWizard" src="images/lab12img07.png">
+</ol>
+
+<h2>
+<a id="summary" class="anchor" href="#summary" aria-hidden="true"><span class="octicon octicon-link"></span></a>Summary</h2>
+<p>
+You have now learned how to effectively build custom gestures using Visual Gesture Builder. You should also have understood how to implement a Gesture Database into your application and use that gesture to take a screen shot. 
+</p>
+	<li class="button">
+	<a class="buttons tag" href="https://github.com/Kinect/Tutorial/archive/lab12.zip">This Lab Code</a> 
+	</li>
+    <li class="button">
+	<a class="buttons feedback" href="https://github.com/Kinect/Tutorial/issues/">View Issues</a> </li>
+    <li class="button">
+	<a class="buttons feedback" href="https://github.com/Kinect/Tutorial/issues/new?labels=Gesture_Builder">Give Feedback</a> </li>
+<br>
+<br>
+<a href="#" class="back-to-top"><i class="fa fa-chevron-up"> Back to Top</i></a>
+<footer> </footer>
+</div>
+
+<!--[if !IE]><script>fixScale(document);</script><![endif]-->
+</section></html>

@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html>
+	<head>
+	  <meta charset="utf-8">
+	  <meta http-equiv="X-UA-Compatible" content="chrome=1">
+	  <title>Kinect 2 for Windows - Hands On Lab 14</title>
+	  <link rel="stylesheet" href="../stylesheets/styles.css">
+	  <link rel="stylesheet" href="../stylesheets/pygment_trac.css">
+	  <link rel="stylesheet" href="http://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.min.css">
+	  <script src="../javascripts/scale.fix.js"></script>
+	  <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+	<!--[if lt IE 9]>
+		<script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+		<![endif]-->
+	</head>
+<body>
+<div class="wrapper">
+      <header>
+        <h1 class="header">Kinect 2 for Windows Demo App</h1>
+        <p class="header">The Hands On Labs to complete a sample application for Windows 8.1 and the Kinect 2 for Windows</p>
+        <ul>
+		  <li ><a class="buttons home" href="../index.html">Home</a></li>
+		  <li class="download"><a class="buttons" href="https://github.com/MicrosoftKinect2/ms-Kinect2Demo-Win81/zipball/master">Complete App</a></li>
+          <li><a class="buttons github" href="https://github.com/MicrosoftKinect2/ms-Kinect2Demo-Win81">View On GitHub</a></li>
+        </ul>
+      </header>
+      <section>
+	  
+<div>  
+<nav id="labs_dropdown">
+<ul>
+  <li><a style="padding: 0px;"><h3 style="color:#FFF; padding: 10px;">Lab 14 - Tracking Strategies<i style="float:right; font-size: 16px; padding-top: 0.5%;" class="fa fa-chevron-down"></i></h3></a>
+    <ul>
+		<li class="download"><a href="../Lab01/index.html">1 - Project Setup</a></li>
+		<li class="download"><a href="../Lab02/index.html">2 - Infrared Data</a></li>
+		<li class="download"><a href="../Lab03/index.html">3 - Color Data</a></li>
+		<li class="download"><a href="../Lab04/index.html">4 - Depth Data</a></li>
+		<li class="download"><a href="../Lab05/index.html">5 - Body Mask</a></li>
+		<li class="download"><a href="../Lab06/index.html">6 - Body Data</a></li>
+		<li class="download"><a href="../Lab07/index.html">7 - Background Removal</a></li>
+		<li class="download"><a href="../Lab08/index.html">8 - Face Tracking</a></li>
+		<li class="download"><a href="../Lab09/index.html">9 - Face Game</a></li>
+		<li class="download"><a href="../Lab10/index.html">10 - Hand Cursor Interactions</a></li>
+		<li class="download"><a href="../Lab11/index.html">11 - Kinect Studio</a></li>
+		<li class="download"><a href="../Lab12/index.html">12 - Gesture Builder</a></li>
+		<li class="download"><a href="../Lab13/index.html">13 - Bing Speech</a></li>
+		<li class="download"><a href="index.html">14 - Tracking Strategies</a></li>
+	</ul>
+</ul>
+</div>
+
+<h1><a id="kinect-2-hands-on-labs" class="anchor" href="#kinect-2-hands-on-labs" aria-hidden="true"><span class="octicon octicon-link"></span></a>Kinect 2 Hands On Labs</h1>
+<h2>
+<img style="width: 100%;" alt="Touch Gestures Image" src="images/lab14img04.jpg">
+<a id="lab-14-tracking-strategies" class="anchor" href="#lab-14-tracking-strategies" aria-hidden="true"><span class="octicon octicon-link"></span></a>Lab 14: Tracking Strategies</h2>
+<p><strong>Estimated Time to Complete</strong>: 40min</p>
+<p>This lab is part of a series which teach you how to build a Windows 8.1 Store Application which uses almost every available
+feature of the Kinect 2. This is the 14th and last lab in the series, and it
+explains some common and effective strategies for tracking users and players in your Kinect 2 applications.</p>
+
+<p>This lab does not include much code, but instead offers insight into the design of applications with NUIs(Natural User Interfaces) such as you might create for a Kinect 2 solutions. This lab includes a discussion of the limitations and advantages of each tracking method.
+
+<p>This lab will explain the following:
+<ol>
+<li>Tracking a user who is the first to be seen.
+<li>Tracking the user who is the closest to the Kinect 2.
+<li>Tracking a user who is the most active in the scene.
+<li>Tracking several people simultaneously.
+</ol></p>
+
+<h1>
+<a id="exercise-1---tracking-strategies" class="anchor" href="#exercise-1---tracking-strategies" aria-hidden="true"><span class="octicon octicon-link"></span></a>Exercise 1 - Tracking Strategies</h1>
+<p>Since the invention of physical buttons, interfaces have had one thing that gets taken for granted: <strong>Deliberation</strong>.
+<br>
+<br>
+<strong>Pressing a physical button is a deliberate action</strong> because it is attached to something which is (hopefully) obviously an interface with some kind of feedback, and you know you are pressing it because you use your muscles to depress a button in a single direction. <strong>You must physically connect with the button</strong> so it's a fair assumption that the button getting pressed was a deliberate action.
+<img style="width: 100%;" alt="Light Switch Image" src="images/lab14img01.jpg">
+<a href=""></a>
+<br>
+<br>
+<strong>Touch screens only require a touch</strong>, not a press. So they have had issues with non-deliberate touches in their own way, which is why standard gestures like swipe to confirm or double-tap have come into existence. There is less effort to interact with a touch screen (no force is required, only a fingertip or stylus touch is needed) so <strong>with less effort to interact, it's more likely to get a false interaction.</strong>
+<img style="width: 100%;" alt="Touch Gestures Image" src="images/lab14img02.jpg">
+<br>
+<br>
+So we come to today and the rise of the <strong>Natural User Interface using body tracking</strong>, where your software has an option to record <strong>every movement of every joint, with no deliberation from the user</strong>. You must decide how to handle this in your application. There are no existing standards of interfaces or tracking methods using NUI, which is exciting for developers! <strong>You could be the one to create a new gesture which is so good and foolproof that it becomes a standard.</strong>
+<img style="width: 100%;" alt="Kinect Gestures Image" src="images/lab14img03.jpg">
+<br>
+<br>
+When you are designing your Kinect 2 app, you must ask yourself: 
+<ul>
+<li>What happens when a crowd of people walk past? 
+<li>What happens when someone is very short? 
+<li>What happens when someone is very tall? 
+<li>What happens when someone leaves the screen to get a friend, then comes back? 
+<li>What happens when someone is wearing unusual clothing? 
+<li>What happens when someone is using a walking frame or cane?
+<li>What happens when there is not much room to move or furniture in the scene?
+</ul>
+These are all realistic scenarios which occur often in a public space, and even in the lounge room. The design of your software needs to consider all of these situations and many more. It's fine to only cater for some of these situations, but <strong>know your limitations</strong> as you design your interface.
+<br>
+<br>
+As a <strong>single developer</strong>, it is difficult to consider all these options of usability when <strong>you are a single user testing an app</strong>. Also it's quite expensive to pay many testers to work concurrently to test an app in the same instance. That's why Microsoft knew it was necessary to make tools like <strong>Kinect Studio</strong> to enable developers to repeat and test multi-user scenarios easily, by <strong>recording and playing back streams of interaction</strong>.
+<br>
+<br>
+If your task is even as simple as <strong>counting users who interact with your app</strong>, you must explicitly decide <strong>what exactly an interaction is</strong>. Some common interactions are tracked as:
+<ul>
+<li>Complete body registered in the scene for a single frame. (<strong>Inaccurate</strong> - up to 6 concurrent users)
+<li>Complete body facing the screen for at least 300 frames (or ~ 10 seconds) (<strong>Accurate</strong> - up to 6 concurrent users)
+<li>A face with eyes looking at the screen for at least 10 seconds (<strong>Very Accurate</strong> - up to 2 concurrent users)
+<li>A user pressing a button or deliberately interacting with a gesture (<strong>Most Accurate</strong> - concurrency depends on UI, ususally 1 person at a time).
+</ul>
+
+So <strong>how will you do it</strong>? How will you handle one or many users in your application? In this lab you will learn some common methods for achieving this to help you design your own NUI.
+
+
+<ol>
+<li><h3>First person gets control</h3>
+To be explicit: The first body registered by the Kinect in the frame is maintained as the single user of the application until their body is no longer recognized.
+<br>
+<img style="width: 100%;" alt="Touch Gestures Image" src="images/lab14img05.jpg">
+<br>
+<strong>Pros</strong>:
+<ul>
+<li>Easier to design a NUI for single user.
+<li>First come, first served is fairly engrained in users minds.
+<li>Users are used to single-user experiences.
+</ul>
+<strong>Cons</strong>:
+<ul>
+<li>Less unique as an interaction.
+<li>Lose the the first tracked body if they are obscured (body index order changes)
+<li>Application must allow the user to be at any position in the frame and still access functions.
+<li>First person registered is not necessarily the deliberate user.
+<li>Awkward to switch user. (Must leave the scene and let another body take first position)
+</ul>
+<strong>How</strong>?
+<br>
+As you have seen in previous labs, the body frame will come through with all 6 possible bodies in the array of the frame result. Whenever one of the bodies in the array is tracked, record the index as a class level variable and use it to access the array, ignoring all other bodies.
+<br>
+When the body at that index is no longer tracked, reset the activeBodyIndex to an invalid value.
+<pre>
+private int activeBodyIndex = -1; // Default to impossible value.
+
+private void Reader_MultiSourceFrameArrived(
+      MultiSourceFrameReader sender, 
+      MultiSourceFrameArrivedEventArgs e)
+{
+   MultiSourceFrame multiSourceFrame = e.FrameReference.AcquireFrame();
+   
+   // If the Frame has expired by the time we process this event, return.
+   if (multiSourceFrame == null)
+   {
+      return;
+   }
+   
+   using (bodyFrame = 
+      multiSourceFrame.BodyFrameReference.AcquireFrame())
+   {
+      Body[] bodiesArray = 
+         new Body[this.kinectSensor.BodyFrameSource.BodyCount];
+	  
+      if (bodyFrame != null)
+      {
+         bodyFrame.GetAndRefreshBodyData(bodies);
+		 
+         // Check activeBodyIndex is still active
+         if (activeBodyIndex != -1)
+         {
+            Body body = bodiesArray[activeBodyIndex];
+            if (!body.IsTracked)
+            {
+               activeBodyIndex = -1;
+            }
+         }
+         
+         // Get new activeBodyIndex if it's not currently tracked
+         if (activeBodyIndex == -1)
+         {
+            for (int i = 0; i &lt bodiesArray.Length; i++)
+            {
+               body = bodiesArray[i];
+               if (body.IsTracked)
+               {
+                  activeBodyIndex = i;
+                  // No need to continue loop
+                  break;
+               }
+            }
+         }
+         
+         // If active body is still active after checking and 
+         // updating, use it
+         if (activeBodyIndex != -1)
+         {
+            Body body = bodiesArray[activeBodyIndex];
+            // Do stuff with known active body.
+         }
+      }
+   }
+}
+</pre>
+<li><h3>Closest person gets control</h3>
+To be explicit: The body at the least depth from the camera of all bodies is the single user of the application.
+<br>
+<img style="width: 100%;" alt="Touch Gestures Image" src="images/lab14img06.png">
+<strong>Pros</strong>:
+<ul>
+<li>Easier to design a NUI for single user.
+<li>When in a group, the position of the active user being in front makes it obvious who is controlling the app without looking at the screen.
+<li>Users are used to single-user experiences.
+<li>Easy to code.
+<li>Easy to explain succinctly. "The closest person is in control"
+<li>Easy to switch user. Simply be the closest.
+</ul>
+<strong>Cons</strong>:
+<ul>
+<li>Less unique as an interaction.
+<li>Any bodies who accidentally walk in front immediately get control.
+<li>People will naturally be closer to the screen as a result of the rule.
+<li>Requires education for the user.
+
+</ul>
+<strong>How</strong>?
+<br>
+This one is easy. Pick a joint in the body to be representative of the whole body. In this example we will use the JointType.SpineBase. Then store the index of the body with the minimum Z value for that joint.
+<pre>
+private void Reader_MultiSourceFrameArrived(
+      MultiSourceFrameReader sender, 
+      MultiSourceFrameArrivedEventArgs e)
+{
+   MultiSourceFrame multiSourceFrame = e.FrameReference.AcquireFrame();
+   
+   // If the Frame has expired by the time we process this event, return.
+   if (multiSourceFrame == null)
+   {
+      return;
+   }
+   
+   using (bodyFrame = 
+      multiSourceFrame.BodyFrameReference.AcquireFrame())
+   {
+      int activeBodyIndex = -1; // Default to impossible value.
+      Body[] bodiesArray = new Body[
+         this.kinectSensor.BodyFrameSource.BodyCount];
+	  
+      if (bodyFrame != null)
+      {
+         bodyFrame.GetAndRefreshBodyData(bodies);
+         
+         // Iterate through all bodies, 
+         // no point persisting activeBodyIndex because must 
+         // compare with depth of all bodies so no gain in efficiency.
+
+         float minZPoint = float.MaxValue; // Default to impossible value
+         for (int i = 0; i &lt bodiesArray.Length; i++)
+         {
+            body = bodiesArray[i];
+            if (body.IsTracked)
+            {
+               float zMeters = 
+                  body.Joints[JointType.SpineBase].Position.Z;
+               if (zMeters &lt minZPoint)
+               {
+                  minZPoint = zMeters;
+                  activeBodyIndex = i;
+               }
+            }
+         }
+
+         
+         // If active body is still active after checking and 
+         // updating, use it
+         if (activeBodyIndex != -1)
+         {
+            Body body = bodiesArray[activeBodyIndex];
+            // Do stuff with known active body.
+         }
+      }
+   }
+}
+</pre>
+<li><h3>Most active person gets control</h3>
+To be explicit: The body with the joints which are moving the most in a particular fashion is the person in control.
+<br>
+<img style="width: 100%;" alt="Touch Gestures Image" src="images/lab14img07.png">
+<strong>Pros</strong>:
+<ul>
+<li>Easier to design a NUI for single user.
+<li>Passive onlookers will never be accidentally in control.
+<li>Users are used to single-user experiences.
+<li>Easy to switch user.
+<li>Fairly natural. Attention given to the most active.
+<li>Unique as an interaction mechanism.
+</ul>
+<strong>Cons</strong>:
+<ul>
+<li>Difficult to code.
+<li>Relies on other gestures to be accurate.
+<li>Interface must reject slow speeds to force the person in control to be the most active.
+<li>Involves tracking joints over time, more demanding on hardware.
+<li>Requires education for the user.
+
+</ul>
+<strong>How</strong>?
+<br>
+Simply tracking the movement of all joints and then giving control to the greatest mover is so error prone it's not worth pursuing. When people are in front of an experience it is very normal for them to be still for seconds at a time as they read text. Even if they are positioning their arm to hit a button they can do it slowly. Alternately, any other body in the scene could accidentally sneeze or run past in the background, thereby moving more than the active user and gaining control.
+<br>
+<br>
+The simplest way to get this working is actually to use a gesture to gain control of the application and respond to that. You could do a continuous "Wave a hand at the screen" gesture. Then while a body has been waving for 3 seconds continuously, switch to that body as the active user. 
+<br>
+<br>
+Gestures are explained in Lab <a href="../lab13/index.html">13 - Using Gestures</a>.
+
+<li><h3>People in region get control</h3>
+To be explicit: The bodies contained within a virtual area or areas are in simultaneous control.
+<br>
+<img style="width: 100%;" alt="Touch Gestures Image" src="images/lab14img08.png">
+<strong>Pros</strong>:
+<ul>
+<li>Fun for users, more interaction is usually more fun.
+<li>Easy to understand and communicate. "Stand on the circle".
+<li>More adaptive NUI, single or many users.
+<li>Easy to switch user.
+<li>Easy to code.
+</ul>
+<strong>Cons</strong>:
+<ul>
+<li>Difficult to design. Adaptive NUI's require lots of considerations to deal with concurrent bodies.
+<li>Difficult to test. Simultaneous users requires exponentially more testing.
+<li>Difficult to identify who is interacting unless you expose the color feed and show the users.
+</ul>
+<strong>How</strong>?
+<br>
+There are multiple ways to achieve this so you should look to some popular examples for guidance. This interaction is popular among games, as games have had multi-player considerations, and therefore UI's for concurrent users, as a design challenge for ages. Remember the Kinect was initially developed for the XBox, a games console.
+A popular solution for multi users is to use the BodyIndexFrame mapped in depth space as a kind of silhouette for each player, so the particpants can identify who is interacting with the system. Positioning interactive cursors where the active users hands can help them to interact with controls (such as buttons) within the interface.
+<br>
+<br>
+As for explicitly allowing a certain region, use similar joint retrieval code as in the "Closest person gets control" strategy. Only allow the active body index if the CameraSpacePoint for that joint is within your min/max of your region in X, Y and Z co-ordinates, otherwise skip that body index.
+</ol>
+
+<h2>
+<a id="summary" class="anchor" href="#summary" aria-hidden="true"><span class="octicon octicon-link"></span></a>Summary</h2>
+<p>
+Developing interactions for Kinect 2 apps is very exciting because it's mostly uncharted territory. Your designs have freedom because the possibilities for interaction are any movement of any body, or joint, or even movements of in the face, and any combination of them! 
+<br>
+<br>
+The best strategy for tracking users in your own application will probably be a combination of those discussed here. You will definitely have to experiment heavily with interactions as you develop your own unique NUI.
+<br>
+<br>
+The effort to get the interactions working well will pay off. Users become excited about new interfaces and using your body to interact with a machine without touching any physical device is a sci-fi dream. NUI's using the Kinect are hugely impressive when done right.
+<br>
+</p>
+    <li class="button">
+	<a class="buttons feedback" href="https://github.com/Kinect/Tutorial/issues/">View Issues</a> </li>
+    <li class="button">
+	<a class="buttons feedback" href="https://github.com/Kinect/Tutorial/issues/new?labels=Tracking_Strategies">Give Feedback</a> </li>
+<br>
+<br>
+<a href="#" class="back-to-top"><i class="fa fa-chevron-up"> Back to Top</i></a>
+<footer> </footer>
+</div>
+
+<!--[if !IE]><script>fixScale(document);</script><![endif]-->
+</section></html>

@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html>
+	<head>
+	  <meta charset="utf-8">
+	  <meta http-equiv="X-UA-Compatible" content="chrome=1">
+	  <title>Kinect 2 for Windows - Hands On Lab 13</title>
+	  <link rel="stylesheet" href="../stylesheets/styles.css">
+	  <link rel="stylesheet" href="../stylesheets/pygment_trac.css">
+	  <link rel="stylesheet" href="http://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.min.css">
+	  <script src="../javascripts/scale.fix.js"></script>
+	  <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+	<!--[if lt IE 9]>
+		<script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+		<![endif]-->
+	</head>
+<body>
+<div class="wrapper">
+      <header>
+        <h1 class="header">Kinect 2 for Windows Demo App</h1>
+        <p class="header">The Hands On Labs to complete a sample application for Windows 8.1 and the Kinect 2 for Windows</p>
+        <ul>
+		  <li ><a class="buttons home" href="../index.html">Home</a></li>
+		  <li class="download"><a class="buttons" href="https://github.com/MicrosoftKinect2/ms-Kinect2Demo-Win81/zipball/master">Complete App</a></li>
+          <li><a class="buttons github" href="https://github.com/MicrosoftKinect2/ms-Kinect2Demo-Win81">View On GitHub</a></li>
+        </ul>
+      </header>
+      <section>
+	  
+<div>  
+<nav id="labs_dropdown">
+<ul>
+  <li><a style="padding: 0px;"><h3 style="color:#FFF; padding: 10px;">Lab 13 - Bing Speech<i style="float:right; font-size: 16px; padding-top: 0.5%;" class="fa fa-chevron-down"></i></h3></a>
+    <ul>
+		<li class="download"><a href="../Lab01/index.html">1 - Project Setup</a></li>
+		<li class="download"><a href="../Lab02/index.html">2 - Infrared Data</a></li>
+		<li class="download"><a href="../Lab03/index.html">3 - Color Data</a></li>
+		<li class="download"><a href="../Lab04/index.html">4 - Depth Data</a></li>
+		<li class="download"><a href="../Lab05/index.html">5 - Body Mask</a></li>
+		<li class="download"><a href="../Lab06/index.html">6 - Body Data</a></li>
+		<li class="download"><a href="../Lab07/index.html">7 - Background Removal</a></li>
+		<li class="download"><a href="../Lab08/index.html">8 - Face Tracking</a></li>
+		<li class="download"><a href="../Lab09/index.html">9 - Face Game</a></li>
+		<li class="download"><a href="../Lab10/index.html">10 - Hand Cursor Interactions</a></li>
+		<li class="download"><a href="../Lab11/index.html">11 - Kinect Studio</a></li>
+		<li class="download"><a href="../Lab12/index.html">12 - Gesture Builder</a></li>
+		<li class="download"><a href="index.html">13 - Bing Speech</a></li>
+		<li class="download"><a href="../Lab14/index.html">14 - Tracking Strategies</a></li>
+	</ul>
+</ul>
+</div>
+
+<h1><a id="kinect-2-hands-on-labs" class="anchor" href="#kinect-2-hands-on-labs" aria-hidden="true"><span class="octicon octicon-link"></span></a>Kinect 2 Hands On Labs</h1>
+<h2>
+<img style="width: 50%;" alt="Recording Result Image" src="images/lab13img08.jpg">
+<br>
+<a id="lab-13-bing-speech" class="anchor" href="#lab-13-bing-speech" aria-hidden="true"><span class="octicon octicon-link"></span></a>Lab 13: Bing Speech</h2>
+<p><strong>Estimated Time to Complete</strong>: 40min</p>
+<p>This lab is part of a series of hands on labs which teach you how to use almost every available feature of the Kinect 2. 
+This is the thirteenth lab in the series, and it
+teaches you how to use the Kinect 2 and the <strong>Bing.Speech API</strong> to recognize speech as input for a new Windows 8.1 store application.</p>
+
+<p>
+The Bing Speech API is a <strong>cloud based speech recognition</strong> solution. The cloud it works with is a part of <strong>Microsoft Azure</strong> and so it requires Azure account information to work correctly. There is a charge for applications which utilise a lot of speach transactions and this is calculated and advertised on the Windows Azure Data Marketplace. <strong>For testing and initial development, it is fine to set up an account with a free 500,000 queries in the Azure Marketplace.</strong>
+
+<p>
+The Bing Speech API Speech Recognition works by streaming raw audio from <strong>a microphone (in this case, the Kinect 2 microphone array)</strong>, and <strong>sending that raw audio</strong> stream to the cloud. The cloud service processes the audio stream, and <strong>whole words and sentences are returned to the application</strong> (in text form) with a measure of confidence. Many languages are supported but for this lab we will use American English (<strong>en-US</strong>) (Please keep in mind that an American accent does make a difference to the translation accuracy).
+
+<p>This lab will create a project from scratch which uses Bing Speech to retrieve text from Speech, using the Kinect 2 microphone.
+
+<p>This lab will explain the following:
+<ol>
+<li>How to create a new Windows 8.1 Store application
+<li>How to properly get and add a reference to the Bing.Speech Extension for Windows 8.1
+<li>How to register for an account with Azure to access the free 500,000 requests through Bing Speech
+<li>How to use the SpeechRecognizer to process text on the fly, and after a sentence.
+</ol></p>
+
+<h1>
+<a id="exercise-1---setting-up-the-speech-project" class="anchor" href="#exercise-1---setting-up-the-speech-project" aria-hidden="true"><span class="octicon octicon-link"></span></a>Exercise 1 - Setting Up The Speech Project</h1>
+<p>This lab and all subsequent labs in this series are built using C# and
+assume you have a fundamental knowledge of the C# language.
+The screenshots here are from <strong>Visual Studio Community Edition</strong>
+.</p>
+
+
+<ol>
+<li><p>
+<p><strong>Download the Bing Speech Recognition Control</strong> from the Visual Studio Gallery online.
+<p><a href="https://visualstudiogallery.msdn.microsoft.com/521cf616-a9a8-4d99-b5d9-92b539d9df82">https://visualstudiogallery.msdn.microsoft.com/521cf616-a9a8-4d99-b5d9-92b539d9df82</a>
+
+<li><p>Run the <strong>Bing Speech Recognition Control For Windows 8.1.visx</strong> installer to install this extension SDK. If Visual Studio 2013 is open, close it.
+
+<li><p>Create a <strong>new project</strong>:
+<ul>
+<li><p><strong>Open Visual Studio 2013</strong> and create a new project by selecting <strong>FILE &gt New &gt Project...</strong>
+<br>
+<img style="width: 100%;" alt="New Project Image" src="images/lab13img01.jpg">
+<li><p>Create a <strong>C# Windows Store App</strong> from a <strong>Blank Template</strong> and name it <strong>Kinect2SampleSpeech</strong>. It's not related to or dependent on the previous labs so you can put it in any directory you like. 
+<br>
+<img style="width: 100%;" alt="New Blank Project Image" src="images/lab13img02.jpg">
+<li><p> Click <strong>OK</strong>.
+</ul>
+
+<li><p>Add a <strong>reference to the Bing.Speech Extension</strong>:
+<ul>
+<li><strong>Right Click the References</strong> folder in the <strong>Solution Explorer</strong> and select <strong>Add Reference...</strong>
+<li>Select <strong>Windows 8.1 Extensions</strong> on the left and check <strong>Bing.Speech</strong> in the list.<strong> Do not check the greyed out version</strong>, as that is the version compatible with C++ 11 for Windows 8.0.
+<br>
+<img style="width: 100%;" alt="Add Reference Image" src="images/lab13img03.jpg">
+<li>Click <strong>OK</strong>.
+<br>This will add <strong>both</strong> the Bing.Speech reference and the <strong>Microsoft Visual C++ 2013 Runtime</strong> which is a dependency.
+</ul>
+
+<li><p><strong>Bing.Speech does not work with the AnyCPU architecture</strong>, you must select either x86 or x64 (in this lab we will use x64):
+
+<ul>
+<li>Open the <strong>Configuration Manager</strong> by selecting <strong>BUILD &gt Configuration Manager...</strong>
+<li>Under the Active solution platform: select <strong>x64</strong>
+<br>
+<img style="width: 100%;" alt="Configuration Manager Image" src="images/lab13img04.jpg">
+<li>Click <strong>Close</strong>.
+</ul>
+
+<li><p>Change the <strong>capabilities</strong> of the app so that it can access the <strong>microphone in the Kinect</strong>:
+Open the <strong>Package.appxmanifest</strong> from the <strong>Solution Explorer</strong>.
+<br>
+Select the <strong>Capabilities tab</strong> and check the <strong>Microphone</strong> and <strong>Internet (Client)</strong>.
+<br>
+<img style="width: 100%;" alt="Capabilities Image" src="images/lab13img05.jpg">
+<br>Save the changes <strong>(Ctrl + S)</strong>.
+
+<li><p>Finally, there is something special you must do to the the Package.appxmanifest to use the Bing Speech reference. <strong>There is some interop within the Bing.Speech library, and it needs to have some classes registered manually:</strong>
+<ul>
+<li>Open the <strong>Package.appxmanifest</strong> as <strong>XML</strong> code by <strong>right clicking</strong> it in the <strong>Solution Explorer and selecting View Code...</strong>
+<br>
+<img style="width: 100%;" alt="View appxmanifest Code Image" src="images/lab13img06.jpg">
+<li>This is the same as the page you previously edited, but in the raw XML form. <strong>Add the Bing.Speech Extension Dependencies</strong> by copying the following highlighted code at the end, <strong>after the Capabilities</strong>:
+<li>
+<pre>
+  &ltCapabilities&gt
+    &ltCapability Name="internetClient" /&gt
+    &ltDeviceCapability Name="microphone" /&gt
+  &lt/Capabilities&gt</hi>
+  <hi>&ltExtensions&gt</hi>
+    <hi>&ltExtension Category="windows.activatableClass.inProcessServer"&gt</hi>
+      <hi>&ltInProcessServer&gt</hi>
+        <hi>&ltPath&gtMicrosoft.Speech.VoiceService.MSSRAudio.dll&lt/Path&gt</hi>
+        <hi>&ltActivatableClass ActivatableClassId=</hi>
+        <hi>"Microsoft.Speech.VoiceService.MSSRAudio.Encoder" </hi>
+        <hi>ThreadingModel="both" /&gt</hi>
+      <hi>&lt/InProcessServer&gt</hi>
+    <hi>&lt/Extension&gt</hi>
+    <hi>&ltExtension Category="windows.activatableClass.proxyStub"&gt</hi>
+      <hi>&ltProxyStub ClassId="5807FC3A-A0AB-48B4-BBA1-BA00BE56C3BD"&gt</hi>
+        <hi>&ltPath&gtMicrosoft.Speech.VoiceService.MSSRAudio.dll&lt/Path&gt</hi>
+        <hi>&ltInterface Name="IEncodingSettings" </hi>
+        <hi>InterfaceId="C97C75EE-A76A-480E-9817-D57D3655231E" /&gt</hi>
+      <hi>&lt/ProxyStub&gt</hi>
+    <hi>&lt/Extension&gt</hi>
+    <hi>&ltExtension Category="windows.activatableClass.proxyStub"&gt</hi>
+      <hi>&ltProxyStub ClassId="F1D258E4-9D97-4BA4-AEEA-50A8B74049DF"&gt</hi>
+        <hi>&ltPath&gtMicrosoft.Speech.VoiceService.Audio.dll&lt/Path&gt</hi>
+        <hi>&ltInterface Name="ISpeechVolumeEvent" InterfaceId=</hi>
+        <hi>"946379E8-A397-46B6-B9C4-FBB253EFF6AE" /&gt</hi>
+        <hi>&ltInterface Name="ISpeechStatusEvent" InterfaceId=</hi>
+        <hi>"FB0767C6-7FAA-4E5E-AC95-A3C0C4D72720" /&gt</hi>
+      <hi>&lt/ProxyStub&gt</hi>
+    <hi>&lt/Extension&gt</hi>
+  <hi>&lt/Extensions&gt</hi>
+&lt/Package&gt
+</pre>
+<li>Save the changes <strong>(Ctrl + S)</strong>.
+</ul>
+
+<li><p><strong>Build and Run</strong> the application to make sure the reference was added and doesn't conflict with any others.
+
+<h1>
+<a id="exercise-2---getting-a-client-key-for-azure" class="anchor" href="#exercise-2---getting-a-client-key-for-azure" aria-hidden="true"><span class="octicon octicon-link"></span></a>Exercise 2 - Getting a Client Key for Bing Speech</h1>
+<p>Before you can use the API through the <strong>SpeechRecognizer</strong>, you need <strong>Azure credentials</strong> to use for the application. The following instructions are from the msdn page :
+<a href="https://msdn.microsoft.com/en-us/library/dn434606.aspx">https://msdn.microsoft.com/en-us/library/dn434606.aspx</a>
+
+<ol>
+
+<li><p>To subscribe to the Bing Speech Recognition Control:
+<ul>
+<li>1.Go to <a href="https://datamarket.azure.com/dataset/bing/speechcontrol" target="_blank">Bing Speech Recognition Control purchase page</a> on the Windows Azure Data Marketplace.
+<li>2.On the Registration page, click the <strong>BUY</strong> or <strong>SIGN UP</strong> link that corresponds to the level of subscription you want.
+<br>The free subscription is usually sufficient for development and testing purposes.
+<br><strong>NOTE</strong>: Bing speech restricts licensing in some countries because of the limited amount of languages available, 
+so if is not available in your region change your region to United States.
+<li>3.Fill out the registration form and then click <strong>CONTINUE</strong>.
+<li>4.Check the box to accept the terms of use for Windows Azure Marketplace, and then click <strong>REGISTER</strong>.
+<li>5.On the Sign Up page, check the box to accept the publisher’s terms and privacy policy, and then click <strong>SIGN UP</strong>.
+<li>You can check your usage or cancel your subscription at any time from the My Data page at <a href="https://datamarket.azure.com/account/datasets">https://datamarket.azure.com/account/datasets</a>.
+</ul>
+
+<li><p>To register your application with the Azure Data Market:
+<ul>
+<li>1.Go to the Windows Azure Marketplace Developers page at <a href="https://datamarket.azure.com/developer/applications/">https://datamarket.azure.com/developer/applications/</a> and click the <strong>REGISTER</strong> button.
+<li>2.Fill in the <strong>Client ID</strong> field with a unique string to identify your application.
+<li>3.Fill in the <strong>Name</strong> field with the name of the application as you would like it to appear in the Marketplace.
+<li>4.Fill in the <strong>Redirect URI</strong> with a common URI. This value is required, but will not be used.
+<li>5.Record the values for <strong>Client ID</strong> and <strong>Client Secret</strong>. You will need these to implement speech recognition.
+<li>6.Click <strong>CREATE</strong>.
+<br>You will be returned to the Windows Azure Marketplace Developers page with your new application listed.
+
+</ul>
+
+<li><p>For the rest of this Lab we will use placeholder ID and Secret data, which you should replace with the Client ID and Client Secret you just created.
+</ol>
+
+
+<h1>
+<a id="exercise-3---using-the-speech-recognizer" class="anchor" href="#exercise-3---using-the-speech-recognizer" aria-hidden="true"><span class="octicon octicon-link"></span></a>Exercise 3 - Using the Speech Recognizer</h1>
+<p>You now get to write some code! You're going to create an app with one button to start a recording, then it will give you instant feedback on its assumptions about what you said, until it's finished recognising your sentence.
+
+<ol>
+<li><p>Add a <strong>button and some text fields in the xaml</strong> of the MainPage to control and respond to the <strong>Speech Recognizer</strong>. <strong>Open the MainPage.xaml</strong> file and add the following new code:
+<br>
+<pre>
+&ltPage
+    x:Class="Kinect2SampleSpeech.MainPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:Kinect2SampleSpeech"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"&gt
+    <hi>&ltPage.Resources&gt</hi>
+        <hi>&ltStyle TargetType="TextBlock"&gt</hi>
+            <hi>&ltSetter Property="FontSize" Value="20"/&gt</hi>
+            <hi>&ltSetter Property="Margin" Value="15"/&gt</hi>
+        <hi>&lt/Style&gt</hi>
+    <hi>&lt/Page.Resources&gt</hi>
+
+    &ltGrid Background=
+      "{ThemeResource ApplicationPageBackgroundThemeBrush}"&gt
+        <hi>&ltStackPanel Orientation="Vertical"</hi>
+            <hi>HorizontalAlignment="Center"&gt</hi>
+            <hi>&ltButton x:Name="StartRecButton" </hi>
+                      <hi>Margin="20" </hi>
+                      <hi>Click="StartRecButton_Click"&gt</hi>
+                      <hi>Start Recording</hi>
+                <hi>&lt/Button&gt</hi>
+            <hi>&ltTextBlock x:Name="CaptureStateTextBlock"/&gt</hi>
+            <hi>&ltTextBlock x:Name="VolumeTextBlock" /&gt</hi>
+            <hi>&ltTextBlock x:Name="IntermediateResultsTextBlock"/&gt</hi>
+            <hi>&ltTextBlock x:Name="ConfidenceTextBlock"/&gt</hi>
+            <hi>&ltTextBlock x:Name="FinalResultTextBlock"/&gt</hi>
+            <hi>&ltTextBlock x:Name="AlternatesTextBlock"/&gt</hi>
+        <hi>&lt/StackPanel&gt</hi>
+    &lt/Grid&gt
+&lt/Page&gt
+</pre>
+
+<li><p>Open the code behind <strong>MainPage.xaml.cs</strong> file, and add a new <strong>MainPage.Loaded</strong> handler method, in which you can <strong>initialize the SpeechRecognizer</strong>, which you can keep as a class level variable:
+<br>
+<pre>
+<hi>using Bing.Speech;</hi>
+
+namespace Kinect2SampleSpeech
+{
+
+    public sealed partial class MainPage : Page
+    {
+        <hi>private SpeechRecognizer speechRec;</hi>
+
+        public MainPage()
+        {
+            this.InitializeComponent();
+            <hi>this.Loaded += MainPage_Loaded;</hi>
+        }
+
+        <hi>void MainPage_Loaded(object sender, RoutedEventArgs e)</hi>
+        <hi>{</hi>
+            <hi>// Apply credentials from the </hi>
+            <hi>// Windows Azure Data Marketplace.</hi>
+            <hi>var credentials = new SpeechAuthorizationParameters();</hi>
+            <hi>credentials.ClientId = "YOUR_CLIENT_ID";</hi>
+            <hi>credentials.ClientSecret = "YOUR_CLIENT_SECRET";</hi>
+
+            <hi>// Initialize the speech recognizer.</hi>
+            <hi>speechRec = new SpeechRecognizer("en-US", credentials);</hi>
+
+        <hi>}</hi>
+</pre>
+<br>
+Replace the <strong>ClientId</strong> and <strong>ClientSecret</strong> with your own Id and Secret, retrieved in the previous exercise.
+<br>
+<br>
+<strong>If you do not have correct credentials</strong> here, then when you try to recognize speech you will encounter an <strong>UnauthorizedAccessException</strong> with the message "Invalid Client" later. 
+
+<li><p>Sign up for events from the SpeechRecognizer and create handler methods for these events:
+<ul>
+<li>The <strong>AudioCaptureStateChanged</strong> event is raised when the SpeechRecognizer starts or stops capturing audio.
+<li>The <strong>AudioLevelChanged</strong> event is raised when the perceived volume from the Kinect microphone changes.
+<li>The <strong>RecognizerResultRecieved</strong> event is raised when a new single word has been recognized.
+</ul>
+<br>
+<pre>
+void MainPage_Loaded(object sender, RoutedEventArgs e)
+{
+    // Apply credentials from the Windows Azure Data Marketplace.
+    var credentials = new SpeechAuthorizationParameters();
+    credentials.ClientId = "YOUR CLIENT ID";
+    credentials.ClientSecret = "YOUR CLIENT SECRET";
+
+    // Initialize the speech recognizer.
+    speechRec = new SpeechRecognizer("en-US", credentials);
+
+    <hi>// Add speech recognition event handlers.</hi>
+    <hi>speechRec.AudioCaptureStateChanged += </hi>
+      <hi>speechRec_AudioCaptureStateChanged; </hi>
+    <hi>speechRec.AudioLevelChanged += speechRec_AudioLevelChanged;</hi>
+    <hi>speechRec.RecognizerResultReceived += </hi>
+      <hi>speechRec_RecognizerResultReceived;</hi>
+}
+
+<hi>void speechRec_AudioCaptureStateChanged(SpeechRecognizer sender,</hi>
+    <hi> SpeechRecognitionAudioCaptureStateChangedEventArgs args)</hi>
+<hi>{</hi>
+    <hi>CaptureStateTextBlock.Text = "Capture State: " </hi>
+      <hi>+ Enum.GetName(typeof(SpeechRecognizerAudioCaptureState), </hi>
+      <hi>args.State);</hi>
+<hi>}</hi>
+
+<hi>void speechRec_AudioLevelChanged(SpeechRecognizer sender, </hi>
+    <hi>SpeechRecognitionAudioLevelChangedEventArgs args)</hi>
+<hi>{</hi>
+    <hi>VolumeTextBlock.Text = "Volume:  "+ args.AudioLevel;</hi>
+<hi>}</hi>
+
+<hi>void speechRec_RecognizerResultReceived(SpeechRecognizer sender,</hi>
+    <hi> SpeechRecognitionResultReceivedEventArgs args)</hi>
+<hi>{</hi>
+    <hi>if (args.Text == null) return;</hi>
+
+    <hi>IntermediateResultsTextBlock.Text = "IntermediateResults: " </hi>
+      <hi>+ args.Text;</hi>
+
+    <hi>if (args.Text.ToLower().Contains("cancel"))</hi>
+        <hi>speechRec.RequestCancelOperation();</hi>
+    <hi>else if (args.Text.ToLower().Contains("stop"))</hi>
+        <hi>speechRec.StopListeningAndProcessAudio();</hi>
+<hi>}</hi>
+</pre>
+
+This code should be self explanatory; the stop and cancellation,  simply <strong>cancels the web request if the user says cancel</strong>, or <strong>stops and process the request if the user says stop</strong>.
+<br>
+<br>
+<li><p>Set up the <strong>StartRecButton_Click</strong> event to start the recording and wait for it so finish:
+<br>
+<br>
+This must be an <strong>async</strong> method as it's main function is to <strong>await</strong> the result of a call to <strong>speechRec.RecognizeSpeechAsync().</strong>
+<br>
+<br>
+After getting the result, you then display it and if there are any sentences or words which sound similar, they are available from the <strong>GetAlternatives()</strong> call.
+<br>
+<br>
+<strong>Exceptions can be thrown from this method</strong> because it's a web request so if the user loses internet connection before or during the listening period, it will fail. Keep this in mind when designing your speech experience.
+<br>
+<br>
+Copy the following <strong>StartRecButton_Click</strong> async method into the <strong>MainPage.xaml.cs</strong> code file:
+
+<pre>
+<hi>async private void StartRecButton_Click(object sender, RoutedEventArgs e)</hi>
+<hi>{</hi>
+    <hi>// Prevent concurrent calls to an async method</hi>
+    <hi>StartRecButton.IsEnabled = false;</hi>
+
+    <hi>// Reset all the text</hi>
+    <hi>VolumeTextBlock.Text = "";</hi>
+    <hi>CaptureStateTextBlock.Text = "";</hi>
+    <hi>IntermediateResultsTextBlock.Text = "";</hi>
+    <hi>ConfidenceTextBlock.Text = "";</hi>
+    <hi>FinalResultTextBlock.Text = "";</hi>
+    <hi>AlternatesTextBlock.Text = "";</hi>
+
+    <hi>// Use a try block because RecognizeSpeechToTextAsync depends</hi>
+    <hi>// on a web service which can throw exceptions.</hi>
+    <hi>try</hi>
+    <hi>{</hi>
+        <hi>// Start speech recognition and await the result</hi>
+        <hi>// As this is occuring, the RecognizerResultReceived will </hi>
+        <hi>// fire as the user is speaking.</hi>
+        <hi>var result = await speechRec.RecognizeSpeechToTextAsync();</hi>
+
+        <hi>// Show the TextConfidence.</hi>
+        <hi>ConfidenceTextBlock.Text = "Confidence: " + </hi>
+          <hi>Enum.GetName(typeof(SpeechRecognitionConfidence), </hi>
+          <hi>result.TextConfidence);</hi>
+
+        <hi>// Display the text.</hi>
+        <hi>if (result.Text != null)</hi>
+        <hi>{</hi>
+            <hi>FinalResultTextBlock.Text = result.Text;</hi>
+        <hi>}</hi>
+
+        <hi>// Fill a string with the alternate results.</hi>
+        <hi>var alternates = result.GetAlternates(5);</hi>
+        <hi>if (alternates.Count &gt 1)</hi>
+        <hi>{</hi>
+            <hi>string s = "";</hi>
+            <hi>for (int i = 1; i &lt alternates.Count; i++)</hi>
+            <hi>{</hi>
+                <hi>s += "\n" + alternates[i].Text  ;</hi>
+            <hi>}</hi>
+            <hi>AlternatesTextBlock.Text = "Alternates: " + s;</hi>
+        <hi>}</hi>
+    <hi>}</hi>
+    <hi>catch (Exception ex)</hi>
+    <hi>{</hi>
+        <hi>// If there's an exception, </hi>
+        <hi>// show it instead of the Final Result.</hi>
+        <hi>if (ex.GetType() != typeof(OperationCanceledException))</hi>
+        <hi>{</hi>
+            <hi>FinalResultTextBlock.Text = string.Format("{0}: {1}",</hi>
+                        <hi>ex.GetType().ToString(), ex.Message);</hi>
+        <hi>}</hi>
+    <hi>}</hi>
+
+    <hi>// Finished recording, allow recording again.</hi>
+    <hi>StartRecButton.IsEnabled = true;</hi>
+<hi>}</hi>
+</pre>
+
+<li><p>Build and Run the application. You should see a big Start Recording button at the top:
+<br>
+<img style="width: 100%;" alt="Start Recording Button Image" src="images/lab13img07.jpg">
+<br>
+When you press it, the app will ask for <strong>microphone permission</strong>, then once you've allowed it, the state will change to Listening and if you say something at the Kinect 2, it will attempt to interpret. When you've finished speaking, it will display a final result:
+<br>
+<img style="width: 100%;" alt="Recording Result Image" src="images/lab13img08.jpg">
+<br>
+<br>
+If you are having issues with the speech recognition, try <strong>boosting your microphone gain</strong> in Windows for the Kinect 2 device:
+<ul>
+<li>Press the <strong>Windows Key</strong>
+<li>Type "<strong>Manage Audio Settings</strong>"
+<li><strong>Select</strong> the top search result. 
+<li>Select the <strong>Recording Tab</strong> and Select the <strong>Microphone Array for the XBOX NUI Sensor</strong> and <strong>Click Properties</strong>.
+<img style="width: 100%;" alt="Sound Settings Image" src="images/lab13img09.jpg">
+<li>Select the <strong>Levels tab</strong>, then move the <strong>Microphone Array Slider to 100</strong>.
+<img style="width: 100%;" alt="Mic Volume Image" src="images/lab13img10.jpg">
+<li>Click <strong>OK</strong>, then <strong>OK</strong> again to exit and save your changes.
+</ul>
+
+</ol>
+<h2>
+<a id="summary" class="anchor" href="#summary" aria-hidden="true"><span class="octicon octicon-link"></span></a>Summary</h2>
+<p>Using the Kinect as a microphone for Bing Speech is exactly the same as you would use any other attached microphone. <strong>In fact the Kinect API is not even referenced in this solution.</strong>.
+<br>
+<br>
+You should be aware that the user <strong>must have an uninterrupted internet connection while processing speech</strong>, and you <strong>need a developer licence to use the Bing.Speech cloud recognition</strong> (You get 500,000 processes for free, and it's very cheap after that).
+<br>
+<br>
+It should be noted that while these tutorials were being created with Visual Studio 2013 Update 4, there were breaking issues attempting to use the Bing Speech API at the same time as the Microsoft.Kinect.Xaml.Controls API and the Microsoft.Kinect.Face API. Using Bing.Speech resulted in some classes no longer being registered and throwing WinRT Class Not Registered exceptions upon initialization. We are investigating this issue and if you have any additional info about it, then we would like to hear it!
+<strong>Please give feedback with the following link.</strong>
+<br>
+
+The next lab will begin from the code completed in this lab code.</p>
+	<li class="button">
+	<a class="buttons tag" href="https://github.com/Kinect/Tutorial/archive/lab13.zip">This Lab Code</a> 
+	</li>
+    <li class="button">
+	<a class="buttons feedback" href="https://github.com/Kinect/Tutorial/issues/">View Issues</a> </li>
+    <li class="button">
+	<a class="buttons feedback" href="https://github.com/Kinect/Tutorial/issues/new?labels=Bing_Speech">Give Feedback</a> </li>
+<a href="#" class="back-to-top"><i class="fa fa-chevron-up"> Back to Top</i></a>
+<footer> </footer>
+</div>
+
+<!--[if !IE]><script>fixScale(document);</script><![endif]-->
+</section></html>

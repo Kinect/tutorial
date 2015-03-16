@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html>
+	<head>
+	  <meta charset="utf-8">
+	  <meta http-equiv="X-UA-Compatible" content="chrome=1">
+	  <title>Kinect 2 for Windows - Hands On Lab 7</title>
+	  <link rel="stylesheet" href="../stylesheets/styles.css">
+	  <link rel="stylesheet" href="../stylesheets/pygment_trac.css">
+	  <link rel="stylesheet" href="http://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.min.css">
+	  <script src="../javascripts/scale.fix.js"></script>
+	  <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+	<!--[if lt IE 9]>
+		<script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+		<![endif]-->
+	</head>
+<body>
+<div class="wrapper">
+      <header>
+        <h1 class="header">Kinect 2 for Windows Demo App</h1>
+        <p class="header">The Hands On Labs to complete a sample application for Windows 8.1 and the Kinect 2 for Windows</p>
+        <ul>
+		  <li ><a class="buttons home" href="../index.html">Home</a></li>
+		  <li class="download"><a class="buttons" href="https://github.com/MicrosoftKinect2/ms-Kinect2Demo-Win81/zipball/master">Complete App</a></li>
+          <li><a class="buttons github" href="https://github.com/MicrosoftKinect2/ms-Kinect2Demo-Win81">View On GitHub</a></li>
+        </ul>
+      </header>
+      <section>
+	  
+<div>  
+<nav id="labs_dropdown">
+<ul>
+  <li><a style="padding: 0px;"><h3 style="color:#FFF; padding: 10px;">Lab 07 - Background Removal<i style="float:right; font-size: 16px; padding-top: 0.5%;" class="fa fa-chevron-down"></i></h3></a>
+    <ul>
+		<li class="download"><a href="../Lab01/index.html">1 - Project Setup</a></li>
+		<li class="download"><a href="../Lab02/index.html">2 - Infrared Data</a></li>
+		<li class="download"><a href="../Lab02/index.html">3 - Color Data</a></li>
+		<li class="download"><a href="../Lab04/index.html">4 - Depth Data</a></li>
+		<li class="download"><a href="../Lab05/index.html">5 - Body Mask</a></li>
+		<li class="download"><a href="../Lab06/index.html">6 - Body Data</a></li>
+		<li class="download"><a href="index.html">7 - Background Removal</a></li>
+		<li class="download"><a href="../Lab08/index.html">8 - Face Tracking</a></li>
+		<li class="download"><a href="../Lab09/index.html">9 - Face Game</a></li>
+		<li class="download"><a href="../Lab10/index.html">10 - Hand Cursor</a></li>
+		<li class="download"><a href="../Lab11/index.html">11 - Kinect Studio</a></li>
+		<li class="download"><a href="../Lab12/index.html">12 - Gesture Builder</a></li>
+		<li class="download"><a href="../Lab13/index.html">13 - Bing Speech</a></li>
+		<li class="download"><a href="../Lab14/index.html">14 - Tracking Strategies</a></li>
+	</ul>
+</ul>
+</div>
+
+<h1><a id="kinect-2-hands-on-labs" class="anchor" href="#kinect-2-hands-on-labs" aria-hidden="true"><span class="octicon octicon-link"></span></a>Kinect 2 Hands On Labs</h1>
+<h2>
+<img style="width: 100%;" alt="Background Removed Low DepthMax Image" src="images/lab07img01.jpg">
+<a id="lab-7-removing-background" class="anchor" href="#lab-7-removing-background" aria-hidden="true"><span class="octicon octicon-link"></span></a>Lab 7: Removing the Background</h2>
+<p><strong>Estimated Time to Complete</strong>: 30min</p>
+<p>This lab is part of a series of hands on labs which teach you how to create a Windows 8.1 Store Application using almost every available feature of the Kinect 2. This is the seventh lab in the series, and it
+describes how to use the Kinect 2 to remove parts of the camera feed beyond a certain depth.</p>
+<p>This lab will explain the following:
+<ol>
+<li>How to add a background image and a slider in xaml to control depth
+<li>How to use the color feed and depth feed mapped together
+<li>How to use unsafe code to do bitmap manipulation in a simpler way.
+<li>How to make a converter to switch the visibility of some xaml elements.
+</ol></p>
+
+<h1>
+<a id="exercise-1---adding-a-slider-and-background" class="anchor" href="#exercise-1---adding-a-slider-and-background" aria-hidden="true"><span class="octicon octicon-link"></span></a>Exercise 1 - Adding a Slider and Background</h1>
+<p>This exercise will teach you how to set up a new feed type to render in xaml, with a background
+image and a slider to control the depth. These controls should only be visible when the appropriate
+activity is selected, so you will also create a converter which modifies the visibility of an element.
+This lab and all subsequent labs in this series are built using C# and
+assume you have a fundamental knowledge of the C# language.
+The screenshots here are from <strong>Visual Studio Community Edition</strong>
+.</p>
+<ol>
+  <li><p>
+    Open the Kinect2Sample project and then open the <strong>MainPage.xaml</strong> from the Solution
+	Explorer.
+  <li><p>
+    First you will add another image to serve as a background. Find the xaml where you added the FrameDisplayImage, and above it, add the following hilighted code:
+	<pre>
+&lt/StackPanel&gt
+<hi>&ltImage x:Name="FrameBackground" Source="Assets/Background.png"</hi> 
+       <hi>Grid.Row="1" Stretch="Fill" </hi>
+       <hi>Visibility="{Binding CurrentDisplayFrameType, </hi>
+       <hi>Converter={StaticResource DisplayTypeToVisibilityConverter}, </hi>
+       <hi>ConverterParameter=BackgroundRemoved }"/&gt </hi>
+&ltImage x:Name="FrameDisplayImage" Grid.Row="1" Stretch="Uniform"/&gt
+&ltViewbox Grid.Row="1" HorizontalAlignment="Center"&gt
+    &ltGrid x:Name="BodyJointsGrid" Background="Transparent" Width="512"
+      Height="414"/&gt
+&lt/Viewbox&gt	</pre>
+
+  <li><p>
+	You can tell from that code snippet that this image will be controlled through a property called
+	<strong>CurrentDisplayFrameType</strong>, and use a converter called <strong>DisplayTypeToVisibilityConverter</strong>.
+	But before creating those properties, lets add the Image to the solution. <strong>Right Click the Image below</strong> and choose <strong>SaveAs..</strong> and put it in the <strong>Assets</strong> directory of the solution.<br>
+	<img style="width: 100%;" " alt="Background Image" src="images/Background.png">
+	<br>Then in the <strong>Solution Explorer</strong>, Right click the Assets folder and choose <strong>Add &gt Existing Item</strong>, then navigate to your saved picture and click <strong>OK</strong>.
+
+  <li><p>
+	Now you can create a visibility converter to compare two DisplayFrameTypes and determine if they are the same. If they match, return <strong>Visible</strong>, if not, return <strong>Collapsed</strong>.
+	<br>
+	Make a new code file for this converter, <strong>Right Click</strong> the project in the Solution Explorer and select <strong>Add... &gt Class... &gt</strong>. Name the new class <strong>DisplayTypeToVisibilityConverter.cs</strong> and click <strong>OK</strong>.
+	<br>
+	Add the following code to this new class. This converter takes a paramater as a <strong>string</strong>, and does a <strong>string compare to check the DisplayFrameTypes</strong>. It converts to a string because it's 
+	simple to provide a string in xaml as the <strong>ConverterParameter</strong>:
+	<pre>
+<hi>using Windows.UI.Xaml.Data;</hi>
+<hi>using Windows.Xaml;</hi>
+//...
+    class DisplayTypeToVisibilityConverter <hi>:IValueConverter</hi>
+    <hi>{</hi>
+        <hi>public object Convert(object value, Type targetType, </hi>
+          <hi>object parameter, string language)</hi>
+        <hi>{</hi>
+            <hi>String boundString = </hi>
+              <hi>Enum.GetName(typeof(DisplayFrameType), value);</hi>
+            <hi>String matchString = (String)parameter;</hi>
+
+            <hi>if (String.Equals(boundString, matchString))</hi>
+            <hi>{</hi>
+                <hi>return Visibility.Visible;</hi>
+            <hi>}</hi>
+            <hi>else</hi>
+            <hi>{</hi>
+                <hi>return Visibility.Collapsed;</hi>
+            <hi>}</hi>
+        <hi>}</hi>
+
+        <hi>public object ConvertBack(object value, Type targetType, </hi>
+          <hi>object parameter, string language)</hi>
+        <hi>{</hi>
+            <hi>throw new NotImplementedException();</hi>
+        <hi>}</hi>
+    <hi>}</hi>
+	</pre>
+
+  <li><p>
+  Open the <strong>MainPage.xaml</strong> again and add the <strong>DisplayTypeToVisibilityConverter</strong> as a resource of the 
+  Page at the top of the xaml:
+  <pre>
+            &ltSetter Property="FontSize" Value="20"/&gt
+        &lt/Style&gt  
+        <hi>&ltlocal:DisplayTypeToVisibilityConverter </hi>
+          <hi>x:Key="DisplayTypeToVisibilityConverter"/&gt </hi>
+    &lt/Page.Resources&gt </pre>
+
+  <li><p>
+  You can now add the slider which uses the same converter for its visibility, as it should
+  only be shown when the <strong>BackgroundRemoved</strong> <strong>DisplayFrameType</strong> is selected. Scroll down to where the FrameDisplayImage is and add the following <strong>StackPanel</strong> with a slider in it. The slider value is bound to a property <strong>DepthMax</strong> you will create next:
+  <pre>
+&ltImage x:Name="FrameDisplayImage" Grid.Row="1" Stretch="Uniform"/&gt
+&ltViewbox Grid.Row="1" HorizontalAlignment="Center"&gt  
+    &ltGrid x:Name="BodyJointsGrid" Background="Transparent" Width="512"
+      Height="414"/&gt  
+&lt/Viewbox&gt  
+<hi>&ltStackPanel Grid.Row="1" Orientation="Vertical"</hi>  
+            <hi>HorizontalAlignment="Left" </hi> 
+            <hi>Visibility="{Binding CurrentDisplayFrameType,  </hi>
+       <hi>Converter={StaticResource DisplayTypeToVisibilityConverter},   </hi>
+       <hi>ConverterParameter=BackgroundRemoved }"&gt  </hi>
+    <hi>&ltTextBlock Text="DepthMax"/&gt  </hi>
+    <hi>&ltTextBlock Text="{Binding DepthMax}"/&gt  </hi>
+    <hi>&ltSlider Width="250" Minimum="500" Maximum="8000"</hi>
+    <hi>Value="{Binding DepthMax, Mode=TwoWay}"/&gt</hi>  
+<hi>&lt/StackPanel&gt  </hi>
+&ltScrollViewer Grid.Row="2" ScrollViewer.HorizontalScrollBarVisibility="Auto"   </pre>
+  <li><p>
+  Open the code behind <strong>MainPage.xaml.cs</strong> and add the two properties, as well as the new <strong>DisplayFrameType</strong>:
+  <pre>
+namespace Kinect2Sample
+{
+    public enum DisplayFrameType
+    {
+        Infrared,
+        Color,
+        Depth,
+        BodyMask,
+        BodyJoints<hi>,</hi>
+        <hi>BackgroundRemoved</hi>
+    }
+
+    public sealed partial class MainPage : Page, INotifyPropertyChanged
+    {
+	//...
+	//Depth Frame
+        private ushort[] depthFrameData = null;
+        private byte[] depthPixels = null;
+       <hi> private ushort depthMax = 8000; </hi>
+	//...
+	public FrameDescription CurrentFrameDescription
+        {
+		//...
+        }
+
+        <hi>public DisplayFrameType CurrentDisplayFrameType</hi>
+        <hi>{</hi>
+            <hi>get { return this.currentDisplayFrameType; }</hi>
+            <hi>set</hi>
+            <hi>{</hi>
+                <hi>if (this.currentDisplayFrameType != value)</hi>
+                <hi>{</hi>
+                    <hi>this.currentDisplayFrameType = value;</hi>
+                    <hi>if (this.PropertyChanged != null)</hi>
+                    <hi>{</hi>
+                        <hi>this.PropertyChanged(this, </hi>
+                          <hi>new PropertyChangedEventArgs(</hi>
+                          <hi>"CurrentDisplayFrameType"));</hi>
+                    <hi>}</hi>
+                <hi>}</hi>
+            <hi>}</hi>
+        <hi>}</hi>
+
+        <hi>public ushort DepthMax</hi>
+        <hi>{</hi>
+            <hi>get { return this.depthMax; }</hi>
+            <hi>set</hi>
+            <hi>{</hi>
+                <hi>if (this.depthMax != value)</hi>
+                <hi>{</hi>
+                    <hi>this.depthMax = value;</hi>
+                    <hi>if (this.PropertyChanged != null)</hi>
+                    <hi>{</hi>
+                        <hi>this.PropertyChanged(this, </hi>
+                        <hi>new PropertyChangedEventArgs("DepthMax"));</hi>
+                    <hi>}</hi>
+                <hi>}</hi>
+            <hi>}</hi>
+        <hi>}</hi>
+
+        public MainPage()
+		//...  </pre>
+
+  <li><p>
+  <strong>Build and Run</strong> the application, there should be no errors, and the background and slider should not be showing. 
+  </ol>
+  <h1>
+<a id="exercise-2---the-background-removal" class="anchor" href="#exercise-2---the-background-removal" aria-hidden="true"><span class="octicon octicon-link"></span></a>Exercise 2 - The Background Removal</h1>
+<p> The method to remove the background is very similar to the logic for cutting out detected bodies in a color frame, like the <strong>BodyMask</strong> lab. This time you will do things differently, using the unsafe code only in relevance to the bitmap manipulation instead of also exposing an IBuffer for the frame data.
+<br><br>
+The bitmap manipulation required here is processor intensive. Every pixel must be checked in each frame one by one, and color manipulated as appropriate. In a <strong>1920 by 1080 feed this is 2073600 pixels</strong> to be altered. A graphics card is exceptional at handling image rendering logic through shaders, and if this was a GPU or Direct X tutorial then this method could be used but for the sake of clarity we simply use <strong>optimised unsafe code in C#</strong> to control the bitmap. 
+<br><br>
+The limitation of this is that when running with an <strong>attached debugger the performance is not very good</strong>, keep that in mind.
+<ol>
+    <li><p>
+	You've added a new DisplayFrameType to the enum already. As in the other labs, first the initialization logic for the assets in this frame type must be completed. Go to the SetupCurrentDisplay() method in the MainPage.xaml.cs code behind file, and add the new DisplayFrameType.BackgroundRemoved to the switch:
+	
+	<pre>
+private void SetupCurrentDisplay(DisplayFrameType newDisplayFrameType)	
+{	
+    CurrentDisplayFrameType = newDisplayFrameType;	
+    // Frames used by more than one type are declared outside the switch	
+    FrameDescription colorFrameDescription = null;	
+    FrameDescription depthFrameDescription = null;	
+    // reset the display methods	
+    if (this.BodyJointsGrid != null)	
+    {	
+        this.BodyJointsGrid.Visibility = Visibility.Collapsed;	
+    }	
+    if (this.FrameDisplayImage != null)	
+    {	
+        this.FrameDisplayImage.Source = null;	
+    }	
+    switch (CurrentDisplayFrameType)	
+    {	
+        case DisplayFrameType.Infrared:	
+            //...
+	
+        case DisplayFrameType.Color:	
+            //...	
+	
+        case DisplayFrameType.Depth:	
+            //...
+	
+        case DisplayFrameType.BodyMask:	
+            //...
+	
+        case DisplayFrameType.BodyJoints:	
+            //...
+	
+        <hi>case DisplayFrameType.BackgroundRemoved:</hi>	
+            <hi>colorFrameDescription = </hi>
+              <hi>this.kinectSensor.ColorFrameSource.FrameDescription;</hi>
+            <hi>depthFrameDescription = </hi>
+              <hi>this.kinectSensor.DepthFrameSource.FrameDescription;</hi>	
+            <hi>// Actual current frame is going to be a map of depth</hi>
+            <hi>// and color, choosing the larger to display(color)</hi>	
+            <hi>this.CurrentFrameDescription = colorFrameDescription;</hi>	
+            <hi>// allocate space to put the pixels being received</hi>
+            <hi>// and converted</hi>	
+            <hi>this.depthFrameData = </hi>	
+               <hi>new ushort[depthFrameDescription.Width * </hi>
+                <hi>depthFrameDescription.Height];</hi>	
+            <hi>this.colorMappedToDepthPoints = </hi>	
+               <hi>new DepthSpacePoint[colorFrameDescription.Width *</hi>
+                <hi> colorFrameDescription.Height];</hi>	
+            <hi>this.bitmap = </hi>	
+               <hi>new WriteableBitmap(colorFrameDescription.Width,</hi>
+                <hi> colorFrameDescription.Height);</hi>	
+            <hi>break;</hi>	
+        default:	
+            break;	
+    }	
+}</pre>
+<p> This new frame type doesn't use any new variables to hold the frame data. It uses the <strong>depthFrameData</strong> (first used in the Depth Tutorial), and the <strong>colorMappedToDepthPoints</strong>(First used in the BodyMask tutorial). You are going to use them together in a different way.
+<br>The <strong>final image will only be the dimensions of the depth frame</strong> because you will remove (make transparent) any part of the color feed which is beyond a certain depth. To do this you need to know the depth of that part of the color image but because <strong>the aspect ratio of the depth and color is different</strong>, the left/right sides of the color feed are not valid because there's no depth in those regions to detect. However, the resolution of the color feed is much higher than the depth feed so you can still get a crisp image, even though the depth resolution is low. For this reason the <strong>bitmap is initialized to the colorFrameDescription size instead of the depth size</strong>.
+  
+  <li><p>
+ Now you will add code to process the frame. To prepare the variables for frame processing, you need to add a new case within the switch in the <strong>Reader_MultiSourceFrameArrived()</strong> method. 
+ <br>There are a few things which must be disposed of, so you need to implement a <strong>try, finally</strong> pattern. As this case is not exposing the frame data into a buffer (only using the bitmap pixel buffer), this is a little simpler than the BodyMask method. 
+ <br>Copy the new switch case below to <strong>retrieve the frame data required</strong>, <strong>copy the color data to the bitmap</strong>, and <strong>pass it all to a new method</strong> to be created next:<br>
+ 
+<pre>private void Reader_MultiSourceFrameArrived(MultiSourceFrameReader sender, MultiSourceFrameArrivedEventArgs e)
+{
+//...
+    switch (CurrentDisplayFrameType)
+    {
+        case DisplayFrameType.Infrared:
+            //...
+            break;
+        case DisplayFrameType.Color:
+            //...
+            break;
+        case DisplayFrameType.Depth:
+            //...
+        case DisplayFrameType.BodyMask:
+            //...
+            break;
+        case DisplayFrameType.BodyJoints:
+            //...
+        <hi>case DisplayFrameType.BackgroundRemoved:</hi>
+            <hi>// Put in a try catch to utilise finally() and </hi>
+            <hi>// clean up frames</hi>
+            <hi>try</hi>
+            <hi>{</hi>
+                <hi>depthFrame = multiSourceFrame.DepthFrameReference.</hi>
+                  <hi>AcquireFrame();</hi>
+                <hi>colorFrame = multiSourceFrame.ColorFrameReference.</hi>
+                  <hi>AcquireFrame();</hi>
+                <hi>if ((depthFrame == null) || (colorFrame == null))</hi>
+                <hi>{</hi>
+                    <hi>return;</hi>
+                <hi>}</hi>
+                <hi>depthFrame.CopyFrameDataToArray(depthFrameData);</hi>
+                <hi>this.coordinateMapper.MapColorFrameToDepthSpace(</hi>
+                  <hi>depthFrameData, </hi>
+                   <hi>this.colorMappedToDepthPoints);</hi>
+                <hi>// Process Color.</hi>
+                <hi>colorFrame.CopyConvertedFrameDataToBuffer(</hi>
+                    <hi>this.bitmap.PixelBuffer, </hi>
+                   <hi>ColorImageFormat.Bgra);</hi>
+
+                <hi>ShowMappedColorBackgroundRemoved(</hi>
+                  <hi>colorMappedToDepthPoints, </hi>
+                   <hi>depthFrameData, depthFrame.FrameDescription);</hi>
+            <hi>}</hi>
+            <hi>finally</hi>
+            <hi>{</hi>
+                <hi>if (depthFrame != null)</hi>
+                <hi>{</hi>
+                    <hi>depthFrame.Dispose();</hi>
+                <hi>}</hi>
+                <hi>if (colorFrame != null)</hi>
+                <hi>{</hi>
+                    <hi>colorFrame.Dispose();</hi>
+                <hi>}</hi>
+            <hi>}</hi>
+            <hi>break;</hi>
+        default:
+            break;
+    }
+}</pre>
+  <li><p>
+  Add the new method <strong>ShowMappedColorBackgroundRemoved</strong> which will process the frame data. Put this new method with the other Show... methods in the MainPage class.
+	<br>
+	This method is where the <strong>unsafe code is going o be added to enable the compiler to create more optimal code</strong>.
+	<br>
+	The method does the following:<ul>	<li>iterates through all pixels in the colorMappedToDepthPoints, 
+<li>checks the depth for each pixel (if there is a depth for that pixel), 
+<li>and keeps the color if the depth is within the DepthMax allowed, 
+<li>or zeroes out (makes transparent) the pixel if not.</ul>
+	<pre><hi>unsafe private void ShowMappedColorBackgroundRemoved(</hi>
+      <hi>DepthSpacePoint[] colorMappedToDepthPoints, </hi>
+    <hi>ushort[] depthFrameData, FrameDescription frameDescription)</hi>
+{
+    <hi>fixed (DepthSpacePoint* colorMappedToDepthPointsPointer = </hi>
+      <hi>colorMappedToDepthPoints)</hi>
+    <hi>{</hi>
+        <hi>IBufferByteAccess bitmapBackBufferByteAccess = </hi>
+          <hi>(IBufferByteAccess)this.bitmap.PixelBuffer;</hi>
+
+        <hi>byte* bitmapBackBufferBytes = null;</hi>
+        <hi>bitmapBackBufferByteAccess.Buffer(out bitmapBackBufferBytes);</hi>
+
+        <hi>// Treat the color data as 4-byte pixels</hi>
+        <hi>uint* bitmapPixelsPointer = (uint*)bitmapBackBufferBytes;</hi>
+
+        <hi>int depthWidth = frameDescription.Width;</hi>
+        <hi>int depthHeight = frameDescription.Height;</hi>
+		
+        <hi>// Loop over each row and column of the color image</hi>
+        <hi>// Zero out any pixels that don't correspond to a body index</hi>
+        <hi>for (int colorIndex = 0; </hi>
+          <hi>colorIndex &lt this.colorMappedToDepthPoints.Length; </hi>
+          <hi>++colorIndex)</hi>
+        <hi>{</hi>
+            <hi>float colorMappedToDepthX = </hi>
+              <hi>colorMappedToDepthPoints[colorIndex].X;</hi>
+            <hi>float colorMappedToDepthY = </hi>
+              <hi>colorMappedToDepthPoints[colorIndex].Y;</hi>
+
+            <hi>// The sentinel value is -inf, -inf, </hi>
+            <hi>// meaning that no depth pixel corresponds to this </hi>
+            <hi>// color pixel.</hi>
+            <hi>if (!float.IsNegativeInfinity(colorMappedToDepthX) &&</hi>
+                <hi>!float.IsNegativeInfinity(colorMappedToDepthY))</hi>
+            <hi>{</hi>
+                <hi>// Make sure the depth pixel maps to a </hi>
+                <hi>// valid point in color space</hi>
+                <hi>int depthX = (int)(colorMappedToDepthX + 0.5f);</hi>
+                <hi>int depthY = (int)(colorMappedToDepthY + 0.5f);</hi>
+
+                <hi>// If the point is not valid, </hi>
+                <hi>// there is no body index there.</hi>
+                <hi>if ((depthX >= 0) &amp&amp (depthX &lt depthWidth) && </hi>
+                    <hi>(depthY >= 0) &amp&amp (depthY &lt depthHeight))</hi>
+                <hi>{</hi>
+                    <hi>int depthIndex = (depthY * depthWidth) + depthX;</hi>
+
+                    <hi>if (depthFrameData[depthIndex] &lt DepthMax)</hi>
+                    <hi>{</hi>
+                        <hi>continue;</hi>
+                    <hi>}</hi>
+                <hi>}</hi>
+            <hi>}</hi>
+        <hi>// no matching depth. zero out the pixel.</hi>
+        <hi>bitmapPixelsPointer[colorIndex] = 0;</hi>
+        <hi>}</hi>
+    <hi>}</hi>
+    <hi>this.bitmap.Invalidate();</hi>
+    <hi>FrameDisplayImage.Source = this.bitmap;</hi>
+<hi>}</hi>
+</pre>
+  <li><p>
+  To switch to this new <strong>DisplayFrameType</strong>, you need to add a button to the xaml. Open the <strong>MainPage.xaml</strong> file and add the following button to the StackPanel with all the other buttons:
+  <pre>
+  &ltStackPanel Orientation="Horizontal"&gt
+    &lt!-- ... other frame select buttons --&gt
+    <hi>&ltButton Style="{StaticResource FrameSelectorButtonStyle}"</hi>
+            <hi>Click="BackgroundButton_Click"&gt</hi>
+        <hi>&ltTextBlock Text="BG Removed" TextWrapping="Wrap" /&gt</hi>
+    <hi>&lt/Button&gt</hi>
+  &lt/StackPanel&gt</hi></pre>
+  <li><p>
+  Finally, open the <strong>MainPage.xaml.cs</strong> code file again and add a new method at the bottom of the MainPage class to set the DisplayFrameType when the button is clicked.
+  <pre><hi>private void BackgroundButton_Click(object sender, RoutedEventArgs e)</hi>
+<hi>{</hi>
+    <hi>SetupCurrentDisplay(DisplayFrameType.BackgroundRemoved);</hi>
+<hi>}</hi></pre>
+  <li><p>
+  <strong>Build and Run</strong> the application. There should be no errors. If you click on the <strong>BG Removed</strong> button now, you will notice a <strong>terrible framerate</strong>, but the background and slider should be visible. This is because you are running with an attached debugger. Stop debugging
+  <li><p>
+  <strong>Press Ctrl + F5 or select DEBUG &gt Start Without Debugging</strong> to run without an attached debugger and you will get a good framerate with the background removed!
+    <img style="width: 100%;" alt="Background Removed Low DepthMax Image" src="images/lab07img01.jpg">
+	<p>
+	Try using the depth slider on the top left to <strong>change the DepthMax</strong> and eliminate more or less of the image as a result. <br>
+    <img style="width: 100%;" alt="Background Removed Hi DepthMax Image" src="images/lab07img02.jpg">
+</ol>
+<h2>
+<a id="summary" class="anchor" href="#summary" aria-hidden="true"><span class="octicon octicon-link"></span></a>Summary</h2>
+<p>This lab explained how to use the depth frame with the color frame, to eliminate the background. You can probably imagine using this technique to create an animation in a kinect game to reveal the players. Using debug controls, like the DepthMax slider, can be very helpful when initially working with the Kinect. Debug controls provide a way for you to see the effect of parameter changes in real time.<br><br>
+
+Feeds can be used together to create interesting results, and putting a person in another environment is one of the most commonly requested features. This Depth Max method, along with the Body Mask method, are the best ways to achieve this effect.<br><br>
+The next lab will begin from the code completed in this lab code.</p>
+	<li class="button">
+	<a class="buttons tag" href="https://github.com/Kinect/Tutorial/archive/lab07.zip">This Lab Code</a> 
+	</li>
+    <li class="button">
+	<a class="buttons feedback" href="https://github.com/Kinect/Tutorial/issues/">View Issues</a> </li>
+    <li class="button">
+	<a class="buttons feedback" href="https://github.com/Kinect/Tutorial/issues/new?labels=BG_Removal">Give Feedback</a> </li>
+<a href="#" class="back-to-top"><i class="fa fa-chevron-up"> Back to Top</i></a>
+<footer> </footer>
+</div>
+
+<!--[if !IE]><script>fixScale(document);</script><![endif]-->
+</section></html>

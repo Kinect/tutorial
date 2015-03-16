@@ -1,0 +1,695 @@
+<!DOCTYPE html>
+<html>
+	<head>
+	  <meta charset="utf-8">
+	  <meta http-equiv="X-UA-Compatible" content="chrome=1">
+	  <title>Kinect 2 for Windows - Hands On Lab 8</title>
+	  <link rel="stylesheet" href="../stylesheets/styles.css">
+	  <link rel="stylesheet" href="../stylesheets/pygment_trac.css">
+	  <link rel="stylesheet" href="http://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.min.css">
+	  <script src="../javascripts/scale.fix.js"></script>
+	  <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+	<!--[if lt IE 9]>
+		<script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+		<![endif]-->
+	</head>
+<body>
+<div class="wrapper">
+      <header>
+        <h1 class="header">Kinect 2 for Windows Demo App</h1>
+        <p class="header">The Hands On Labs to complete a sample application for Windows 8.1 and the Kinect 2 for Windows</p>
+        <ul>
+		  <li ><a class="buttons home" href="../index.html">Home</a></li>
+		  <li class="download"><a class="buttons" href="https://github.com/MicrosoftKinect2/ms-Kinect2Demo-Win81/zipball/master">Complete App</a></li>
+          <li><a class="buttons github" href="https://github.com/MicrosoftKinect2/ms-Kinect2Demo-Win81">View On GitHub</a></li>
+        </ul>
+      </header>
+      <section>
+	  
+<div>  
+<nav id="labs_dropdown">
+<ul>
+  <li><a style="padding: 0px;"><h3 style="color:#FFF; padding: 10px;">Lab 08 - Face Tracking<i style="float:right; font-size: 16px; padding-top: 0.5%;" class="fa fa-chevron-down"></i></h3></a>
+    <ul>
+		<li class="download"><a href="../Lab01/index.html">1 - Project Setup</a></li>
+		<li class="download"><a href="../Lab02/index.html">2 - Infrared Data</a></li>
+		<li class="download"><a href="../Lab03/index.html">3 - Color Data</a></li>
+		<li class="download"><a href="../Lab04/index.html">4 - Depth Data</a></li>
+		<li class="download"><a href="../Lab05/index.html">5 - Body Mask</a></li>
+		<li class="download"><a href="../Lab06/index.html">6 - Body Data</a></li>
+		<li class="download"><a href="../Lab07/index.html">7 - Background Removal</a></li>
+		<li class="download"><a href="index.html">8 - Face Tracking</a></li>
+		<li class="download"><a href="../Lab09/index.html">9 - Face Game</a></li>
+		<li class="download"><a href="../Lab10/index.html">10 - Hand Cursor</a></li>
+		<li class="download"><a href="../Lab11/index.html">11 - Kinect Studio</a></li>
+		<li class="download"><a href="../Lab12/index.html">12 - Gesture Builder</a></li>
+		<li class="download"><a href="../Lab13/index.html">13 - Bing Speech</a></li>
+		<li class="download"><a href="../Lab14/index.html">14 - Tracking Strategies</a></li>
+	</ul>
+</ul>
+</div>
+
+<h1><a id="kinect-2-hands-on-labs" class="anchor" href="#kinect-2-hands-on-labs" aria-hidden="true"><span class="octicon octicon-link"></span></a>Kinect 2 Hands On Labs</h1>
+<h2>
+<img style="width: 100%;" alt="Cat Face Fullscreen Image" src="images/lab08img05.jpg">
+<a id="lab-8-face-tracking" class="anchor" href="#lab-8-face-tracking" aria-hidden="true"><span class="octicon octicon-link"></span></a>Lab 8: Face Tracking</h2>
+<p><strong>Estimated Time to Complete</strong>: 40min</p>
+<p>This lab is part of a series of hands on labs which teach you how to create a Windows 8.1 Store Application using almost every available feature of the Kinect 2. This is the eighth lab in the series, and it
+teaches you how to use the Kinect 2 to get face points, and other face properties, for up to 6 bodies.</p>
+<p>This lab will explain the following:
+<ol>
+<li>How to add a reference to a pre-built face library in the x64 architecture.
+<li>How to apply the face data on a canvas as an overlay for debugging purposes.
+<li>How to use face data on your own to position images over the face.
+</ol></p>
+
+<h1>
+<a id="exercise-1---using-the-face-library" class="anchor" href="#exercise-1---using-the-face-library" aria-hidden="true"><span class="octicon octicon-link"></span></a>Exercise 1 - Using The Face Library</h1>
+<p>This exercise will teach you how to add a custom library <strong>KinectFaceData.dll</strong> to the solution for multiple architectures. This library is then used to <strong>overlay face data on the color feed</strong> with shapes and text. <br>
+This lab and all subsequent labs in this series are built using C# and
+assume you have a fundamental knowledge of the C# language.
+The screenshots here are from <strong>Visual Studio Community Edition</strong>.</p>
+
+<p>
+<strong>IMPORTANT: </strong> The Kinect Face tracking logic is in the Microsoft.Kinect.Face libraries because it has an important difference from the Windows.Kinect libraries: <strong>Face Tracking will not work in the x86 (32bit) architecture.</strong> 
+<br>
+Building a solution with the Microsoft.Kinect.Face libraries in an x86 build is possible, but you will find that accessing the face point data from a successful frame results in a WinRT Exception every time, this is a known bug as of the SDK release v2.0_1409.
+</p>
+<ol>
+  <li><p>
+	The face library to be used is dependent on the <strong>Microsoft.Kinect.Face</strong> libraries which are installed with the <strong>KinectSDK under Windows 8.1 extensions</strong>. Although WinRT apps use the WindowsPreview.Kinect libraries and namespaces, it's ok to use the Microsoft.Kinect namespace for the face tracking.<br>
+    Open the <strong>Kinect2Sample</strong> project and <strong>Right Click the Kinect2Sample project</strong> from the <strong>Solution Explorer</strong> and <strong>select Add &gt Reference...</strong>
+	<br>In the <strong>Reference Manager</strong> <strong>Click Windows 8.1</strong> on the left, then <strong>Extensions</strong>, then find and check the <strong>Microsoft.Kinect.Face SDK </strong>and <strong>click OK</strong>. <br>
+	<img  style="width: 100%;" alt="Reference Manager Image" src="images/lab08img01.jpg">
+
+  <li><p>
+    Now you need to add a custom portable library that was built to make the Face Tracking simpler. This library is available on the github account if you are interested. In this lab you will be using a release version of of the Library. 
+	<br>
+	<ol>
+	<li>Create a new folder in the solution directory called Libraries (in the same directory as the Kinect2Sample.csproj file).
+	<li>Download this zip of the x64 release of the face library:
+	<br>
+	<a href="Data/KinectFaceStoreLibraries.zip">KinectFaceStore.dll</a>
+	<li> Extract the zip contents to the Libraries folder you just created. The Libraries folder should contain the KinectFaceStore.dll now.
+	</ol>
+
+<li><p>
+Add the KinectFaceStore.dll as a reference by browsing to the KinectFaceStore.dll
+<ol>
+<li> <strong>Right click</strong> the Kinect2Sample References filter in the <strong>Solution Explorer</strong> and select <strong>Add Reference...</strong>
+<li> Click the <strong>Browse</strong> button at the bottom.
+<li> Navigate to the Libraries directory within the solution
+<br>
+<img  style="width: 100%;" alt="Reference Manager Image" src="images/lab08img02.jpg">
+<li> Click <strong>Add</strong> to add the new library.
+</ol>
+
+<li><p>
+Note your current configuration settings by clicking <strong>BUILD &gt Configuration Manager...</strong> and checking the <strong>Active Solution Platform</strong>: on the top right. Make sure it is set to <strong>x64</strong>.
+<br><br><strong>Build and Run</strong> the application and make sure there are no errors.
+<br> <strong>The rest of the labs depend on the Microsoft.Kinect.Face and so will be built only with x64 architecture from now on.</strong>
+</p>
+  <li><p>
+	The <strong>KinectFaceStore</strong> library has a single <strong>FaceManager</strong> class which can either retrieve the latest tracked faces, or draw the face data for you.
+	<br>
+	First you will set the library to draw the face data. To achieve this you need a <strong>canvas</strong> in a <strong>viewport</strong>, so it fills the space, regardless of its size. You will use the canvas as an overlay. 
+	<br><br>
+	Open <strong>MainPage.xaml</strong> and add the new <strong>FacePointsCanvas</strong> as highlighted below:
+	<pre>
+	
+&ltViewbox Grid.Row="1" HorizontalAlignment="Center"&gt
+    &ltGrid x:Name="BodyJointsGrid" Background="Transparent" 
+        Width="512" Height="414"/&gt
+&lt/Viewbox&gt
+<hi>&ltViewbox Grid.Row="1" HorizontalAlignment="Center"&gt</hi>
+    <hi>&ltCanvas x:Name="FacePointsCanvas"/&gt</hi>
+<hi>&lt/Viewbox&gt</hi>
+&ltStackPanel Grid.Row="1" Orientation="Vertical" 
+            HorizontalAlignment="Left"
+            Visibility="{Binding CurrentDisplayFrameType,
+       Converter={StaticResource DisplayTypeToVisibilityConverter}, 
+       ConverterParameter=BackgroundRemoved }"&gt
+</pre>
+
+  <li><p>
+Open the MainPage.xaml.cs and add the new namespaces to use, and a new DisplayFrameType, then the new FaceManager private variables. 
+<br>
+The <strong>FaceManager</strong> is the main class in the KinectFaceStore library and is used to initialize and track all the faces.
+<br>
+The FaceFrameFeatures object is used to setup and retrieve custom types of face data.
+<br>
+Copy the following highlighted code to the MainPage class:
+<pre>
+//...
+using Windows.UI;
+<hi>using KinectFace;
+using Microsoft.Kinect.Face;</hi>
+
+namespace Kinect2Sample
+{
+    public enum DisplayFrameType
+    {
+        Infrared,
+        Color,
+        Depth,
+        BodyMask,
+        BodyJoints,
+        BackgroundRemoved<hi>,</hi>
+        <hi>FaceOnColor</hi>
+    }
+	
+    public sealed partial class MainPage : Page, INotifyPropertyChanged
+    {
+        //...
+        //Body Joints are drawn here
+        private Canvas drawingCanvas;
+
+        <hi>//FaceManager library</hi>
+        <hi>private FaceManager faceManager;</hi>
+        <hi>private FaceFrameFeatures faceFrameFeatures;</hi>
+		
+        //...
+</pre>
+  <li><p>
+Go to the <strong>MainPage()</strong> constructor and initialize the <strong>FaceManager</strong>. The FaceManager takes the currently used <strong>KinectSensor</strong>, and also the required kinds of <strong>FaceFrameFeatures</strong>. Here you are retrieving all the FaceFrameFeatures so you have the freedom to select what you want later.
+<br><br>
+As you are using a canvas as an overlay, it must be reset if not in use; you need to call <strong>SetupCurrentDisplay when the UI is loaded</strong>, not on construction of MainPage (when the UI is not ready to be manipulated). So now remove <strong>SetupCurrentDisplay<br>(DEFAULT_DISPLAYFRAMETYPE);</strong> 
+from the <strong>MainPage()</strong>. Add a handler for the <strong>MainPage.Loaded</strong> event and put the <strong>SetupCurrentDisplay()</strong> in there.
+<pre>
+public MainPage()
+{            
+    this.multiSourceFrameReader.MultiSourceFrameArrived += this.Reader_MultiSourceFrameArrived;
+
+    <hi>// specify the required face frame results</hi>
+    <hi>// init with all the features so they are accessible later.</hi>
+    <hi>this.faceFrameFeatures =</hi>
+        <hi>FaceFrameFeatures.BoundingBoxInColorSpace</hi>
+        <hi>| FaceFrameFeatures.PointsInColorSpace</hi>
+        <hi>| FaceFrameFeatures.BoundingBoxInInfraredSpace</hi>
+        <hi>| FaceFrameFeatures.PointsInInfraredSpace</hi>
+        <hi>| FaceFrameFeatures.RotationOrientation</hi>
+        <hi>| FaceFrameFeatures.FaceEngagement</hi>
+        <hi>| FaceFrameFeatures.Glasses</hi>
+        <hi>| FaceFrameFeatures.Happy</hi>
+        <hi>| FaceFrameFeatures.LeftEyeClosed</hi>
+        <hi>| FaceFrameFeatures.RightEyeClosed</hi>
+        <hi>| FaceFrameFeatures.LookingAway</hi>
+        <hi>| FaceFrameFeatures.MouthMoved</hi>
+        <hi>| FaceFrameFeatures.MouthOpen;</hi>
+
+    <hi>this.faceManager = new FaceManager(</hi>
+                 <hi>this.kinectSensor, </hi>
+                 <hi>this.faceFrameFeatures);</hi>
+	
+    // set IsAvailableChanged event notifier
+    this.kinectSensor.IsAvailableChanged += 
+        this.Sensor_IsAvailableChanged;
+    //...
+    this.InitializeComponent();
+	
+    <hi>this.Loaded += MainPage_Loaded;</hi>
+}
+    
+<hi>void MainPage_Loaded(object sender, RoutedEventArgs e)</hi>
+<hi>{</hi>
+    <hi>SetupCurrentDisplay(DEFAULT_DISPLAYFRAMETYPE);</hi>
+<hi>}</hi>
+</pre>
+  <li><p>
+Within the <strong>SetupCurrentDisplay()</strong> method you must setup the dimensions of the face canvas, and choose which FaceFrameFeatures you would like to display when the new <strong>DisplayFrameType.FaceOnColor</strong> is selected. You will also need the usual setup for the color frame.
+<br><br>
+In this exercise you will use the color feed to display all the face data in a simple manner to enable you to debug the code and see the information being retrieved. Add the following highlighted code to the SetupCurrentDisplay() method:
+<pre>
+private void SetupCurrentDisplay(DisplayFrameType newDisplayFrameType)
+{
+	//...
+    FrameDescription depthFrameDescription = null;
+    <hi>FacePointsCanvas.Children.Clear();</hi>
+    // reset the display methods
+    if (this.BodyJointsGrid != null)
+    {
+        this.BodyJointsGrid.Visibility = Visibility.Collapsed;
+    }
+    if (this.FrameDisplayImage != null)
+    {
+        this.FrameDisplayImage.Source = null;
+    }
+    switch (CurrentDisplayFrameType)
+    {
+        case DisplayFrameType.Infrared:
+            //...
+        case DisplayFrameType.Color:
+            //...
+        case DisplayFrameType.Depth:
+            //...
+        case DisplayFrameType.BodyMask:
+            //...
+        case DisplayFrameType.BodyJoints:
+            //...
+        case DisplayFrameType.BackgroundRemoved:
+            //...
+        <hi>case DisplayFrameType.FaceOnColor:</hi>
+            <hi>colorFrameDescription = </hi>
+                <hi>this.kinectSensor.ColorFrameSource.FrameDescription;</hi>
+            <hi>this.CurrentFrameDescription = colorFrameDescription;</hi>
+            <hi>// create the bitmap to display</hi>
+            <hi>this.bitmap = new WriteableBitmap(</hi>
+                <hi>colorFrameDescription.Width, </hi>
+                <hi>colorFrameDescription.Height);</hi>
+            <hi>this.FacePointsCanvas.Width = colorFrameDescription.Width;</hi>
+            <hi>this.FacePointsCanvas.Height = colorFrameDescription.Height;</hi>
+            <hi>this.faceFrameFeatures =</hi>
+                    <hi>FaceFrameFeatures.BoundingBoxInColorSpace</hi>
+                    <hi>| FaceFrameFeatures.PointsInColorSpace</hi>
+                    <hi>| FaceFrameFeatures.RotationOrientation</hi>
+                    <hi>| FaceFrameFeatures.FaceEngagement</hi>
+                    <hi>| FaceFrameFeatures.Glasses</hi>
+                    <hi>| FaceFrameFeatures.Happy</hi>
+                    <hi>| FaceFrameFeatures.LeftEyeClosed</hi>
+                    <hi>| FaceFrameFeatures.RightEyeClosed</hi>
+                    <hi>| FaceFrameFeatures.LookingAway</hi>
+                    <hi>| FaceFrameFeatures.MouthMoved</hi>
+                    <hi>| FaceFrameFeatures.MouthOpen;</hi>
+            <hi>break;</hi>
+        default:
+            break;
+    }
+}
+</pre>
+<p>
+Notice how the FaceManager was initialized with the <strong>PointsInInfraredSpace</strong> and the <strong>BoundingBoxInInfraredSpace</strong>, yet here you are only asking for the <strong>PointsInColorSpace</strong> and <strong>BoundingBoxInColorSpace</strong>. That's because you are rendering an overlay on a canvas with the <strong>dimensions of the color frame</strong>, so points in the mapping of the infrared (or depth) frame dimensions are wrong for this resolution.
+<br>
+The FaceManager is now ready to draw the face data to a canvas.
+
+<li><p>
+  In the <strong>Reader_MultiSourceFrameArrived()</strong> method, add a call to <strong>DrawLatestFaceResults</strong> and pass the canvas and the requested <strong>FaceFrameFeatures</strong>. (ShowColorFrame() was already done in an earlier lab).
+  <pre>
+private void Reader_MultiSourceFrameArrived(MultiSourceFrameReader sender, MultiSourceFrameArrivedEventArgs e)
+{
+	//...
+    switch (CurrentDisplayFrameType)
+    {
+        case DisplayFrameType.Infrared:
+            //...
+        case DisplayFrameType.Color:
+            //...
+        case DisplayFrameType.Depth:
+            //...
+        case DisplayFrameType.BodyMask:
+            //...
+        case DisplayFrameType.BodyJoints:
+            //...
+        case DisplayFrameType.BackgroundRemoved:
+            //...
+        <hi>case DisplayFrameType.FaceOnColor:</hi>
+            <hi>using (colorFrame =</hi>
+            <hi> multiSourceFrame.ColorFrameReference.AcquireFrame())</hi>
+            <hi>{</hi>
+                <hi>ShowColorFrame(colorFrame);</hi>
+                <hi>this.faceManager.DrawLatestFaceResults(</hi>
+                <hi>this.FacePointsCanvas, this.faceFrameFeatures);</hi>
+            <hi>}</hi>
+            <hi>break;</hi>
+        default:
+            break;
+    }
+}
+</pre>
+<li><p>
+Next create a button to change the current <strong>DisplayFrameType</strong> to the new <strong>FaceOnColor</strong> type. Open the <strong>MainPage.xaml</strong> and add this new button:
+<pre>
+&ltButton Style="{StaticResource FrameSelectorButtonStyle}"
+        Click="BackgroundButton_Click"&gt
+    &ltTextBlock Text="BG Removed" TextWrapping="Wrap" /&gt
+&lt/Button&gt
+<hi>&ltButton Style="{StaticResource FrameSelectorButtonStyle}"</hi>
+        <hi>Click="ColorFaceButton_Click"&gt</hi>
+    <hi>&ltTextBlock Text="Color Face" TextWrapping="Wrap" /&gt</hi>
+<hi>&lt/Button&gt</hi>
+</pre>
+<li><p>
+Open <strong>MainPage.xaml.cs</strong> and in the MainPage class add a handler for the button click.
+<pre>
+<hi>private void ColorFaceButton_Click(object sender, RoutedEventArgs e)</hi>
+<hi>{</hi>
+   <hi>SetupCurrentDisplay(DisplayFrameType.FaceOnColor);</hi>
+<hi>}</hi>
+</pre>
+<li><p>
+<strong>Build and run</strong> the application. Click on the <strong>Color Face</strong> button and you will see the face data displayed. <strong>Make sure your whole body is in frame</strong>. Once it detects your body it will add your face to the frame as an overlay along with all the data available on the Kinect.
+<br>
+<img style="width: 100%;" alt="Color Face Fullscreen Image" src="images/lab08img03.jpg">
+<br>
+The FaceFrameResult has a number of properties, all of which are shown here. These properties all come with a <strong>DetectionResult</strong> of <strong>Yes, No or Maybe</strong>. There is also rotational data of the face, which is drawn here to the closest 5 degrees.
+<br>
+<img style="width: 35%;" alt="Color Face Fullscreen Image" src="images/lab08img04.jpg">
+<br>
+<br>
+Try tracking multiple faces. Each detected face is given a different color.
+  </ol>
+  <h1>
+<a id="exercise-2---drawing-your-own-face" class="anchor" href="#exercise-2---drawing-your-own-face" aria-hidden="true"><span class="octicon octicon-link"></span></a>Exercise 2 - Drawing Your Own Face</h1>
+<p>The face tracking data you exposed in the last exercise is good for debugging, but it's more fun to use the data to achieve something. Given that we have some important points in the face available, this exercise will teach you how to <strong>position image assets at the same position as the detected face points, for multiple faces</strong>. 
+<br> You will make users look like a cat in the night, by rendering an overlay of cat eyes onto the infrared frame.
+<ol>
+    <li><p>
+	Download the following images and put them in the Assets directory of the solution. <strong>Right click</strong> eash image and Select <strong>Save As...</strong>
+	<br>
+	<img style="width: 25%;" " alt="Cat Eye Left Open Image" src="images/CatEye_left_open.png"> 
+	<img style="width: 25%;" " alt="Cat Eye Left Closed Fullscreen Image" src="images/CatEye_left_closed.png"> 
+	<img style="width: 25%;" " alt="Cat Nose Fullscreen Image" src="images/CatNose.png">
+	
+
+  <li><p>
+ Open the <strong>MainPage.xaml.cs</strong> and add a new <strong>DisplayFrameType</strong> and add the new private variable image assets which will store the cat images to be positioned later. 
+ <br><br>These assets are stored in <strong>arrays</strong>, as there can be up to 6 bodies using the same image.
+ <pre>
+namespace Kinect2Sample
+{
+    public enum DisplayFrameType
+    {
+        Infrared,
+        Color,
+        Depth,
+        BodyMask,
+        BodyJoints,
+        BackgroundRemoved,
+        FaceOnColor<hi>,</hi>
+        <hi>FaceOnInfrared</hi>
+    }
+	
+    public sealed partial class MainPage : Page, INotifyPropertyChanged
+    {
+        //...
+        //FaceManager library
+        private FaceManager faceManager;
+        private FaceFrameFeatures faceFrameFeatures;
+		
+        <hi>//Cat assets</hi>		
+        <hi>private Image[] catEyeRightOpen, catEyeRightClosed,</hi>
+            <hi>catEyeLeftOpen, catEyeLeftClosed, catNose;</hi>
+        //...
+</pre>
+ 
+  <li><p>
+In the <strong>MainPage_Loaded</strong> handler, call a new method named <strong>SetupCatAssets</strong>, which will load and position the cat images:
+<pre>
+void MainPage_Loaded(object sender, RoutedEventArgs e)
+{
+    SetupCurrentDisplay(DEFAULT_DISPLAYFRAMETYPE);
+
+    <hi>SetupCatAssets();</hi>
+}
+</pre>
+  <li><p>
+  Now create that <strong>SetupCatAssets</strong> method. This method initializes all the image asset arrays and loads the appropriate image. 
+  <br>
+  The only thing worth mentioning here is that the <strong>eye is flipped to become the asset of the right eye</strong>, saving space on resources. The rest is boilerplate.
+  <pre>
+<hi>private void SetupCatAssets()</hi>
+<hi>{</hi>	
+    <hi>ScaleTransform flipTransform = </hi>
+        <hi>new ScaleTransform() { ScaleX = -1.0 };</hi>		
+    <hi>int bodyCount = kinectSensor.BodyFrameSource.BodyCount;	</hi>	
+    <hi>catEyeRightOpen = new Image[bodyCount];</hi>
+    <hi>catEyeRightClosed = new Image[bodyCount];</hi>	
+    <hi>catEyeLeftOpen = new Image[bodyCount];</hi>
+    <hi>catEyeLeftClosed = new Image[bodyCount];</hi>		
+    <hi>catNose = new Image[bodyCount];</hi>		
+		
+    <hi>for (int i = 0; i &lt kinectSensor.BodyFrameSource.BodyCount; i++)</hi>		
+    <hi>{</hi>		
+        <hi>catEyeRightOpen[i] = new Image()	</hi>	
+        <hi>{</hi>		
+            <hi>Source = new BitmapImage(new Uri(this.BaseUri,</hi>
+                <hi> "Assets/CatEye_left_open.png")),	</hi>	
+            <hi>Width = 30,	</hi>	
+            <hi>Height = 20,</hi>		
+            <hi>RenderTransformOrigin = new Point(0.5, 0.5),</hi>		
+            <hi>RenderTransform = flipTransform</hi>		
+        <hi>};</hi>		
+        <hi>catEyeRightClosed[i] = new Image()</hi>		
+        <hi>{</hi>		
+            <hi>Source = new BitmapImage(new Uri(this.BaseUri,</hi>
+                <hi> "Assets/CatEye_left_closed.png")),</hi>
+            <hi>Width = 30,</hi>		
+            <hi>Height = 20,</hi>		
+            <hi>RenderTransformOrigin = new Point(0.5, 0.5),</hi>		
+            <hi>RenderTransform = flipTransform	</hi>	
+        <hi>};</hi>		
+        <hi>catEyeLeftOpen[i] = new Image()</hi>
+        <hi>{</hi>
+            <hi>Source = new BitmapImage(new Uri(this.BaseUri,</hi>
+                <hi> "Assets/CatEye_left_open.png")),</hi>
+            <hi>Width = 30,</hi>
+            <hi>Height = 20</hi>
+        <hi>};</hi>
+        <hi>catEyeLeftClosed[i] = new Image()</hi>
+        <hi>{</hi>
+            <hi>Source = new BitmapImage(new Uri(this.BaseUri,</hi>
+                <hi> "Assets/CatEye_left_closed.png")),</hi>
+            <hi>Width = 30,</hi>
+            <hi>Height = 20</hi>
+        <hi>};</hi>
+        <hi>catEyeLeftClosed[i].RenderTransformOrigin = </hi>
+            <hi>new Point(0.5, 0.5);</hi>
+        <hi>catNose[i] = new Image()</hi>
+        <hi>{</hi>
+            <hi>Source = new BitmapImage(new Uri(this.BaseUri, </hi>
+                <hi>"Assets/CatNose.png")),</hi>
+            <hi>Width = 40,</hi>
+            <hi>Height = 25</hi>
+        <hi>};</hi>
+    <hi>}</hi>
+<hi>}</hi>
+  </pre>
+  <li><p>
+ Edit <strong>SetupCurrentDisplay()</strong> to handle the new case. 
+ <br>
+You are now using the <strong>infraredFrameDesc</strong> in two cases, so it should be moved and declared above the switch statement. 
+ <br>Also note that the <strong>FramePointsCanvas</strong> is being set to different dimensions and the <strong>FrameDisplayTypes</strong> are not necessary because you will be drawing ourselves.
+<pre>
+private void SetupCurrentDisplay(DisplayFrameType newDisplayFrameType)
+{
+    //...
+    FrameDescription depthFrameDescription = null;
+    <hi>FrameDescription infraredFrameDescription = null;</hi>
+    FacePointsCanvas.Children.Clear();
+    //...
+    switch (CurrentDisplayFrameType)
+    {
+        case DisplayFrameType.Infrared:
+            //new
+            <hi>infraredFrameDescription = </hi>
+                <hi>this.kinectSensor.InfraredFrameSource.FrameDescription;</hi>
+            this.CurrentFrameDescription = infraredFrameDescription;
+            // allocate space to put the pixels being 
+            // received and converted
+            this.infraredFrameData = 
+                new ushort[infraredFrameDescription.Width * infraredFrameDescription.Height];
+            this.infraredPixels = 
+                new byte[infraredFrameDescription.Width * infraredFrameDescription.Height * BytesPerPixel];
+            this.bitmap = new WriteableBitmap(
+                infraredFrameDescription.Width, 
+                infraredFrameDescription.Height);
+            break;
+
+        case DisplayFrameType.Color:
+            //...
+        case DisplayFrameType.Depth:
+            //...
+        case DisplayFrameType.BodyMask:
+            //...
+        case DisplayFrameType.BodyJoints:
+            //...
+        case DisplayFrameType.BackgroundRemoved:
+            //...
+        case DisplayFrameType.FaceOnColor:
+            //...
+        <hi>case DisplayFrameType.FaceOnInfrared:</hi>
+            <hi>infraredFrameDescription = </hi>
+                <hi>this.kinectSensor.InfraredFrameSource.FrameDescription;</hi>
+            <hi>this.CurrentFrameDescription = </hi>
+                <hi>infraredFrameDescription;</hi>
+            <hi>// allocate space to put the pixels being </hi>
+            <hi>// received and converted</hi>
+            <hi>this.infraredFrameData = </hi>
+                <hi>new ushort[infraredFrameDescription.Width * </hi>
+			<hi>infraredFrameDescription.Height];</hi>
+            <hi>this.infraredPixels = </hi>
+                <hi>new byte[infraredFrameDescription.Width * </hi>
+			<hi>infraredFrameDescription.Height * </hi>
+                <hi> BytesPerPixel];</hi>
+            <hi>this.bitmap = new WriteableBitmap(</hi>
+                <hi>infraredFrameDescription.Width, </hi>
+			<hi>infraredFrameDescription.Height);</hi>
+            <hi>this.FacePointsCanvas.Width = </hi>
+                <hi>infraredFrameDescription.Width;</hi>
+            <hi>this.FacePointsCanvas.Height = </hi>
+                <hi>infraredFrameDescription.Height;</hi>
+            <hi>break;</hi>
+
+        default:
+            break;
+    }
+}
+</pre>
+  <li><p>
+In the Reader_MultiSourceFrameArrived() handler, add a new case for the new DisplayFrameType.FaceOnInfrared. 
+<br>
+In this case, you can draw the InfraredFrame as usual, then you'll make a new method to handle the face.
+<pre>
+private void Reader_MultiSourceFrameArrived(MultiSourceFrameReader sender, MultiSourceFrameArrivedEventArgs e)
+{
+    //...
+    switch (CurrentDisplayFrameType)
+    {
+        case DisplayFrameType.Infrared:
+            //...
+        case DisplayFrameType.Color:
+            //...
+        case DisplayFrameType.Depth:
+            //...
+        case DisplayFrameType.BodyMask:
+            //...
+        case DisplayFrameType.BodyJoints:
+            //...
+        case DisplayFrameType.BackgroundRemoved:
+            //...
+        case DisplayFrameType.FaceOnColor:
+            //...
+        <hi>case DisplayFrameType.FaceOnInfrared:</hi>
+            <hi>using (infraredFrame = </hi>
+                <hi>multiSourceFrame.InfraredFrameReference.AcquireFrame())</hi>
+            <hi>{</hi>
+                <hi>ShowInfraredFrame(infraredFrame);</hi>
+                <hi>DrawFaceOnInfrared();</hi>
+            <hi>}</hi>
+            <hi>break;</hi>
+        default:
+            break;
+    }
+}
+</pre>
+<li><p>
+Add the new DrawFaceOnInfrared() method with all the other ShowXXX methods. 
+<br>
+This method calls faceManager.GetLatestFaceFrameResults() and retrieves and array of face frame results to use. There are as many elements in the array as possible bodies in a scene, so a maximum of six.
+<br>
+Then iterate through the results, extract the points from the FaceFrameResults, find out if the eye is blinking or not, and as a result, position the corresponding asset on the canvas at the right position.
+<pre>
+<hi>private void DrawFaceOnInfrared()</hi>
+<hi>{</hi>
+    <hi>FacePointsCanvas.Children.Clear();</hi>
+    <hi>FaceFrameResult[] results = faceManager.GetLatestFaceFrameResults();</hi>
+    <hi>for (int i = 0; i &lt results.Count(); i++ )</hi>
+    <hi>{</hi>
+        <hi>if (results[i] != null)</hi>
+        <hi>{</hi>
+            <hi>Point rightEyePoint = </hi>
+                <hi>results[i].FacePointsInInfraredSpace[</hi>
+                    <hi>FacePointType.EyeRight];</hi>
+            <hi>Point leftEyePoint = results[i].FacePointsInInfraredSpace[</hi>
+            <hi>FacePointType.EyeLeft];</hi>
+            <hi>Point nosePoint = results[i].FacePointsInInfraredSpace[</hi>
+                <hi>FacePointType.Nose];</hi>
+            <hi>bool rightEyeIsClosed = </hi>
+                <hi>results[i].FaceProperties[FaceProperty.RightEyeClosed] </hi>
+                <hi> == DetectionResult.Yes ||</hi>
+                <hi>results[i].FaceProperties[FaceProperty.RightEyeClosed]</hi>
+                <hi> == DetectionResult.Maybe;</hi>
+            <hi>bool leftEyeIsClosed = </hi>
+                <hi>results[i].FaceProperties[FaceProperty.LeftEyeClosed]</hi>
+                    <hi> == DetectionResult.Yes ||</hi>
+                <hi>results[i].FaceProperties[FaceProperty.LeftEyeClosed]</hi>
+                <hi> == DetectionResult.Maybe;</hi>
+
+            <hi>if (leftEyeIsClosed)</hi>
+            <hi>{</hi>
+                <hi>Canvas.SetLeft(catEyeLeftClosed[i], </hi>
+                  <hi>leftEyePoint.X - (catEyeLeftClosed[i].Width / 2));</hi>
+                <hi>Canvas.SetTop(catEyeLeftClosed[i], </hi>
+                  <hi>leftEyePoint.Y - (catEyeLeftClosed[i].Height / 2));</hi>
+                <hi>this.FacePointsCanvas.Children.Add(</hi>
+                    <hi>catEyeLeftClosed[i]);</hi>
+            <hi>}</hi>
+            <hi>else</hi>
+            <hi>{</hi>
+                <hi>Canvas.SetLeft(catEyeLeftOpen[i], </hi>
+                    <hi>leftEyePoint.X - (catEyeLeftOpen[i].Width / 2));</hi>
+                <hi>Canvas.SetTop(catEyeLeftOpen[i], </hi>
+                    <hi>leftEyePoint.Y - (catEyeLeftOpen[i].Height / 2));</hi>
+                <hi>this.FacePointsCanvas.Children.Add(</hi>
+                    <hi>catEyeLeftOpen[i]);</hi>
+            <hi>}</hi>
+
+            <hi>if (rightEyeIsClosed)</hi>
+            <hi>{</hi>
+                C<hi>anvas.SetLeft(catEyeRightClosed[i], rightEyePoint.X - </hi>
+                    <hi>(catEyeRightClosed[i].Width / 2));</hi>
+                <hi>Canvas.SetTop(catEyeRightClosed[i], rightEyePoint.Y -</hi>
+                    <hi> (catEyeRightClosed[i].Height / 2));</hi>
+                <hi>this.FacePointsCanvas.Children.Add(</hi>
+                    <hi>catEyeRightClosed[i]);</hi>
+            <hi>}</hi>
+            <hi>else</hi>
+            <hi>{</hi>
+                <hi>Canvas.SetLeft(catEyeRightOpen[i], </hi>
+                    <hi>rightEyePoint.X - (catEyeRightOpen[i].Width / 2));</hi>
+                <hi>Canvas.SetTop(catEyeRightOpen[i], </hi>
+                    <hi>rightEyePoint.Y - (catEyeRightOpen[i].Height / 2));</hi>
+                <hi>this.FacePointsCanvas.Children.Add(</hi>
+                    <hi>catEyeRightOpen[i]);</hi>
+            <hi>}</hi>
+
+            <hi>Canvas.SetLeft(catNose[i], </hi>
+                <hi>nosePoint.X - (catNose[i].Width / 2));</hi>
+            <hi>Canvas.SetTop(catNose[i], nosePoint.Y);</hi>
+            <hi>this.FacePointsCanvas.Children.Add(catNose[i]);</hi>
+        <hi>}</hi>
+    <hi>}</hi>
+<hi>}</hi>
+</pre>
+<li><p>
+Next add a button to change the current <strong>DisplayFrameType</strong> to the new <strong>FaceOnInfrared</strong> type. Open the <strong>MainPage.xaml</strong> and add this new button:
+<pre>
+<hi>&ltButton Style="{StaticResource FrameSelectorButtonStyle}"{</hi>
+        <hi>Click="InfraredFaceButton_Click" x:Name="InfraredFaceButton"&gt</hi> 
+		<hi>SetupCurrentDisplay(DisplayFrameType.FaceOnColor);</hi>
+    <hi>&ltTextBlock Text="Infrared Face" TextWrapping="Wrap" /&gt}</hi>
+<hi>&lt/Button&gt</hi>
+</pre>
+<li><p>
+Open <strong>MainPage.xaml.cs</strong> and in the MainPage class add a handler method for the button click event.
+<pre>
+<hi>private void InfraredFaceButton_Click(object sender, RoutedEventArgs e)</hi>
+<hi>{</hi>
+   <hi>SetupCurrentDisplay(DisplayFrameType.FaceOnInfrared);</hi>
+<hi>}</hi>
+</pre>
+<li><p>
+Build and Run the application. Click the InfraredFace button and make sure your whole body is in the frame. You should see the cat eyes and nose are positioned appropriately at the recognised face points. Try blinking and the cat eyes blink!
+<br>
+<img style="width: 100%;" alt="Cat Face Fullscreen Image" src="images/lab08img05.jpg">
+<br>
+Try using other images, or a whole face!
+</ol>
+<h2>
+<a id="summary" class="anchor" href="#summary" aria-hidden="true"><span class="octicon octicon-link"></span></a>Summary</h2>
+<p>This lab explained how to use the KinectFaceStore library to access the face tracking available in Kinect. All the code to retrieve the face tracking is documented in the samples within the Kinect 2 SDK. This library simplifies the accessing of the face frame for you.<br><br>
+
+This control can also be placed as a overlay on a canvas on top of anything, try combining the face tracking to work with the Background Removal frame or the Body Skeleton frame.<br><br>
+The next lab will begin from the code completed in this lab code.</p>
+	<li class="button">
+	<a class="buttons tag" href="https://github.com/Kinect/Tutorial/archive/lab08.zip">This Lab Code</a> 
+	</li>
+    <li class="button">
+	<a class="buttons feedback" href="https://github.com/Kinect/Tutorial/issues/">View Issues</a> </li>
+    <li class="button">
+	<a class="buttons feedback" href="https://github.com/Kinect/Tutorial/issues/new?labels=Face_Tracking">Give Feedback</a> </li>
+<a href="#" class="back-to-top"><i class="fa fa-chevron-up"> Back to Top</i></a>
+<footer> </footer>
+</div>
+
+<!--[if !IE]><script>fixScale(document);</script><![endif]-->
+</section></html>

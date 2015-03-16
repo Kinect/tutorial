@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html>
+	<head>
+	  <meta charset="utf-8">
+	  <meta http-equiv="X-UA-Compatible" content="chrome=1">
+	  <title>Kinect 2 for Windows - Hands On Lab 10</title>
+	  <link rel="stylesheet" href="../stylesheets/styles.css">
+	  <link rel="stylesheet" href="../stylesheets/pygment_trac.css">
+	  <link rel="stylesheet" href="http://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.min.css">
+	  <script src="../javascripts/scale.fix.js"></script>
+	  <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+	<!--[if lt IE 9]>
+		<script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+		<![endif]-->
+	</head>
+<body>
+<div class="wrapper">
+      <header>
+        <h1 class="header">Kinect 2 for Windows Demo App</h1>
+        <p class="header">The Hands On Labs to complete a sample application for Windows 8.1 and the Kinect 2 for Windows</p>
+        <ul>
+		  <li ><a class="buttons home" href="../index.html">Home</a></li>
+		  <li class="download"><a class="buttons" href="https://github.com/MicrosoftKinect2/ms-Kinect2Demo-Win81/zipball/master">Complete App</a></li>
+          <li><a class="buttons github" href="https://github.com/MicrosoftKinect2/ms-Kinect2Demo-Win81">View On GitHub</a></li>
+        </ul>
+      </header>
+      <section>
+	  
+<div>  
+<nav id="labs_dropdown">
+<ul>
+  <li><a style="padding: 0px;"><h3 style="color:#FFF; padding: 10px;">Lab 10 - Hand Cursor Interactions<i style="float:right; font-size: 16px; padding-top: 0.5%;" class="fa fa-chevron-down"></i></h3></a>
+    <ul>
+		<li class="download"><a href="../Lab01/index.html">1 - Project Setup</a></li>
+		<li class="download"><a href="../Lab02/index.html">2 - Infrared Data</a></li>
+		<li class="download"><a href="../Lab03/index.html">3 - Color Data</a></li>
+		<li class="download"><a href="../Lab04/index.html">4 - Depth Data</a></li>
+		<li class="download"><a href="../Lab05/index.html">5 - Body Mask</a></li>
+		<li class="download"><a href="../Lab06/index.html">6 - Body Data</a></li>
+		<li class="download"><a href="../Lab07/index.html">7 - Background Removal</a></li>
+		<li class="download"><a href="../Lab08/index.html">8 - Face Tracking</a></li>
+		<li class="download"><a href="../Lab09/index.html">9 - Face Game</a></li>
+		<li class="download"><a href="index.html">10 - Hand Cursor</a></li>
+		<li class="download"><a href="../Lab11/index.html">11 - Kinect Studio</a></li>
+		<li class="download"><a href="../Lab12/index.html">12 - Gesture Builder</a></li>
+		<li class="download"><a href="../Lab13/index.html">13 - Bing Speech</a></li>
+		<li class="download"><a href="../Lab14/index.html">14 - Tracking Strategies</a></li>
+	</ul>
+</ul>
+</div>
+
+<h1><a id="kinect-2-hands-on-labs" class="anchor" href="#kinect-2-hands-on-labs" aria-hidden="true"><span class="octicon octicon-link"></span></a>Kinect 2 Hands On Labs</h1>
+<h2>
+<img style="width: 100%;" alt="FullScreen Image" src="images/lab10img04.jpg">
+<a id="lab-9-cursor" class="anchor" href="#lab-9-cursor" aria-hidden="true"><span class="octicon octicon-link"></span></a>Lab 10: Hand Cursor Interactions</h2>
+<p><strong>Estimated Time to Complete</strong>: 40min</p>
+<p>This lab is part of a series of hands on labs which teach you how to create a Windows 8.1 Store Application using almost every available feature of the Kinect 2. This is the tenth lab in the series, and it
+teaches you how to use the Kinect 2 to use the active users hand to represent a cursor within the application. This hand cursor has simliar actions to a mouse.</p>
+<p>This lab will explain the following:
+<ol>
+<li>How to add references to the Microsoft.Kinect.Xaml.Controls and its dependency Microsoft.Kinect.Input.Toolkit libraries.
+<li>How to apply the KinectRegion over the entire application and use the hand cursor.
+<li>How to make the Display full screen.
+<li>How to design buttons specifically for the hand cursor.
+</ol></p>
+
+<h1>
+<a id="exercise-1---using-the-kinect-input-library" class="anchor" href="#exercise-1---using-the-kinect-input-library" aria-hidden="true"><span class="octicon octicon-link"></span></a>Exercise 1 - Using The Kinect Input Library</h1>
+<p>The app is going to utilize a new control called the <strong>KinectRegion</strong>. The <strong>KinectRegion</strong> control sits above the application interface and shows a <strong>cursor</strong> simulating the users hand. <strong>All presses from the cursor are registered as mouse events</strong> within the application, this means that no buttons need to change for the Kinect input to work. 
+<br><br>
+When the input changes for an application it's important to adapt the design also. The user may be standing up when they use the kinect, and as they will be further from the screen, you will make all the Display Frames full screen when they are first active.
+<br>
+<br>
+This lab, and all subsequent labs in this series, are built using C# and
+assume you have a fundamental knowledge of the C# language.
+The screenshots here are from <strong>Visual Studio Community Edition</strong>.</p>
+
+
+<ol>
+<li><p>
+<p>To use the <strong>Hand cursor</strong>, you must add references to two Microsoft Extension Libraries for Kinect input:
+<ul>
+<li>Microsoft.Kinect.Xaml.Controls
+<li>Microsoft.Kinect.Input.Toolkit
+</ul>
+<strong>Right click</strong> the Kinect2Sample References filter in the <strong>Solution Explorer</strong> and select <strong>Add Reference...</strong>
+<br>
+Click <strong>Extensions</strong> on the left and select the <strong>Microsoft.Kinect.Xaml.Controls</strong> and <strong>Microsoft.Kinect.Input.Toolkit</strong> libraries. Then click <strong>OK</strong>.
+<br>
+<img style="width: 100%;" alt="Add Reference Image" src="images/lab10img01.jpg">
+
+<li><p>The content of the app is in a <strong>layer within the KinectRegion</strong>. Above the KinectRegion is a layer which <strong>renders the hand cursor</strong>, as well as a <strong>view of the depth stream</strong>, highlighting the active user.
+To set this up you need a new style for the KinectRegion object, which will be in a new Resource Dictionary:
+<ul>
+<li>Make a <strong>new xaml</strong> file now within the Kinect2Sample Project. Right click the project, then select <strong>Add</strong>, then <strong>New Item...</strong>
+<li>Select the <strong>Resource Dictionary</strong> and name it <strong>KinectRegionStyles.xaml</strong>. 
+<br>
+<img style="width: 100%;" alt="New ResourceDictionary Image" src="images/lab10img02.jpg">
+<li> Click <strong>Add</strong>.
+</ul>
+
+<li><p>Within this <strong>Resource Dictionary</strong> you're going to create a new style for a 
+<strong>KinectRegion</strong> which will provide the <strong>CursorRenderingLayer</strong> and the <strong>KinectUserViewer</strong> 
+on top of the content. Then when you use the KinectRegion, it will use this style. Copy the new highlighted text into 
+the <strong>KinectRegionStyles Resource Dictionary</strong>:
+<pre>
+&ltResourceDictionary
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:Kinect2Sample"
+    <hi>xmlns:k="using:Microsoft.Kinect.Xaml.Controls"&gt</hi>
+
+    <hi>&ltExponentialEase x:Key="VisualStateEasingFunction" Exponent="7" /&gt</hi>
+
+    <hi>&ltStyle TargetType="k:KinectRegion"&gt</hi>
+        <hi>&ltSetter Property="Template"&gt</hi>
+            <hi>&ltSetter.Value&gt</hi>
+                <hi>&ltControlTemplate TargetType="k:KinectRegion"&gt</hi>
+                    <hi>&ltBorder</hi>
+                        <hi>Background="{TemplateBinding Background}"</hi>
+                        <hi>BorderBrush="{TemplateBinding BorderBrush}"</hi>
+                        <hi>BorderThickness=</hi>
+                            <hi>"{TemplateBinding BorderThickness}"</hi>
+                        <hi>&gt</hi>
+                        <hi>&ltGrid&gt</hi>
+                            <hi>&ltContentPresenter x:Name="contentHolder" /&gt</hi>
+
+                            <hi>&lt!-- only change from default KinectRegion</hi>
+                            <hi> style, is the addition of a user viewer </hi>
+                            <hi>under cursor layer,</hi>
+                                 <hi>but above content --&gt</hi>
+                            <hi>&ltk:KinectUserViewer Height="100" </hi>
+                                <hi>Width="121"</hi>
+                                <hi>HorizontalAlignment="Center"</hi>
+                                <hi>VerticalAlignment="Top" /&gt</hi>
+
+                            <hi>&ltCanvas x:Name="cursorRenderingLayer" </hi>
+                                <hi>Background="{x:Null}"/&gt</hi>
+                        <hi>&lt/Grid&gt</hi>
+                    <hi>&lt/Border&gt</hi>
+                <hi>&lt/ControlTemplate&gt</hi>
+            <hi>&lt/Setter.Value&gt</hi>
+        <hi>&lt/Setter&gt</hi>
+    <hi>&lt/Style&gt</hi>
+
+&lt/ResourceDictionary&gt
+</pre>
+
+<li><p>Open the <strong>App.xaml</strong> and include this <strong>ResourceDictionary</strong> as a <strong>MergedDictionary</strong> for the application to use.
+
+<pre>
+&ltApplication
+    x:Class="Kinect2Sample.App"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:Kinect2Sample"&gt
+    <hi>&ltApplication.Resources&gt</hi>
+        <hi>&ltResourceDictionary&gt</hi>
+            <hi>&ltResourceDictionary.MergedDictionaries&gt</hi>
+               <hi>&lt!-- </hi>
+                    <hi>Styles that define look and feel of Kinect controls  </hi>
+                <hi>--&gt</hi>
+                <hi>&ltResourceDictionary Source="KinectRegionStyles.xaml"/&gt</hi>
+            <hi>&lt/ResourceDictionary.MergedDictionaries&gt</hi>
+        <hi>&lt/ResourceDictionary&gt</hi>
+    <hi>&lt/Application.Resources&gt</hi>
+&lt/Application&gt
+</pre>
+
+<li><p>Open the App code behind file (<strong>App.xaml.cs</strong>) and add a new <strong>public KinectRegion Property</strong>. In the <strong>OnLaunched</strong> handler method where the root content of the Window.Current is set: change this to <strong>set the content to a new KinectRegion. Set the rootFrame as the content of the KinectRegion.</strong>
+
+<pre>
+<hi>using Microsoft.Kinect.Xaml.Controls;</hi>
+//...
+namespace Kinect2Sample
+{
+    sealed partial class App : Application
+    {
+        <hi>///&ltsummary&gt</hi>
+        <hi>/// Gets the app level KinectRegion element, </hi>
+        <hi>///which is created in App.xaml.cs</hi>
+        <hi>///&lt/summary&gt</hi>
+        <hi>public KinectRegion KinectRegion { get; private set; }</hi>
+        //...
+
+        protected override void OnLaunched(LaunchActivatedEventArgs e)
+        {
+
+#if DEBUG
+            if (System.Diagnostics.Debugger.IsAttached)
+            {
+                this.DebugSettings.EnableFrameRateCounter = true;
+            }
+#endif
+
+            Frame rootFrame = Window.Current.Content as Frame;
+
+            // Do not repeat app initialization when the Window already 
+            // has content, just ensure that the window is active
+            if (rootFrame == null)
+            {
+                // Create a Frame to act as the navigation context 
+                // and navigate to the first page
+                rootFrame = new Frame();
+                // Set the default language
+                rootFrame.Language = 
+                 Windows.Globalization.ApplicationLanguages.Languages[0];
+
+                rootFrame.NavigationFailed += OnNavigationFailed;
+
+                if (e.PreviousExecutionState == 
+                        ApplicationExecutionState.Terminated)
+                {
+                    //TODO: Load state from previously 
+                    // suspended application
+                }
+
+                <hi>// Create a CursorLayer that listens to</hi>
+                <hi>// KinectPointerPoints/GestureRecognizers</hi>
+                <hi>// and works with the affected controls.</hi>
+                <hi>KinectRegion = new KinectRegion();</hi>
+                <hi>KinectRegion.Content = rootFrame;</hi>
+
+                <hi>// Place the frame in the current Window,</hi>
+                <hi>// with a Kinect cursor layer + user viewer control</hi>
+                <hi>Window.Current.Content = KinectRegion;</hi>
+            }
+
+            if (rootFrame.Content == null)
+            {
+                // When the navigation stack isn't restored 
+                // navigate to the first page,
+                // configuring the new page by passing required 
+                // information as a navigation
+                // parameter
+                rootFrame.Navigate(typeof(MainPage), e.Arguments);
+            }
+            // Ensure the current window is active
+            Window.Current.Activate();
+        }
+		
+</pre>
+
+<li><p><strong>Build and Run</strong> the application. Hold your hand up and keep it visible for a second or two, the Hand cursor will become visible and your silhouette will highlight green at the top of the screen.
+<br><br>
+You can move the hand cursor around and push your hand forward to press on an active control, like the buttons at the bottom of the screen. 
+<img style="width: 100%;" alt="Hand Cursor Image" src="images/lab10img03.jpg">
+
+Given that it's now possible to use the app while standing and away from the screen, it would be nice to have the selected feed become full screen by default so it's easier to see from a distance.
+
+<li><p>You want to add functionality so that <strong>when you click a button the feed becomes full screen, then if you click a back button, it changes to the usual size, revealing the other option buttons again.</strong>
+<br><br>
+Using the Kinect hand cursor is simliar using the finger to touch in a touch interface. The buttons must be bigger, or rather, their active click field must be bigger because the Kinect cursor is massive compared to the mouse or touch. <strong>Open the KinectRegionStyles.xaml Resource Dictionary and add the following button style:</strong>
+<pre>
+<hi>&lt!-- 
+BackButtons have a small visible area.
+The changes in this style (change margin to padding, 
+set kinectpressinset, add border to template to support padding) 
+enable a larger hit test region Open the MainPage.xaml.cs and in the
+SetupCurrentDisplay, you can change the method to take an isFullScreen
+parameter and use this to effect the grid layout of the page.
+for HandPointers
+--&gt</hi>
+<hi>&ltStyle x:Key="KinectBackButtonStyle" TargetType="Button"&gt</hi>
+    <hi>&ltSetter Property="MinWidth" Value="48"/&gt</hi>
+    <hi>&ltSetter Property="MinHeight" Value="48"/&gt</hi>
+    <hi>&ltSetter Property="Padding" Value="36,56,36,36" /&gt</hi>
+    <hi>&ltSetter Property="k:KinectRegion.KinectPressInset" </hi>
+        <hi>Value="36,56,36,36" /&gt</hi>
+    <hi>&ltSetter Property="VerticalAlignment" Value="Top"/&gt</hi>
+    <hi>&ltSetter Property="FontFamily" Value="Segoe UI Symbol"/&gt</hi>
+    <hi>&ltSetter Property="FontWeight" Value="Normal"/&gt</hi>
+    <hi>&ltSetter Property="FontSize" Value="56"/&gt</hi>
+    <hi>&ltSetter Property="AutomationProperties.AutomationId" </hi>
+        <hi>Value="BackButton"/&gt</hi>
+    <hi>&ltSetter Property="AutomationProperties.Name" Value="Back"/&gt</hi>
+    <hi>&ltSetter Property="AutomationProperties.ItemType" </hi>
+        <hi>Value="Navigation Button"/&gt</hi>
+    <hi>&ltSetter Property="Template"&gt</hi>
+        <hi>&ltSetter.Value&gt</hi>
+            <hi>&ltControlTemplate TargetType="Button"&gt</hi>
+                <hi>&ltGrid x:Name="RootGrid"&gt</hi>
+                    <hi>&ltBorder Padding="{TemplateBinding Padding}" </hi>
+                        <hi>Background="Transparent"&gt</hi>
+                        <hi>&ltGrid Margin="-1,-16,0,0"&gt</hi>
+                          <hi>&ltTextBlock x:Name="BackgroundGlyph" </hi>
+                          <hi>Text="&#xE0A8;" Foreground=</hi>
+                          <hi>"{StaticResource </hi>
+                            <hi>BackButtonBackgroundThemeBrush}"/&gt</hi>
+                          <hi>&ltTextBlock x:Name="NormalGlyph" </hi>
+                          <hi>Text="&#xE071;" Foreground=</hi>
+                          <hi>"{StaticResource </hi>
+                          <hi>BackButtonForegroundThemeBrush}"/&gt</hi>
+                            <hi>&ltTextBlock x:Name="ArrowGlyph" </hi>
+                            <hi>Text="&#xE0A6;" Foreground=</hi>
+                            <hi>"{StaticResource </hi>
+                              <hi>BackButtonPressedForegroundThemeBrush}"</hi>
+                            <hi> Opacity="0"/&gt</hi>
+                        <hi>&lt/Grid&gt</hi>
+                    <hi>&lt/Border&gt</hi>
+                    <hi>&ltRectangle</hi>
+                        <hi>x:Name="FocusVisualWhite"</hi>
+                        <hi>IsHitTestVisible="False"</hi>
+                        <hi>Stroke="{StaticResource </hi>
+                         <hi>FocusVisualWhiteStrokeThemeBrush}"</hi>
+                        <hi>StrokeEndLineCap="Square"</hi>
+                        <hi>StrokeDashArray="1,1"</hi>
+                        <hi>Opacity="0"</hi>
+                        <hi>StrokeDashOffset="1.5"/&gt</hi>
+                    <hi>&ltRectangle</hi>
+                        <hi>x:Name="FocusVisualBlack"</hi>
+                        <hi>IsHitTestVisible="False"</hi>
+                        <hi>Stroke="{StaticResource </hi>
+                         <hi>FocusVisualBlackStrokeThemeBrush}"</hi>
+                        <hi>StrokeEndLineCap="Square"</hi>
+                        <hi>StrokeDashArray="1,1"</hi>
+                        <hi>Opacity="0"</hi>
+                        <hi>StrokeDashOffset="0.5"/&gt</hi>
+
+                    <hi>&ltVisualStateManager.VisualStateGroups&gt</hi>
+                        <hi>&ltVisualStateGroup x:Name="CommonStates"&gt</hi>
+                            <hi>&ltVisualState x:Name="Normal" /&gt</hi>
+                            <hi>&ltVisualState x:Name="PointerOver"&gt</hi>
+                                <hi>&ltStoryboard&gt</hi>
+                                    <hi>&ltObjectAnimationUsingKeyFrames </hi>
+                                    <hi>Storyboard.TargetName=</hi>
+                                        <hi>"BackgroundGlyph"</hi> 
+                                    <hi>Storyboard.TargetProperty=</hi>
+                                        <hi>"Foreground"&gt</hi>
+                                        <hi>&ltDiscreteObjectKeyFrame </hi>
+                                        <hi>KeyTime="0" </hi>
+                                        <hi>Value="{StaticResource</hi>
+                    <hi>BackButtonPointerOverBackgroundThemeBrush}"/&gt</hi>
+                                    <hi>&lt/ObjectAnimationUsingKeyFrames&gt</hi>
+                                    <hi>&ltObjectAnimationUsingKeyFrames </hi>
+                                    <hi>Storyboard.TargetName="NormalGlyph"</hi>
+                                    <hi> Storyboard.TargetProperty=</hi>
+                                    <hi>"Foreground"&gt</hi>
+                                        <hi>&ltDiscreteObjectKeyFrame </hi>
+                                        <hi>KeyTime="0" Value=</hi>
+                                        <hi>"{StaticResource </hi>
+                    <hi>BackButtonPointerOverForegroundThemeBrush}"/&gt</hi>
+                                    <hi>&lt/ObjectAnimationUsingKeyFrames&gt</hi>
+                                <hi>&lt/Storyboard&gt</hi>
+                            <hi>&lt/VisualState&gt</hi>
+                            <hi>&ltVisualState x:Name="Pressed"&gt</hi>
+                                <hi>&ltStoryboard&gt</hi>
+                                    <hi>&ltObjectAnimationUsingKeyFrames</hi>
+                                    <hi> Storyboard.TargetName=</hi>
+                                        <hi>"BackgroundGlyph"</hi>
+                                     <hi>Storyboard.TargetProperty=</hi>
+                                        <hi>"Foreground"&gt</hi>
+                                        <hi>&ltDiscreteObjectKeyFrame </hi>
+                                        <hi>KeyTime="0" Value=</hi>
+                                        <hi>"{StaticResource </hi>
+                        <hi>BackButtonForegroundThemeBrush}"/&gt</hi>
+                                    <hi>&lt/ObjectAnimationUsingKeyFrames&gt</hi>
+                                    <hi>&ltDoubleAnimation</hi>
+                                        <hi>Storyboard.TargetName=</hi>
+                                            <hi>"ArrowGlyph"</hi>
+                                        <hi>Storyboard.TargetProperty=</hi>
+                                            <hi>"Opacity"</hi>
+                                        <hi>To="1"</hi>
+                                        <hi>Duration="0"/&gt</hi>
+                                    <hi>&ltDoubleAnimation</hi>
+                                        <hi>Storyboard.TargetName=</hi>
+                                        <hi>"NormalGlyph"</hi>
+                                        <hi>Storyboard.TargetProperty=</hi>
+                                        <hi>"Opacity"</hi>
+                                        <hi>To="0"</hi>
+                                        <hi>Duration="0"/&gt</hi>
+                                <hi>&lt/Storyboard&gt</hi>
+                            <hi>&lt/VisualState&gt</hi>
+                            <hi>&ltVisualState x:Name="Disabled"&gt</hi>
+                                <hi>&ltStoryboard&gt</hi>
+                                    <hi>&ltObjectAnimationUsingKeyFrames</hi>
+                                    <hi> Storyboard.TargetName="RootGrid" </hi>
+                                    <hi>Storyboard.TargetProperty=</hi>
+                                        <hi>"Visibility"&gt</hi>
+                                        <hi>&ltDiscreteObjectKeyFrame </hi>
+                                        <hi>KeyTime="0" </hi>
+                                        <hi>Value="Collapsed"/&gt</hi>
+                                    <hi>&lt/ObjectAnimationUsingKeyFrames&gt</hi>
+                                <hi>&lt/Storyboard&gt</hi>
+                            <hi>&lt/VisualState&gt</hi>
+                        <hi>&lt/VisualStateGroup&gt</hi>
+                        <hi>&ltVisualStateGroup x:Name="FocusStates"&gt</hi>
+                            <hi>&ltVisualState x:Name="Focused"&gt</hi>
+                                <hi>&ltStoryboard&gt</hi>
+                                    <hi>&ltDoubleAnimation</hi>
+                                        <hi>Storyboard.TargetName=</hi>
+                                        <hi>"FocusVisualWhite"</hi>
+                                        <hi>Storyboard.TargetProperty=</hi>
+                                        <hi>"Opacity"</hi>
+                                        <hi>To="1"</hi>
+                                        <hi>Duration="0"/&gt</hi>
+                                    <hi>&ltDoubleAnimation</hi>
+                                        <hi>Storyboard.TargetName=</hi>
+                                        <hi>"FocusVisualBlack"</hi>
+                                        <hi>Storyboard.TargetProperty=</hi>
+                                        <hi>"Opacity"</hi>
+                                        <hi>To="1"</hi>
+                                        <hi>Duration="0"/&gt</hi>
+                                <hi>&lt/Storyboard&gt</hi>
+                            <hi>&lt/VisualState&gt</hi>
+                            <hi>&ltVisualState x:Name="Unfocused" /&gt</hi>
+                            <hi>&ltVisualState x:Name="PointerFocused" /&gt</hi>
+                        <hi>&lt/VisualStateGroup&gt</hi>
+                    <hi>&lt/VisualStateManager.VisualStateGroups&gt</hi>
+                <hi>&lt/Grid&gt</hi>
+            <hi>&lt/ControlTemplate&gt</hi>
+        <hi>&lt/Setter.Value&gt</hi>
+    <hi>&lt/Setter&gt</hi>
+<hi>&lt/Style&gt</hi>
+</pre>
+This button is much easier to hit with the Kinect cursor, you can use it when the feed is fullscreen.
+<br><br>
+
+<li><p>Open the <strong>MainPage.xaml</strong> and name the root grid so you can change the row sizes later, then add a <strong>regular button at the bottom</strong> of the xaml (which will place it above everything else) which applies the new <strong>KinectBackButtonStyle</strong>. 
+<pre>
+&ltGrid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}" &gt
+    <hi>&ltGrid x:Name="RootGrid" Margin="30"&gt</hi>
+        &ltGrid.RowDefinitions&gt
+            &ltRowDefinition Height="70"/&gt
+            &ltRowDefinition Height="*"/&gt
+            &ltRowDefinition Height="100"/&gt
+        &lt/Grid.RowDefinitions&gt
+        &lt!--...--&gt
+        &ltScrollViewer Grid.Row="2" 
+            ScrollViewer.HorizontalScrollBarVisibility="Auto" 
+            ScrollViewer.VerticalScrollBarVisibility="Auto"&gt
+            &lt!--...--&gt
+        &lt/ScrollViewer&gt
+        <hi>&ltButton x:Name="FullScreenBackButton" </hi>
+            <hi>Style="{StaticResource KinectBackButtonStyle}" </hi>
+                <hi>Grid.Row="1"</hi>
+                <hi>HorizontalAlignment="Left"</hi>
+                <hi>VerticalAlignment="Top"</hi>
+                <hi>Click="FullScreenBackButton_Click"</hi>
+                <hi>Visibility="Collapsed"/&gt</hi>
+    &lt/Grid&gt
+&lt/Grid&gt
+</pre>
+
+<li><p>Open the <strong>MainPage.xaml.cs</strong> and in the <strong>SetupCurrentDisplay</strong> method, change the method to take an isFullScreen parameter and use this to effect the grid layout of the page. The <strong>isFullScreen</strong> parameter will <strong>default to true</strong> so many of the button click events do not need to change.
+
+<pre>
+private void SetupCurrentDisplay(DisplayFrameType newDisplayFrameType
+        <hi>, bool isFullScreen = true</hi>)
+{
+    <hi>if (isFullScreen)</hi>
+    <hi>{</hi>
+        <hi>RootGrid.RowDefinitions.Clear();</hi>
+        <hi>RootGrid.RowDefinitions.Add(new RowDefinition()</hi>
+        <hi> { Height = new GridLength(0)});</hi>
+        <hi>RootGrid.RowDefinitions.Add(new RowDefinition()</hi>
+        <hi> { Height = new GridLength(1, GridUnitType.Star) });</hi>
+        <hi>RootGrid.RowDefinitions.Add(new RowDefinition()</hi>
+        <hi> { Height = new GridLength(0) });</hi>
+        <hi>FullScreenBackButton.Visibility = </hi>
+            <hi>Windows.UI.Xaml.Visibility.Visible;</hi>
+    <hi>}</hi>
+    <hi>else</hi>
+    <hi>{</hi>
+        <hi>RootGrid.RowDefinitions.Clear();</hi>
+        <hi>RootGrid.RowDefinitions.Add(new RowDefinition()</hi>
+        <hi> { Height = new GridLength(70) });</hi>
+        <hi>RootGrid.RowDefinitions.Add(new RowDefinition()</hi>
+        <hi> { Height = new GridLength(1, GridUnitType.Star) });</hi>
+        <hi>RootGrid.RowDefinitions.Add(new RowDefinition()</hi>
+        <hi> { Height = new GridLength(100) });</hi>
+        <hi>FullScreenBackButton.Visibility =</hi>
+        <hi> Windows.UI.Xaml.Visibility.Collapsed;</hi>
+    <hi>}</hi>
+
+    CurrentDisplayFrameType = newDisplayFrameType;
+    // Frames used by more than one type are declared outside the switch
+
+</pre>
+<li><p>
+The app should not render full screen when it first runs, so in the <strong>MainPage_Loaded</strong> method, change its use of <strong>SetupCurrentDisplay</strong>:
+
+<pre>
+void MainPage_Loaded(object sender, RoutedEventArgs e)
+{
+    SetupCurrentDisplay(DEFAULT_DISPLAYFRAMETYPE<hi>, false</hi>);
+
+    SetupCatAssets();
+}
+</pre>
+
+<li><p>Finally add the <strong>FullScreenButton_Click</strong> handler method to the bottom of the MainPage class, which will setup the same display, but not render full screen:
+
+<pre>
+<hi>private void FullScreenBackButton_Click(object sender, </hi>
+        <hi>RoutedEventArgs e)</hi>
+<hi>{</hi>
+    <hi>SetupCurrentDisplay(CurrentDisplayFrameType, false);</hi>
+<hi>}</hi>
+</pre>
+
+<li><p><strong>Build and Run</strong> the application, and you can make the feeds full screen, and return from full screen with the back button.
+<img style="width: 100%;" alt="FullScreen Image" src="images/lab10img04.jpg">
+
+</ol>
+<h2>
+<a id="summary" class="anchor" href="#summary" aria-hidden="true"><span class="octicon octicon-link"></span></a>Summary</h2>
+<p>This lab explained how to use the Kinect Input library to show a Hand Cursor overlaid on an application. As you can see, the use of a hand cursor is extremely smooth and accurate. There are a few more gestures for the hand to replace the scroll feature of the mouse, if you grip your hand on a scrollable field then you can navigate it by moving your hand, like the scrollbar on a mouse but in any direction.
+
+<br><br> The Kinect 2 hand cursor is an ideal replacement for touch when the user is detached from the screen, for example behind glass in a store front. It is also a cheaper solution than many expensive and inaccurate touch screens for large panels.<br><br>
+
+
+The next lab will begin from the code completed in this lab code.</p>
+	<li class="button">
+	<a class="buttons tag" href="https://github.com/Kinect/Tutorial/archive/lab10.zip">This Lab Code</a> 
+	</li>
+    <li class="button">
+	<a class="buttons feedback" href="https://github.com/Kinect/Tutorial/issues/">View Issues</a> </li>
+    <li class="button">
+	<a class="buttons feedback" href="https://github.com/Kinect/Tutorial/issues/new?labels=Hand_Cursor">Give Feedback</a> </li>
+<a href="#" class="back-to-top"><i class="fa fa-chevron-up"> Back to Top</i></a>
+<footer> </footer>
+</div>
+
+<!--[if !IE]><script>fixScale(document);</script><![endif]-->
+</section></html>

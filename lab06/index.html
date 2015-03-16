@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html>
+	<head>
+	  <meta charset="utf-8">
+	  <meta http-equiv="X-UA-Compatible" content="chrome=1">
+	  <title>Kinect 2 for Windows - Hands On Lab 6</title>
+	  <link rel="stylesheet" href="../stylesheets/styles.css">
+	  <link rel="stylesheet" href="../stylesheets/pygment_trac.css">
+	  <link rel="stylesheet" href="http://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.min.css">
+	  <script src="../javascripts/scale.fix.js"></script>
+	  <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+	<!--[if lt IE 9]>
+		<script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+		<![endif]-->
+	</head>
+<body>
+<div class="wrapper">
+      <header>
+        <h1 class="header">Kinect 2 for Windows Demo App</h1>
+        <p class="header">The Hands On Labs to complete a sample application for Windows 8.1 and the Kinect 2 for Windows</p>
+        <ul>
+		  <li ><a class="buttons home" href="../index.html">Home</a></li>
+		  <li class="download"><a class="buttons" href="https://github.com/MicrosoftKinect2/ms-Kinect2Demo-Win81/zipball/master">Complete App</a></li>
+          <li><a class="buttons github" href="https://github.com/MicrosoftKinect2/ms-Kinect2Demo-Win81">View On GitHub</a></li>
+        </ul>
+      </header>
+      <section>
+	  
+<div>  
+<nav id="labs_dropdown">
+<ul>
+  <li><a style="padding: 0px;"><h3 style="color:#FFF; padding: 10px;">Lab 06 - Body Data<i style="float:right; font-size: 16px; padding-top: 0.5%;" class="fa fa-chevron-down"></i></h3></a>
+    <ul>
+		<li class="download"><a href="../Lab01/index.html">1 - Project Setup</a></li>
+		<li class="download"><a href="../Lab02/index.html">2 - Infrared Data</a></li>
+		<li class="download"><a href="../Lab03/index.html">3 - Color Data</a></li>
+		<li class="download"><a href="../Lab04/index.html">4 - Depth Data</a></li>
+		<li class="download"><a href="../Lab05/index.html">5 - Body Mask</a></li>
+		<li class="download"><a href="index.html">6 - Body Data</a></li>
+		<li class="download"><a href="../Lab07/index.html">7 - Background Removal</a></li>
+		<li class="download"><a href="../Lab08/index.html">8 - Face Tracking</a></li>
+		<li class="download"><a href="../Lab09/index.html">9 - Face Game</a></li>
+		<li class="download"><a href="../Lab10/index.html">10 - Hand Cursor</a></li>
+		<li class="download"><a href="../Lab11/index.html">11 - Kinect Studio</a></li>
+		<li class="download"><a href="../Lab12/index.html">12 - Gesture Builder</a></li>
+		<li class="download"><a href="../Lab13/index.html">13 - Bing Speech</a></li>
+		<li class="download"><a href="../Lab14/index.html">14 - Tracking Strategies</a></li>
+	</ul>
+</ul>
+</div>
+
+<h1><a id="kinect-2-hands-on-labs" class="anchor" href="#kinect-2-hands-on-labs" aria-hidden="true"><span class="octicon octicon-link"></span></a>Kinect 2 Hands On Labs</h1>
+<h2>
+<img alt="Body Data" src="images/lab06img01.png">
+<a id="lab-6-Displaying-Body-Data" class="anchor" href="#lab-6-Displaying-Body-Data" aria-hidden="true"><span class="octicon octicon-link"></span></a>Lab 6: Displaying Body Data</h2>
+<p><strong>Estimated Time to Complete</strong>: 20min</p>
+<p>This lab is part of a series of hands on labs which teach you how to create a Windows 8.1 Store Application using almost every available feature of the Kinect 2. 
+This is the sixth lab in the series, and it teaches you how to use the body feed from the Kinect to render a skeleton for each of the bodies in a scene.</p>
+<p>This lab will explain the following:
+<ul>
+<li>How to get the BodyFrame from the Kinect.
+<li>How to use to CoOrdinateMapper to map the body joint positions.
+<li>How to use a predefined class to create a skeleton of the body and draw it using simple XAML shapes.
+</ul></p>
+<p>This lab comes with a starting point code solution and a completed code
+solution of the exercises.</p>
+
+<h1>
+<a id="exercise-1---Displaying-the-Body-Data" class="anchor" href="#exercise-1---Displaying-the-Depth-Data" aria-hidden="true"><span class="octicon octicon-link"></span></a>Exercise 1 - Displaying the Body Data</h1>
+<p>This exercise will teach you how to display body data as colored joints and bones in a Kinect for Windows 2 application for Windows 8.1.
+This lab, and all subsequent labs in this series, are built using C# and assume you have a fundamental knowledge of the C# language.</p>
+<p>
+The screenshots here are from Visual Studio Pro 2013 Update 2 but Community Edition is identical.
+</p>
+<p>
+This lab builds upon the previous lab, which integrated the Body Mask through the multi-source frame reader.
+There are 2 new code files in this lab, called BodiesManager.cs and BodyInfo.cs. They are included in the completed code for this lab, and can be copied as-is.
+</p>
+<p>
+You have seen how the co-ordinate mapper can help you discern which pixels in a color image are part of a body, yet there is much more body data in the Kinect than just the BodyIndexFrame.
+The Body Frame contains all joint and orientation information about up to six known bodies in the view of the Kinect.
+Most games use this joint information to position game assets or manipulate a model using the joints of a player.
+</p>
+<p>
+There are 25 joints mapped for each body, each one has a position and orientation.
+This exercise creates bones from those joints by storing each joint as a pair and the bone is simply a starting and ending point.
+Then these bones and joints are drawn to a canvas using simple XAML ellipses and lines. This is the first exercise which does not result in rendering a bitmap and it should help you understand that a good Kinect experience does not have to show the live color feed. An application can use shapes and assets to express the same data.
+</p>
+<p>
+To draw <strong>bodies</strong> from the Kinect 2 using the <strong>MultisourceFrameReader</strong>, follow the steps below:
+</p>
+<ol>
+  <li>
+    <p>Open the existing <strong>Kinect 2 Sample</strong> solution in Visual Studio, or the copy you have from the end of the previous lab.</p>
+  </li>
+  <li>
+    <p>To begin, add the new code files to be used in this exercise: the BodiesManager.cs and the BodyInfo.cs files are located with the 
+	Kinect2Sample.csproj file in the completed project.
+	To add these files, copy them into your working directory in Windows, then <strong>Right Click</strong> the <strong>project</strong> in the Solution Explorer, 
+	select <strong>Add</strong> , then <strong>Existing</strong> <strong>Item…</strong> then 
+	select the local versions of <strong>BodyInfo.cs</strong> and <strong>BodiesManager.cs </strong>and Click the Add button.
+	<p>
+	</p>
+	The <strong>BodiesManager</strong> class is responsible for organizing and drawing all the tracked bodies in a frame. 
+	There is a lot of rendering code to render the joints in this class. This is constructed with a co-ordinate mapper to get the joints in 2D space, and a canvas on which to draw. 
+	This class also draws rectangles at the edges where a body is extending outside the cameras field of view.
+	</p>
+	<p>
+	</p>
+	<p>
+	The <strong>BodyInfo</strong> class provides storage of all the joint and bone information obtained from a body to couple the joint information with graphical information like ellipses and color.
+	</p>
+  </li>
+  <li>
+    <p>Add a new <strong>DisplayFrameType</strong> to the enum, then an instance of the BodiesManager class. Open the <strong>MainPage.xaml.cs</strong> file from  <strong>Solution Explorer</strong>.
+	Copy the following highlighted code to do this:
+	</p>
+	<pre>
+namespace Kinect2Sample
+{
+    public enum DisplayFrameType
+    {
+        Infrared,
+        Color,
+        Depth,
+        BodyMask<hi>,</hi>
+        <hi>BodyJoints</hi>
+    }
+
+    public sealed partial class MainPage : Page, INotifyPropertyChanged
+    {
+        //...
+        private MultiSourceFrameReader multiSourceFrameReader = null;
+        private CoordinateMapper coordinateMapper = null;
+        <hi>private BodiesManager bodiesManager = null;</hi>
+        //...
+        //BodyMask Frames
+        private DepthSpacePoint[] colorMappedToDepthPoints = null;
+
+        <hi>//Body Joints are drawn here</hi>
+        <hi>private Canvas drawingCanvas;</hi>
+
+        public event PropertyChangedEventHandler PropertyChanged;
+        //...
+    }
+}
+</pre>
+	<li>
+	<p>
+To use the BodyManager you must initialize a canvas on which to render in xaml. Open the MainPage.xaml.
+Under the Image (FrameDisplayImage) in the xaml add a new canvas within a view box (so it stretches to the size of the available space). To do this copy the highlighted code below:
+	</p>
+	</li>
+	<pre>&lt!--...--&gt
+&ltImage x:Name="FrameDisplayImage" Grid.Row="1" Stretch="Uniform"/&gt
+<hi>&ltViewbox Grid.Row="1" HorizontalAlignment="Center"&gt</hi>
+    <hi>&ltGrid x:Name="BodyJointsGrid" Background="Transparent" Width="512"</hi>  
+     <hi>Height="414"/&gt</hi>
+<hi>&lt/Viewbox&gt</hi>
+&lt!--...--&gt
+	</pre>
+  </li>
+  <li>
+    <p>You already have the <strong>SetupCurrentDisplay</strong> method which is called every time the current display changes, and that’s where the initialization logic for the body belongs.
+	There is a switch statement which uses the <strong>currentDisplayFrameType</strong> to determine <strong>what to initialize</strong> and the <strong>size of the bitmap</strong>. 
+This doesn’t use the bitmap, and instead you render shapes to a canvas. You also have to set the <strong>FrameDisplayImage</strong> and <strong>BodyJointsGrid</strong> to display nothing by default.
+You will then set the various render styles later. This prevents the xaml elements from rendering on top of one another. You can add a new case for the <strong>BodyJoints</strong> in this switch statement.
+To do this, copy the highlighted code below:
+</p>
+	<pre>
+private void SetupCurrentDisplay(DisplayFrameType newDisplayFrameType)
+{
+    currentDisplayFrameType = newDisplayFrameType;
+    // Frames used by more than one type are declared outside the switch
+    FrameDescription colorFrameDescription = null;
+    <hi>// reset the display methods</hi>
+    <hi>if (this.BodyJointsGrid != null)</hi>
+    <hi>{</hi>
+        <hi>this.BodyJointsGrid.Visibility = Visibility.Collapsed;</hi>
+    <hi>}</hi>
+    <hi>if (this.FrameDisplayImage != null)</hi>
+    <hi>{</hi>
+        <hi>this.FrameDisplayImage.Source = null;</hi>
+    <hi>}</hi>
+    switch (currentDisplayFrameType)
+    {
+        case DisplayFrameType.Infrared:
+            //...
+            break;
+
+        case DisplayFrameType.Color:
+          //...
+            break;
+
+        case DisplayFrameType.Depth:
+            //...
+            break;
+
+        case DisplayFrameType.BodyMask:
+            //...
+            break;
+
+        <hi>case DisplayFrameType.BodyJoints:</hi>
+            <hi>// instantiate a new Canvas</hi>
+            <hi>this.drawingCanvas = new Canvas();</hi>
+            <hi>// set the clip rectangle to prevent </hi>
+            <hi>// rendering outside the canvas</hi>
+            <hi>this.drawingCanvas.Clip = new RectangleGeometry();</hi>
+            <hi>this.drawingCanvas.Clip.Rect = new Rect(0.0, 0.0, </hi>
+                 <hi>this.BodyJointsGrid.Width, </hi>
+                 <hi>this.BodyJointsGrid.Height);</hi>
+            <hi>this.drawingCanvas.Width = this.BodyJointsGrid.Width;</hi>
+            <hi>this.drawingCanvas.Height = this.BodyJointsGrid.Height;</hi>
+            <hi>// reset the body joints grid</hi>
+            <hi>this.BodyJointsGrid.Visibility = Visibility.Visible;</hi>
+            <hi>this.BodyJointsGrid.Children.Clear();</hi>
+            <hi>// add canvas to DisplayGrid</hi>
+            <hi>this.BodyJointsGrid.Children.Add(this.drawingCanvas);</hi>
+            <hi>bodiesManager = new BodiesManager(this.coordinateMapper,</hi>
+                 <hi> this.drawingCanvas, </hi>
+                 <hi>this.kinectSensor.BodyFrameSource.BodyCount);</hi>
+            <hi>break;</hi>
+        default:
+            break;
+    }
+}
+</pre>
+<p>
+The other <strong>DisplayFrameTypes</strong> set the source of the <strong>CurrentDisplayFrame</strong> image when they render to the bitmap.
+Then set up the <strong>BodyJointGrid</strong> with the custom canvas each time the <strong>BodyJoints</strong> <strong>DispayFrameType</strong> is selected (on button press later). 
+</p>
+<p>
+Add the new <strong>FrameSourceType</strong> when the <strong>MultiSourceFrameReader</strong> is opened. In the <strong>MainPage</strong> constructor add the FrameSourceTypes.Body to the following line:
+</p>
+<pre>
+this.multiSourceFrameReader = 
+    this.kinectSensor.OpenMultiSourceFrameReader(
+        FrameSourceTypes.Infrared 
+        | FrameSourceTypes.Color 
+        | FrameSourceTypes.Depth
+        | FrameSourceTypes.BodyIndex 
+        <hi>| FrameSourceTypes.Body</hi>));
+</pre>
+ </li>
+  <li>Now the frame variables are initialized, you can setup the logic for the arrival of a frame within the <strong>Reader_MultiSourceFrameArrived</strong> method.
+ There is a switch statement here to handle the other frame types.
+The body frame is not handled with special types or unsafe code, so it can be disposed of with a regular <strong>using</strong> pattern.
+To do this copy the highlighted code below:
+	</p>
+<pre>
+private void Reader_MultiSourceFrameArrived(MultiSourceFrameReader sender, MultiSourceFrameArrivedEventArgs e)
+{
+    //...
+    // If the Frame has expired by the time we process this event, return.
+    if (multiSourceFrame == null)
+    {
+        return;
+    }
+    DepthFrame depthFrame = null;
+    ColorFrame colorFrame = null;
+    InfraredFrame infraredFrame = null;
+    <hi>BodyFrame bodyFrame = null;</hi>
+    BodyIndexFrame bodyIndexFrame = null;
+    IBuffer depthFrameData = null;    
+    //...
+    switch (currentDisplayFrameType)
+    {
+        case DisplayFrameType.Infrared:
+            using (infraredFrame = 
+                multiSourceFrame.InfraredFrameReference.AcquireFrame())
+            //...
+            break;
+        case DisplayFrameType.Color:
+            using (colorFrame = 
+                multiSourceFrame.ColorFrameReference.AcquireFrame())
+            //...
+            break;
+        case DisplayFrameType.Depth:
+            using (depthFrame = 
+                multiSourceFrame.DepthFrameReference.AcquireFrame())
+            //...
+            break;
+        case DisplayFrameType.BodyMask:
+            //...
+            break;
+        <hi>case DisplayFrameType.BodyJoints:</hi>
+            <hi>using (bodyFrame = </hi>
+                <hi>multiSourceFrame.BodyFrameReference.AcquireFrame())</hi>
+            <hi>{</hi>
+                <hi>ShowBodyJoints(bodyFrame);</hi>
+            <hi>}</hi>
+            <hi>break;</hi>
+        default:
+            break;
+    }
+}
+</pre>
+  <li>
+    <p>Finally, create the <strong>ShowBodyJoints ()</strong> method. Add it in <strong>MainPage</strong> above the other <strong>Show***Frame()</strong> methods. 
+	In ShowBodyJoints() the body data is retrieved and stored in the Body array. The Body array is passed to the <strong>bodiesManager</strong>, 
+	which maps the joints and draws the body to the canvas in <strong>UpdateBodiesAndEdges()</strong>:
+	</p>
+	<pre>
+<hi>private void ShowBodyJoints(BodyFrame bodyFrame)</hi>
+<hi>{</hi>
+    <hi>Body[] bodies = new Body[</hi>
+                 <hi>this.kinectSensor.BodyFrameSource.BodyCount];</hi>
+    <hi>bool dataReceived = false;</hi>
+    <hi>if (bodyFrame != null)</hi>
+    <hi>{</hi>
+        <hi>bodyFrame.GetAndRefreshBodyData(bodies);</hi>
+        <hi>dataReceived = true;</hi>
+    <hi>}</hi>
+
+    <hi>if (dataReceived)</hi>
+    <hi>{</hi>
+        <hi>this.bodiesManager.UpdateBodiesAndEdges(bodies);</hi>
+    <hi>}</hi>
+<hi>}</hi>
+</pre>
+<p>
+If you want to manipulate joints in another way (other than showing the skeleton), then you can implement a method similar to the <strong>UpdateBodiesAndEdges</strong> method within the <strong>BodiesManager</strong>.
+The drawing of each skeleton with the bodies manager is accomplished as follows:
+Each joint is a small ellipse, each bone is a line between ellipses, each separate body has different color lines. If any joint extends outside the edge of the cameras view,
+ there is a rectangle drawn on that side. If a hand joint is detected as <strong>open</strong> then it is displayed as a <strong>Green</strong> ellipse, and if a hand is closed it is displayed as a <strong>Red</strong> ellipse.
+All 25 joints in the body are tracked. If some joints are uncertain, they are called <strong>inferred</strong> joints, and they are drawn with a smaller circle and a thin line as the bone.
+</p>
+</li>
+
+<li>Add a button to turn on the Body Joints. Open the <strong>MainPage.xaml</strong> and add a new button called <strong>Body Joints</strong>, with a click event:
+<pre>
+&ltScrollViewer Grid.Row="2" ScrollViewer.HorizontalScrollBarVisibility="Auto" 
+              ScrollViewer.VerticalScrollBarVisibility="Auto"&gt
+    &ltStackPanel Orientation="Horizontal"&gt
+        &ltButton Content="Infrared" 
+                Style="{StaticResource FrameSelectorButtonStyle}"
+                Click="InfraredButton_Click"/&gt
+        &ltButton Content="Color" 
+                Style="{StaticResource FrameSelectorButtonStyle}" 
+                Click="ColorButton_Click"/&gt
+        &ltButton Content="Depth" 
+                Style="{StaticResource FrameSelectorButtonStyle}"
+                Click="DepthButton_Click"/&gt
+        &ltButton Style="{StaticResource FrameSelectorButtonStyle}"
+                Click="BodyMaskButton_Click"&gt
+            &ltTextBlock Text="Body Mask" TextWrapping="Wrap"/&gt
+        &lt/Button&gt
+        <hi>&ltButton Style="{StaticResource FrameSelectorButtonStyle}"</hi>
+                <hi>Click="BodyJointsButton_Click"&gt</hi>
+            <hi>&ltTextBlock Text="Body Joints" TextWrapping="Wrap"/&gt</hi>
+        <hi>&lt/Button&gt</hi>
+    &lt/StackPanel&gt
+&lt/ScrollViewer&gt
+</pre>
+<p>
+Then open the code behind file: MainPage.xaml.cs and add the BodyJointsButton_Click method:
+</p>
+<pre>
+<hi>private void BodyJointsButton_Click(object sender, RoutedEventArgs e)</hi>
+<hi>{</hi>
+    <hi>SetupCurrentDisplay(DisplayFrameType.BodyJoints);</hi>
+<hi>}</hi>
+</pre>
+</li>
+  <li>
+    <p><strong>Build and Run</strong> the application. Click the Body Joints button and stand up so the Kinect 2 can recognize your whole body, and your joints will be displayed!</p>
+	<img alt="Body Data" src="images/lab06img01.png">
+</li>
+</ol>
+
+<h2>
+<a id="summary" class="anchor" href="#summary" aria-hidden="true"><span class="octicon octicon-link"></span></a>Summary</h2>
+<p>
+This lab taught you how to <strong>retrieve and use the Body Frame and others</strong> from the <strong>MultiSourceFrameReader</strong>, and <strong>use that frame data to draw shapes on a canvas representing joints</strong>.
+</p>
+<p>There are many joints in the body (25!) but the most useful ones for interactions are the hands. With Kinect 2 the hands have three points, the wrist, the tip and the radial, or thumb.
+ With these three points Kinect is able to detect an open or closed hand which is very useful for gestures. 
+There is another gesture called “lasso” which is like the fingers pointing a gun shape which can also be detected as a gesture.
+</p>
+<p>
+In the next lab, you will use existing feeds to remove the background of a scene.
+</p>
+<p>
+There is code available for the completed solution from this lab. The next lab will begin from this code.
+</p>
+	<li class="button">
+	<a class="buttons tag" href="https://github.com/Kinect/Tutorial/archive/lab06.zip">This Lab Code</a> 
+	</li>
+    <li class="button">
+	<a class="buttons feedback" href="https://github.com/Kinect/Tutorial/issues/">View Issues</a> </li>
+    <li class="button">
+	<a class="buttons feedback" href="https://github.com/Kinect/Tutorial/issues/new?labels=Body_Data">Give Feedback</a> </li>
+<a href="#" class="back-to-top"><i class="fa fa-chevron-up"> Back to Top</i></a>
+<footer> </footer>
+</div>
+
+<!--[if !IE]><script>fixScale(document);</script><![endif]-->
+</section></html>

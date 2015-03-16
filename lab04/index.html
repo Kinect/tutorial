@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html>
+	<head>
+	  <meta charset="utf-8">
+	  <meta http-equiv="X-UA-Compatible" content="chrome=1">
+	  <title>Kinect 2 for Windows - Hands On Lab 4</title>
+	  <link rel="stylesheet" href="../stylesheets/styles.css">
+	  <link rel="stylesheet" href="../stylesheets/pygment_trac.css">
+	  <link rel="stylesheet" href="http://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.min.css">
+	  <script src="../javascripts/scale.fix.js"></script>
+	  <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+	<!--[if lt IE 9]>
+		<script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+		<![endif]-->
+	</head>
+<body>
+<div class="wrapper">
+      <header>
+        <h1 class="header">Kinect 2 for Windows Demo App</h1>
+        <p class="header">The Hands On Labs to complete a sample application for Windows 8.1 and the Kinect 2 for Windows</p>
+        <ul>
+		  <li ><a class="buttons home" href="../index.html">Home</a></li>
+		  <li class="download"><a class="buttons" href="https://github.com/MicrosoftKinect2/ms-Kinect2Demo-Win81/zipball/master">Complete App</a></li>
+          <li><a class="buttons github" href="https://github.com/MicrosoftKinect2/ms-Kinect2Demo-Win81">View On GitHub</a></li>
+        </ul>
+      </header>
+      <section>
+	  
+<div>  
+<nav id="labs_dropdown">
+<ul>
+  <li><a style="padding: 0px;"><h3 style="color:#FFF; padding: 10px;">Lab 04 - Depth Data<i style="float:right; font-size: 16px; padding-top: 0.5%;" class="fa fa-chevron-down"></i></h3></a>
+    <ul>
+		<li class="download"><a href="../Lab01/index.html">1 - Project Setup</a></li>
+		<li class="download"><a href="../Lab02/index.html">2 - Infrared Data</a></li>
+		<li class="download"><a href="../Lab03/index.html">3 - Color Data</a></li>
+		<li class="download"><a href="index.html">4 - Depth Data</a></li>
+		<li class="download"><a href="../Lab05/index.html">5 - Body Mask</a></li>
+		<li class="download"><a href="../Lab06/index.html">6 - Body Data</a></li>
+		<li class="download"><a href="../Lab07/index.html">7 - Background Removal</a></li>
+		<li class="download"><a href="../Lab08/index.html">8 - Face Tracking</a></li>
+		<li class="download"><a href="../Lab09/index.html">9 - Face Game</a></li>
+		<li class="download"><a href="../Lab10/index.html">10 - Hand Cursor</a></li>
+		<li class="download"><a href="../Lab11/index.html">11 - Kinect Studio</a></li>
+		<li class="download"><a href="../Lab12/index.html">12 - Gesture Builder</a></li>
+		<li class="download"><a href="../Lab13/index.html">13 - Bing Speech</a></li>
+		<li class="download"><a href="../Lab14/index.html">14 - Tracking Strategies</a></li>
+	</ul>
+</ul>
+</div>
+
+<h1><a id="kinect-2-hands-on-labs" class="anchor" href="#kinect-2-hands-on-labs" aria-hidden="true"><span class="octicon octicon-link"></span></a>Kinect 2 Hands On Labs</h1>
+<h2>
+<img style="width: 100%;" alt="Depth Image" src="images/lab04img01.png">
+<a id="lab-4-Displaying-Depth-Data" class="anchor" href="#lab-4-Displaying-Depth-Data" aria-hidden="true"><span class="octicon octicon-link"></span></a>Lab 4: Displaying Depth Data</h2>
+<p><strong>Estimated Time to Complete</strong>: 15 min</p>
+<p>This lab is part of a series of hands on labs which teach you how to create a Windows 8.1 Store Application using almost every available feature of the Kinect 2. 
+This is the fourth lab in the series, and it teaches you how to retrieve the depth feed from the Kinect, along with the feeds from the previous labs.</p>
+<p>This lab will explain the following:
+<ul>
+<li>How to select the new depth frame.
+<li>How to get the new depth frame type from the Multi Source Frame.
+<li>How to convert the depth frame data to a color bitmap.
+</ul></p>
+<p>This lab comes with a starting point code solution and a completed code 
+solution of the exercises.</p>
+
+<h1>
+<a id="exercise-1---Displaying-the-Depth-Frame" class="anchor" href="#exercise-1---Displaying-the-Depth-Frame" aria-hidden="true"><span class="octicon octicon-link"></span></a>Exercise 1 - Displaying the Depth Frame</h1>
+<p>This exercise will teach you how to retrieve a depth frame in a Kinect for Windows 2 application for Windows 8.1. 
+This lab and all subsequent labs in this series are built using C# and assumes you have a fundamental knowledge of the C# language.</p>
+<p>
+The screenshots here are from Visual Studio Pro 2013 Update 2, the Community Edition is identical.
+</p>
+<p>
+This lab builds upon the previous lab, which integrated the multi-source frame reader. 
+The process for getting a color bitmap from the depth data is very similar to the method used for the infrared frame in the first lab.
+</p>
+<p>
+To understand the <strong>Depth Frame</strong>, you must first look at the Kinect 2 device itself. While it is on, the Kinect 2 has a <strong>fuzzy red light</strong> at its center. 
+This is an <strong>Infrared Emitter</strong> and it shoots out a lot of dots like thousands of invisible laser pointers. 
+There is another camera which sees the dots, and measures the time it took for the light to fire, and then become visible. 
+By using this time of visibility, the Kinect 2 can determine how far a single point is from the camera, using the time it took for the IR beam to get there.
+</p>
+<p>
+To retrieve and use <strong>depth frames</strong> from the Kinect 2 using the <strong>MultisourceFrameReader</strong>, follow the steps below:
+</p>
+<ol>
+  <li>
+    <p>Open the existing <strong>Kinect 2 Sample</strong> solution in Visual Studio, or the copy you have from the end of the previous lab.</p>
+  </li>
+  <li>
+    <p>To begin, you will add a new <strong>DisplayFrameType</strong> to the enum. Then you will need new depth frame data arrays to handle the data conversion.
+		Open the <strong>MainPage.xaml.cs</strong> file in the Solution Explorer. 
+		Copy the following highlighted code to do this:
+<pre>
+namespace Kinect2Sample
+{
+    public enum DisplayFrameType
+    {
+        Infrared,
+        Color<hi>,</hi>
+        <hi>Depth</hi>
+    }
+
+    public sealed partial class MainPage : Page, INotifyPropertyChanged
+    {
+        
+        //...
+        //Infrared Frame 
+        private ushort[] infraredFrameData = null;
+        private byte[] infraredPixels = null;
+
+        <hi>//Depth Frame</hi>
+        <hi>private ushort[] depthFrameData = null;</hi>
+        <hi>private byte[] depthPixels = null;</hi>
+
+        public event PropertyChangedEventHandler PropertyChanged;
+        //...
+    }
+}
+</pre>
+  </li>
+  <li>
+    <p>To initialize the new variables you have the <strong>SetupCurrentDisplay</strong> method which is called every time the current display changes. That method is where the initialization 
+	logic for the depth frame belongs. There is a switch statement which uses the <strong>currentDisplayFrameType</strong> to determine <strong>what to initialize</strong> and the <strong>size of the bitmap</strong>. 
+	You can add a new case for the depth frame in this switch statement. To do this, copy the highlighted code below:
+	</p>
+	<pre>
+private void SetupCurrentDisplay(DisplayFrameType newDisplayFrameType)
+{
+    currentDisplayFrameType = newDisplayFrameType;
+    switch (currentDisplayFrameType)
+    {
+        case DisplayFrameType.Infrared:
+            //...
+            break;
+
+        case DisplayFrameType.Color:
+            //...
+            break;
+
+        <hi>case DisplayFrameType.Depth:</hi>
+            <hi>FrameDescription depthFrameDescription = </hi>
+                <hi>this.kinectSensor.DepthFrameSource.FrameDescription;</hi>
+            <hi>this.CurrentFrameDescription = depthFrameDescription;</hi>
+            <hi>// allocate space to put the pixels being </hi>
+            <hi>// received and converted</hi>
+            <hi>this.depthFrameData = </hi>
+               <hi> new ushort[depthFrameDescription.Width * </hi>
+                    <hi> depthFrameDescription.Height];</hi>
+            <hi>this.depthPixels = </hi>
+               <hi> new byte[depthFrameDescription.Width * </hi>
+                     <hi>depthFrameDescription.Height * </hi>
+                     <hi>BytesPerPixel];</hi>
+            <hi>this.bitmap = </hi>
+                 <hi>new WriteableBitmap(depthFrameDescription.Width, </hi>
+                     <hi>depthFrameDescription.Height);</hi>
+            <hi>break;</hi>
+        default:
+            break;
+    }
+}
+</pre>
+	<p>
+		This is <strong>similar to the setup of the infrared frame variables</strong>. You may wonder why two distinct variables are needed when they are the same type and size and not used together. 
+		That’s because the infrared and the depth frame data could be used together for advanced cases such as removing the background of the bitmap.
+	</p>
+	<p>
+	There is one more thing to do in order to properly initialize the Depth Frame, and that is to add the new <strong>FrameSourceType</strong> when the <strong>MultiSourceFrameReader</strong> is opened.
+	In the MainPage constructor add the <strong>FrameSourceTypes.Depth</strong> to the following line, like so:
+	</p>
+	<pre>
+this.multiSourceFrameReader = 
+  this.kinectSensor.OpenMultiSourceFrameReader(
+          FrameSourceTypes.Infrared 
+          | FrameSourceTypes.Color 
+          | <hi>FrameSourceTypes.Depth);</hi>
+	</pre>
+  </li>
+  <li>
+    <p>Now that the frame variables are initialized, you can setup the logic to run when the frame arrived within <strong>Reader_MultiSourceFrameArrived</strong>. 
+	Once again, there is a switch statement here to handle the other frame types so it’s a matter of adding the new <strong>DisplayFrameType</strong> of Depth.
+	To do this copy the highlighted code below:</p>
+	<pre>
+private void Reader_MultiSourceFrameArrived(MultiSourceFrameReader sender, MultiSourceFrameArrivedEventArgs e)
+{
+    //...
+    switch (currentDisplayFrameType)
+    {
+        case DisplayFrameType.Infrared:
+            //...
+            break;
+        case DisplayFrameType.Color:
+            //...
+            break;
+        <hi>case DisplayFrameType.Depth:</hi>
+            <hi>using (DepthFrame depthFrame = </hi>
+ 		<hi>multiSourceFrame.DepthFrameReference.AcquireFrame())</hi>
+            <hi>{</hi>
+                <hi>ShowDepthFrame(depthFrame);</hi>
+            <hi>}</hi>
+            <hi>break;</hi>
+        default:
+            break;
+    }
+}
+</pre>
+  </li>
+  <li>
+<strong>ShowDepthFrame</strong> is a new method that will need to be created. While the <strong>ShowColorFrame</strong> method simply gets the color frame and converts it to the bitmap, 
+the <strong>DepthFrame</strong> does not contain color information, and is raw depth data when it arrives. 
+Some of the depth data may be out of reliable bounds so it must be shaped to exist within something that can be calculated with confidence.
+<strong>ShowDepthFrame</strong> will first make sure the frame data is what is expected, then shape it to become reliable.
+Then it passes the data onto conversion to pixels before rendering to a bitmap. To make the <strong>ShowDepthFrame</strong> method, copy the code below:
+	</p>
+<pre>
+<hi>private void ShowDepthFrame(DepthFrame depthFrame)</hi>
+<hi>{</hi>
+    <hi>bool depthFrameProcessed = false;</hi>
+    <hi>ushort minDepth = 0;</hi>
+    <hi>ushort maxDepth = 0;</hi>
+
+    <hi>if (depthFrame != null)</hi>
+    <hi>{</hi>
+        <hi>FrameDescription depthFrameDescription = </hi>
+            <hi>depthFrame.FrameDescription;</hi>
+
+        <hi>// verify data and write the new infrared frame data</hi>
+        <hi>// to the display bitmap</hi>
+        <hi>if (((depthFrameDescription.Width * depthFrameDescription.Height)</hi>
+            <hi>== this.infraredFrameData.Length) &&</hi>
+            <hi>(depthFrameDescription.Width == this.bitmap.PixelWidth) &&</hi>
+            <hi>(depthFrameDescription.Height == this.bitmap.PixelHeight))</hi>
+        <hi>{</hi>
+            <hi>// Copy the pixel data from the image to a temporary array</hi>
+            <hi>depthFrame.CopyFrameDataToArray(this.depthFrameData);</hi>
+
+            <hi>minDepth = depthFrame.DepthMinReliableDistance;</hi>
+            <hi>maxDepth = depthFrame.DepthMaxReliableDistance;</hi>
+
+            <hi>depthFrameProcessed = true;</hi>
+        <hi>}</hi>
+    <hi>}</hi>
+
+    <hi>// we got a frame, convert and render</hi>
+    <hi>if (depthFrameProcessed)</hi>
+    <hi>{</hi>
+        <hi>ConvertDepthDataToPixels(minDepth, maxDepth);</hi>
+        <hi>RenderPixelArray(this.depthPixels);</hi>
+    <hi>}</hi>
+<hi>}</hi>
+</pre>
+<p>
+The depth frame comes with data relating to a reliable distance at which it can know (with accuracy) what the depth is. 
+There is a minimum reliable distance, which is about 50cm from the device, and a max reliable distance, about 5m from the device. 
+The depth frame will contain points which are beyond these limits, but they are not used by the Kinect because they are not reliable. 
+Displaying these far or close points on a bitmap will result in those areas being error prone as the Kinect struggles to determine a realistic depth for a point it cannot see clearly. 
+So the data points are shaped in the <strong>ConvertDepthDataToPixels</strong> method, you will do that next.
+</p>
+  <li>
+    <p>The <strong>ConvertDepthDataToPixels</strong> method iterates through each point in the depth frame and finds a matching color for it based on the <strong>intensity</strong>.
+	The <strong>intensity</strong> is a conversion of the actual depth, but on a scale of 0 to 255 so it fits in a byte, and therefore can be used as a color.
+	Also this method checks if the depth is within the reliable range, and makes the resulting intensity 0 (black) if it’s not. Copy the new ConvertDepthDataToPixels method below:
+	</p>
+	<pre>
+<hi>private void ConvertDepthDataToPixels(ushort minDepth, ushort maxDepth)</hi>
+<hi>{</hi>
+    <hi>int colorPixelIndex = 0;</hi>
+    <hi>// Shape the depth to the range of a byte</hi>
+    <hi>int mapDepthToByte = maxDepth / 256;</hi>
+
+    <hi>for (int i = 0; i < this.depthFrameData.Length; ++i)</hi>
+    <hi>{</hi>
+        <hi>// Get the depth for this pixel</hi>
+        <hi>ushort depth = this.depthFrameData[i];</hi>
+
+        <hi>// To convert to a byte, we're mapping the depth value</hi>
+        <hi>// to the byte range.</hi>
+        <hi>// Values outside the reliable depth range are </hi>
+        <hi>// mapped to 0 (black).</hi>
+        <hi>byte intensity = (byte)(depth >= minDepth &&</hi>
+            <hi>depth <= maxDepth ? (depth / mapDepthToByte) : 0);</hi>
+
+        <hi>this.depthPixels[colorPixelIndex++] = intensity; //Blue</hi>
+        <hi>this.depthPixels[colorPixelIndex++] = intensity; //Green</hi>
+        <hi>this.depthPixels[colorPixelIndex++] = intensity; //Red</hi>
+        <hi>this.depthPixels[colorPixelIndex++] = 255; //Alpha</hi>
+    <hi>} </hi>
+<hi>}</hi>
+</pre>
+<p>
+There is a new variable in this method called <strong>mapDepthToByte</strong>. This <strong>int</strong> is simply to map the max depth value to the max byte value (256). 
+</p>
+  </li>
+  <li>The final step (<strong>converting to a bitmap</strong>) is the same as the infrared frame bitmap conversion, so the same method is used, but it’s passed a different array of pixels.
+  <strong>RenderPixelArray</strong> was already written in step 5 so all that remains is to make a button to switch to this new frame type.
+  </li>
+  <p>
+  </p>
+  <li>
+    <p>Open the <strong>MainPage.xaml</strong> and add a new button called <strong>Depth</strong>, with a click event, like so:</p>
+	<pre>
+&ltScrollViewer Grid.Row="2" 
+    ScrollViewer.HorizontalScrollBarVisibility="Auto" 
+    ScrollViewer.VerticalScrollBarVisibility="Auto"&gt
+  &ltStackPanel Orientation="Horizontal"&gt
+      &ltButton Content="Infrared" 
+        Style="{StaticResource FrameSelectorButtonStyle}"
+                Click="InfraredButton_Click"/&gt
+      &ltButton Content="Color" 
+        Style="{StaticResource FrameSelectorButtonStyle}" 
+                Click="ColorButton_Click"/&gt
+      <hi>&ltButton Content="Depth" </hi>
+            <hi>Style="{StaticResource FrameSelectorButtonStyle}"</hi>
+                <hi>Click="DepthButton_Click"/&gt</hi>
+    &lt/StackPanel&gt
+&lt/ScrollViewer&gt
+	</pre>
+	<p>
+	Then open the code behind file: <strong>MainPage.xaml.cs</strong> and add the <strong>DepthButton_Click</strong> method:
+	</p>
+	<pre>
+<hi>private void DepthButton_Click(object sender, RoutedEventArgs e)</hi>
+<hi>{</hi>
+   <hi>SetupCurrentDisplay(DisplayFrameType.Depth);</hi>
+<hi>}</hi>
+	</pre>
+</li>
+<li><strong>Build and Run</strong> the application. Click the <strong>Depth</strong> button and the <strong>Depth Frame</strong> will show!.
+<p>
+</p>
+<p>
+</p>
+<img style="width: 100%;" alt="Depth Image" src="images/lab04img01.png">
+<p>
+Although it looks similar to the infrared frame, the data is different. Here, the whiteness of a pixel refers to that point’s distance from the camera (whiter is further away).
+This is a visualization of distance data, which is not usually expressed through a single 2D image.
+Notice how the object in the bottom/right of the screen is pitch black, and the farthest corner is also pitch black.
+These areas are outside the <strong>DepthMaxReliableDistance</strong> and <strong>DepthMinReliableDistance</strong>, and so have been set to black in the code. 
+Also notice how the entire image appears jittery and fuzzy around edges.
+This is because it’s not representing a visual feed, and instead representing calculations of time which has a margin of error associated when computing at such high speeds.
+</p>
+</li>
+<li>
+<p>As an extra activity, you can look back where the <strong>maxDepth</strong> is retrieved from the <strong>DepthMaxReliableDistance</strong> in the <strong>ShowDepthFrame</strong> method and change
+it to a larger number instead of the reliable max, say <strong>8000</strong>.
+The results are quite interesting, but, as discussed, big distances are unreliable for the Kinect to calculate as real points, the fuzziness of the image will increase at large distances.
+</p>
+</li>
+</ol>
+
+<h2>
+<a id="summary" class="anchor" href="#summary" aria-hidden="true"><span class="octicon octicon-link"></span></a>Summary</h2>
+<p>This lab taught you how to <strong>retrieve and use an depth frame and others</strong> from the <strong>MultiSourceFrameReader</strong>, and <strong>use that frame data to make a visible bitmap</strong> to be <strong>rendered in xaml</strong>. 
+The user can switch between the three feeds with buttons.</p>
+<p>
+You may have noticed the resolution of the <strong>Depth Frame</strong> matches the resolution of the <strong>Infrared Frame</strong> at <strong>512 by 424</strong>.
+That’s because the IR camera and the IR emitter work together to get body data, while the color feed is for getting a real color picture.
+There are many more dots which are emitted than points in the depth frame (More than 217088 (512 x 424) dots), but the dots are used together and converted into 217088 points of depth so they 
+can be reliably calculated later into a 3D model or the prediction of a body.
+If users had a night vision camera they could perhaps see the dots being spread across the room from the IR emitter in the Kinect 2.
+</p>
+<p>You may have seen 3D modelling applications which use the Kinect 2 to scan an object into a virtual world model.
+The depth frame is used to achieve this. Another word for the Depth Frame is a <strong>Point Cloud</strong>: A point cloud is a collection of 3D points in world space,
+which then can be used to create a mesh by connecting the points.
+In this lab we are using the 2D point of the Depth point as an x,y co-ordinate in the total resolution of the frame, then using the z depth value to change the color of that point, reflecting its depth. In a 3D application you could simply use the x, y and z depth as a 3D point to 
+position the points in depth frame in a more natural world with a camera to visualize the resulting point cloud.
+</p>
+<p>
+In the next lab, you will implement a new visual into the application, the Body Data.
+</p>
+<p>
+There is code available which is the completed solution from the work in this lab. The next lab will begin from this code.
+</p>
+	<li class="button">
+	<a class="buttons tag" href="https://github.com/Kinect/Tutorial/archive/lab04.zip">This Lab Code</a> 
+	</li>
+    <li class="button">
+	<a class="buttons feedback" href="https://github.com/Kinect/Tutorial/issues/">View Issues</a> </li>
+    <li class="button">
+	<a class="buttons feedback" href="https://github.com/Kinect/Tutorial/issues/new?labels=Depth_Data">Give Feedback</a> </li>
+<a href="#" class="back-to-top"><i class="fa fa-chevron-up"> Back to Top</i></a>
+<footer> </footer>
+</div>
+
+<!--[if !IE]><script>fixScale(document);</script><![endif]-->
+</section></html>

@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html>
+	<head>
+	  <meta charset="utf-8">
+	  <meta http-equiv="X-UA-Compatible" content="chrome=1">
+	  <title>Kinect 2 for Windows - Hands On Lab 2</title>
+	  <link rel="stylesheet" href="../stylesheets/styles.css">
+	  <link rel="stylesheet" href="../stylesheets/pygment_trac.css">
+	  <link rel="stylesheet" href="http://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.min.css">
+	  <script src="../javascripts/scale.fix.js"></script>
+	  <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+	<!--[if lt IE 9]>
+		<script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+		<![endif]-->
+	</head>
+<body>
+<div class="wrapper">
+      <header>
+        <h1 class="header">Kinect 2 for Windows Demo App</h1>
+        <p class="header">The Hands On Labs to complete a sample application for Windows 8.1 and the Kinect 2 for Windows</p>
+        <ul>
+		  <li ><a class="buttons home" href="../index.html">Home</a></li>
+		  <li class="download"><a class="buttons" href="https://github.com/MicrosoftKinect2/ms-Kinect2Demo-Win81/zipball/master">Complete App</a></li>
+          <li><a class="buttons github" href="https://github.com/MicrosoftKinect2/ms-Kinect2Demo-Win81">View On GitHub</a></li>
+        </ul>
+      </header>
+      <section>
+	  
+<div>  
+<nav id="labs_dropdown">
+<ul>
+  <li><a style="padding: 0px;"><h3 style="color:#FFF; padding: 10px;">Lab 02 - Infrared Data<i style="float:right; font-size: 16px; padding-top: 0.5%;" class="fa fa-chevron-down"></i></h3></a>
+    <ul>
+		<li class="download"><a href="../Lab01/index.html">1 - Project Setup</a></li>
+		<li class="download"><a href="index.html">2 - Infrared Data</a></li>
+		<li class="download"><a href="../Lab03/index.html">3 - Color Data</a></li>
+		<li class="download"><a href="../Lab04/index.html">4 - Depth Data</a></li>
+		<li class="download"><a href="../Lab05/index.html">5 - Body Mask</a></li>
+		<li class="download"><a href="../Lab06/index.html">6 - Body Data</a></li>
+		<li class="download"><a href="../Lab07/index.html">7 - Background Removal</a></li>
+		<li class="download"><a href="../Lab08/index.html">8 - Face Tracking</a></li>
+		<li class="download"><a href="../Lab09/index.html">9 - Face Game</a></li>
+		<li class="download"><a href="../Lab10/index.html">10 - Hand Cursor</a></li>
+		<li class="download"><a href="../Lab11/index.html">11 - Kinect Studio</a></li>
+		<li class="download"><a href="../Lab12/index.html">12 - Gesture Builder</a></li>
+		<li class="download"><a href="../Lab13/index.html">13 - Bing Speech</a></li>
+		<li class="download"><a href="../Lab14/index.html">14 - Tracking Strategies</a></li>
+	</ul>
+</ul>
+</div>
+
+<h1><a id="kinect-2-hands-on-labs" class="anchor" href="#kinect-2-hands-on-labs" aria-hidden="true"><span class="octicon octicon-link"></span></a>Kinect 2 Hands On Labs</h1>
+<h2>
+<img style="width: 100%;" alt="Infrared Image" src="images/lab02img01.png">
+<a id="lab-2-Displaying-Infrared-Data" class="anchor" href="#lab-2-Displaying-Infrared-Data" aria-hidden="true"><span class="octicon octicon-link"></span></a>Lab 2: Displaying Infrared Data</h2>
+<p><strong>Estimated Time to Complete</strong>: 20min</p>
+<p>This lab is part of a series of hands on labs which teach you how to create a Windows 8.1 Store Application, using almost every available feature of the Kinect 2.
+This is the second lab in the series. In this lab you will learn how to retrieve the infrared feed from the Kinect sensor, and how to present the feed in xaml as an image.</p>
+<p>This lab will explain the following:
+<ul>
+<li>How to open the Infrared Frame Reader on the Kinect Sensor in code.
+<li>How to receive the Infrared Frame when it is ready.
+<li>How to convert the Infrared Frame data to a monochrome bitmap
+<li>How to present the changing bitmap to xaml.
+<li>How to get and present data about the status and resolution of the Kinect 2.
+</ul></p>
+<p>This lab comes with a starting point code solution and a completed code
+solution of the exercises.</p>
+
+<h1>
+<a id="exercise-1---Displaying-the-Infrared-Frame" class="anchor" href="#exercise-1---Displaying-the-Infrared-Frame" aria-hidden="true"><span class="octicon octicon-link"></span></a>Exercise 1 - Displaying the Infrared Frame</h1>
+<p>
+This exercise will teach you how to retrieve an infrared frame in a Kinect for Windows 2 application in Windows 8.1. 
+This lab and all subsequent labs in this series are built using C# and assume you have a fundamental knowledge of the C# language.
+</p>
+<p>To retrieve and use infrared frames from the Kinect 2, follow the steps below:</p>
+<ol>
+  <li>
+    <p>Open the existing <strong>Kinect 2 Sample</strong> solution in Visual Studio, or the copy you have from the end of the previous lab.</p>
+  </li>
+
+  <li>
+    <p>First you will open the <strong>Infrared Frame Reader</strong> in order to retrieve infrared data from the Kinect Sensor.
+		Open the <strong>MainPage.xaml.cs</strong> file from the <strong>Solution Explorer</strong>.
+		The code you write will set up the infrared feed, events, and data required, before opening the Kinect Sensor. When the Kinect starts delivering frames, you have something receiving the input.
+		To explain the following code here is a description of the important variables:
+		<ul>
+			<li><strong>infraredFrameReader</strong> - Reader for infrared frames</li>
+			<li><strong>infraredFrameData</strong> - Intermediate storage for receiving frame data from the sensor</li>
+			<li><strong>infraredPixels</strong> - Intermediate storage for frame data converted to color pixels for display</li>
+			<li><strong>bitmap</strong> – The WritableBitmap which will replace the contents of an image in xaml</li>
+		</ul>
+	</p>
+	<p>A new frame is received from the frame reader when it is ready, usually at about 30 frames per second.
+	Each frame arrives as infrared data for every pixel of the camera resolution. This data is converted to a grayscale color range, in the infraredPixels.
+	Then the infraredPixels are used to write to a bitmap object.</p>
+	<p>All these variables need to be initialized with the appropriate size, which is the size of the infrared frame coming from the Kinect 2.</p>
+	<p>To initialize these variables properly, copy the highlighted code below:</p>
+	<pre>
+// ... other namespaces
+<hi>using Windows.UI.Xaml.Media.Imaging;</hi>
+
+namespace Kinect2Sample
+{
+    public sealed partial class MainPage : Page
+    {
+        // Size of the RGB pixel in the bitmap
+        <hi>private const int BytesPerPixel = 4;</hi>
+
+        private KinectSensor kinectSensor = null;
+        <hi>private WriteableBitmap bitmap = null;</hi>
+
+        //Infrared Frame
+        <hi>private InfraredFrameReader infraredFrameReader = null;</hi>
+        <hi>private ushort[] infraredFrameData = null;</hi>
+        <hi>private byte[] infraredPixels = null;</hi>
+
+        public MainPage()
+        {
+            // one sensor is currently supported
+            this.kinectSensor = KinectSensor.GetDefault();
+
+            // get the infraredFrameDescription from the
+            // InfraredFrameSource
+            <hi>FrameDescription infraredFrameDescription = </hi>
+                <hi>this.kinectSensor.InfraredFrameSource.FrameDescription;</hi>
+
+            // open the reader for the infrared frames
+            <hi>this.infraredFrameReader = </hi>
+                <hi>this.kinectSensor.InfraredFrameSource.OpenReader();</hi>
+
+            // wire handler for frame arrival
+            <hi>this.infraredFrameReader.FrameArrived += </hi>
+                <hi>this.Reader_InfraredFrameArrived;</hi>
+
+            // allocate space to put the pixels being 
+            // received and converted
+            <hi>this.infraredFrameData = </hi>
+                <hi>new ushort[infraredFrameDescription.Width * </hi>
+                <hi>infraredFrameDescription.Height];</hi>
+            <hi>this.infraredPixels = </hi>
+                <hi>new byte[infraredFrameDescription.Width * </hi>
+                <hi>infraredFrameDescription.Height * BytesPerPixel];</hi>
+
+            // create the bitmap to display
+            <hi>this.bitmap = </hi>
+                <hi>new WriteableBitmap(infraredFrameDescription.Width,</hi>
+                <hi>infraredFrameDescription.Height);</hi>
+
+            // open the sensor
+            this.kinectSensor.Open();
+
+            this.InitializeComponent();
+ 	 }
+    }
+}
+</pre>
+  </li>
+  <li>
+    <p>You should have noticed that there is an event handler which has been registered: 
+	the <strong>FrameArrived</strong> event from the <strong>infraredFrameReader</strong>. To handle to this event, write the following new method within the MainWindow class:
+	</p>
+	<pre>
+public sealed partial class MainPage : Page
+{
+    // ...
+
+    <hi>private void Reader_InfraredFrameArrived(object sender,</hi>
+		<hi>InfraredFrameArrivedEventArgs e)</hi>
+    {
+        <hi>bool infraredFrameProcessed = false;</hi>
+
+        // InfraredFrame is IDisposable
+        <hi>using (InfraredFrame infraredFrame = </hi>
+            <hi>e.FrameReference.AcquireFrame())</hi>
+        <hi>{</hi>
+            <hi>if (infraredFrame != null)</hi>
+            {
+                <hi>FrameDescription infraredFrameDescription = </hi>
+			<hi>infraredFrame.FrameDescription;</hi>
+
+                // verify data and write the new infrared frame data
+                // to the display bitmap
+                <hi>if (((infraredFrameDescription.Width * </hi>
+                    <hi>infraredFrameDescription.Height)</hi> 
+			     <hi>== this.infraredFrameData.Length) &&</hi>
+                    <hi>(infraredFrameDescription.Width == </hi>
+                    <hi>this.bitmap.PixelWidth) &&</hi> 
+			<hi>(infraredFrameDescription.Height == </hi>
+                <hi>this.bitmap.PixelHeight))</hi>
+                <hi>{</hi>
+                    // Copy the pixel data from the image to a 
+                    // temporary array
+                    <hi>infraredFrame.CopyFrameDataToArray(</hi>
+                        <hi>this.infraredFrameData);</hi>
+
+                    <hi>infraredFrameProcessed = true;</hi>
+                <hi>}</hi>
+            <hi>}</hi>
+        <hi>}</hi>
+
+        // we got a frame, convert and render
+        <hi>if (infraredFrameProcessed)</hi>
+        <hi>{</hi>
+            <hi>ConvertInfraredDataToPixels();</hi>
+            <hi>RenderPixelArray (this.infraredPixels);</hi>
+        <hi>}</hi>
+    <hi>}</hi>
+}</pre>
+	<p>
+	Once a new frame arrives, this method extracts a single <strong>InfraredFrame</strong> from the <strong>FrameReference</strong> in the event arguments.
+	Then the code checks that the frame is not null, and that it’s width, height, and data length are matching the usable bitmap that was initialized.
+	The key line in this method is the <strong>infraredFrame.CopyFrameDataToArray(this.infraredFrameData)</strong> which copies the infrared frame into the <strong>infraredFrameData</strong> 
+	array class variable which is used in the next stage.
+	</p>
+	<p>
+	Finally, if that was successful, the <strong>infraredFrameProcessed</strong> bool is set to true and the next stage begins.
+	The <strong>ConvertInfraredDataToPixels</strong> and <strong>RenderInfraredPixels</strong> methods will be created next.
+	</p>
+  </li>
+  <li>
+    <p>Now the infrared data is in a readable array of <strong>ushort</strong>, you can convert each ushort to a pixel containing 4 values:
+	Red, Green, Blue and Alpha. In this case the RGB will be duplicate to create a monochrome image, with alpha always at 255(opaque).
+	The ushort coming from each pixel in the frame data will be a number from 0 to 65535 so there is some mathematical shaping which must 
+	occur to get these values into something in a scale from 0 to 255. To do this there are several const variables you must create at the top of the MainWindow class as below:</p>
+	<pre>
+public sealed partial class MainPage : Page
+{
+    <hi>/// &ltsummary&gt</hi>
+    <hi>/// The highest value that can be returned in the InfraredFrame.</hi>
+    <hi>/// It is cast to a float for readability in the visualization code.</hi>
+    <hi>/// &lt/summary&gt</hi>
+    <hi>private const float InfraredSourceValueMaximum = </hi>
+        <hi>(float)ushort.MaxValue;</hi>
+
+    <hi>/// &lt/summary&gt</hi>
+    <hi>/// Used to set the lower limit, post processing, of the</hi>
+    <hi>/// infrared data that we will render.</hi>
+    <hi>/// Increasing or decreasing this value sets a brightness</hi>
+    <hi>/// "wall" either closer or further away.</hi>
+    <hi>/// &lt/summary&gt</hi>
+    <hi>private const float InfraredOutputValueMinimum = 0.01f;</hi>
+    
+    <hi>/// &ltsummary&gt</hi>
+    <hi>/// The upper limit, post processing, of the</hi>
+    <hi>/// infrared data that will render.</hi>
+    <hi>/// &lt/summary&gt</hi>
+    <hi>private const float InfraredOutputValueMaximum = 1.0f;</hi>
+
+    <hi>/// &ltsummary&gt</hi>
+    <hi>/// The InfraredSceneValueAverage value specifies the </hi>
+    <hi>/// average infrared value of the scene. </hi>
+    <hi>/// This value was selected by analyzing the average</hi>
+    <hi>/// pixel intensity for a given scene.</hi>
+    <hi>/// This could be calculated at runtime to handle different</hi>
+    <hi>/// IR conditions of a scene (outside vs inside).</hi>
+    <hi>/// &lt/summary&gt</hi>
+    <hi>private const float InfraredSceneValueAverage = 0.08f;</hi>
+	
+    <hi>/// &ltsummary&gt</hi>
+    <hi>/// The InfraredSceneStandardDeviations value specifies </hi>
+    <hi>/// the number of standard deviations to apply to</hi>
+    <hi>/// InfraredSceneValueAverage.</hi>
+    <hi>/// This value was selected by analyzing data from a given scene.</hi>
+    <hi>/// This could be calculated at runtime to handle different</hi>
+    <hi>/// IR conditions of a scene (outside vs inside).</hi>
+    <hi>/// &lt/summary&gt</hi>
+    <hi>private const float InfraredSceneStandardDeviations = 3.0f;</hi>
+
+    //... other private variables follow
+}</pre>
+  </li>
+  <li>
+    <p>Iterate through the infrared data and shape the values to a range of color. 
+	To do this, copy the new <strong>ConvertInfraredDataToPixels</strong> method below into the <strong>MainWindow</strong> class:
+	</p>
+<pre>
+public sealed partial class MainPage : Page
+{
+    // Reader_InfraredFrameArrived() before this...
+    <hi>private void ConvertInfraredDataToPixels()</hi>
+    {
+        <hi>// Convert the infrared to RGB</hi>
+        <hi>int colorPixelIndex = 0;</hi>
+        <hi>for (int i = 0; i < this.infraredFrameData.Length; ++i)</hi>
+        <hi>{</hi>
+            <hi>// normalize the incoming infrared data (ushort) to </hi>
+            <hi>// a float ranging from InfraredOutputValueMinimum</hi>
+            <hi>// to InfraredOutputValueMaximum] by</hi>
+
+            <hi>// 1. dividing the incoming value by the </hi>
+            <hi>// source maximum value</hi>
+            <hi>float intensityRatio = (float)this.infraredFrameData[i] /</hi> 
+ 		<hi>InfraredSourceValueMaximum;</hi>
+
+            <hi>// 2. dividing by the </hi>
+            <hi>// (average scene value * standard deviations)</hi>
+            <hi>intensityRatio /= </hi>
+            <hi> InfraredSceneValueAverage * InfraredSceneStandardDeviations;</hi>
+
+            <hi>// 3. limiting the value to InfraredOutputValueMaximum</hi>
+            <hi>intensityRatio = Math.Min(InfraredOutputValueMaximum, </hi>
+                <hi>intensityRatio);</hi>
+            
+            <hi>// 4. limiting the lower value InfraredOutputValueMinimum</hi>
+            <hi>intensityRatio = Math.Max(InfraredOutputValueMinimum, </hi>
+                <hi>intensityRatio);</hi>
+
+            <hi>// 5. converting the normalized value to a byte and using </hi>
+            <hi>// the result as the RGB components required by the image</hi>
+            <hi>byte intensity = (byte)(intensityRatio * 255.0f);</hi>
+            <hi>this.infraredPixels[colorPixelIndex++] = intensity; //Blue</hi>
+            <hi>this.infraredPixels[colorPixelIndex++] = intensity; //Green</hi>
+            <hi>this.infraredPixels[colorPixelIndex++] = intensity; //Red</hi>
+            <hi>this.infraredPixels[colorPixelIndex++] = 255;       //Alpha</hi>           
+        <hi>}</hi>
+    <hi>}</hi>
+}</pre>
+<p>
+This method results in a byte array of color data stored in the <strong>infraredPixels[]</strong> class level variable, which contains the pixels colors to be rendered in the next step.
+</p>
+  <li>
+    <p>To get the pixels in the byte array into something xaml can use, it must be copied into a <strong>WritableBitmap</strong> object.
+	Once it’s in a <strong>WritableBitmap</strong>, the frame can be used in xaml simply by linking the source of an Image in xaml to the bitmap class variable.
+	To render the pixels to the bitmap, copy the method below:
+	</p>
+	<pre>
+public sealed partial class MainPage : Page
+{
+    <hi>// ConvertInfraredDataToPixels() before this...</hi>
+    <hi>private void RenderPixelArray (byte[] pixels)</hi>
+    <hi>{</hi>
+       <hi>pixels.CopyTo(this.bitmap.PixelBuffer);</hi>
+       <hi>this.bitmap.Invalidate();</hi>
+        <hi>FrameDisplayImage.Source = this.bitmap;</hi>
+    <hi>}</hi>
+}</pre>
+<p><strong>this.bitmap</strong> should have been created as a class level variable earlier when you were working on the initialization process,
+and the <strong>FrameDisplayImage</strong> is the image in the xaml which will be created next.</p>
+  </li>
+  <li>
+    <p>Open the <strong>MainPage.xaml</strong> file by double clicking it in the <strong>Solution Explorer</strong> or pressing <strong>Shift + F7</strong> while the code behind is open.
+	Add the following xaml within the main grid in the MainPage:
+<pre>
+    &ltGrid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"&gt
+        <hi>&ltGrid Margin="30"&gt</hi>
+            <hi>&ltGrid.RowDefinitions&gt</hi>
+                <hi>&ltRowDefinition Height="70"/&gt</hi>
+                <hi>&ltRowDefinition Height="*"/&gt</hi>
+                <hi>&ltRowDefinition Height="100"/&gt</hi>
+            <hi>&lt/Grid.RowDefinitions></hi>
+            <hi>&ltTextBlock Grid.Row="0" </hi>
+                <hi>Style="{StaticResource SubheaderTextBlockStyle}"</hi>
+                       <hi>Text="Kinect For Windows 2"/></hi>
+            <hi>&ltImage x:Name="FrameDisplayImage" Grid.Row="1" </hi>
+                <hi>Stretch="Uniform"/></hi>
+        <hi>&lt/Grid></hi>
+    &lt/Grid>
+</pre>
+</p>
+</li>
+<li><strong>Build and Run</strong> the application, it will start black, then after a second the Kinect 2 will switch on and present the infrared frame!
+<br><br>
+<img style="width: 100%;" alt="Infrared Image" src="images/lab02img01.png">
+<p>
+For fun, try turning the lights off. Infrared light is invisible to humans and so the camera works even in complete darkness, this is the basis of how night vision works.
+</p>
+</li>
+<li>
+<p>As an optional task, try altering the const values which were set in step 4 of this exercise and see the difference they make in the resulting frame output.
+You will see the visibility depth and brightness of the image change depending on these values.</p>
+</li>
+</ol>
+
+<h2><a id="lab-2-Displaying-Infrared-Data" class="anchor" href="#lab-2-Displaying-Infrared-Data" aria-hidden="true"><span class="octicon octicon-link">
+</span></a>Lab 2: Displaying Infrared Data</h2>
+
+<p>This exercise will show you how to present useful debugging data about the current Infrared Frame and also the current status of the Kinect.
+This exercise will aid you with troubleshooting any problems with the Kinect later, and to highlight the resolution difference between frames in the next exercises.</p>
+<p>To retrieve and display frame data from the Kinect 2, follow the steps below:</p>
+
+<ol>
+	<li>Firstly, you may have noticed that the <strong>Designer</strong> when viewing xaml is not available when building for x64 architectures.
+		That’s fine because Kinect 2 is also compatible with x86 architecture, which you can switch to now:
+		<ol>
+			<li>Click <strong>BUILD</strong> then <strong>Configuration Manager</strong>… to open the Configuration Manager.</li>
+			<li>Click the dropdown box under <strong>Active Solution</strong> Platform: and select <strong>x86</strong>.</li>
+			<br>
+			<img style="width: 100%;" alt="Configuration Image" src="images/lab02img02.png">
+			<li>Click <strong>Close</strong>.</li>
+			<li>Now open the project properties by right Clicking the Kinect2Sample project in the solution explorer, then clicking <strong>Properties</strong>.</li>
+			<li>Click the <strong>Build</strong> tab on the left, then beside <strong>Platform</strong>: select <strong>x86</strong> from the dropdown.</li>
+			<li>Click <strong>FILE</strong>, then <strong>Save All</strong> or hit <strong>Ctrl + Shift + S</strong> to save all files.</li>
+			<li><strong>Build and Run</strong> the application to check for errors.</li>
+		</ol>
+	</li>
+	<li>The things you should focus on are the <strong>status of the Kinect</strong> (if it is responding or not) and the <strong>current resolution of the frame</strong> (which is interesting now, and later on when the lab changes frame type).
+	It is easy enough to get these values in code behind. To enable the xaml to bind to the status values, if they change, you must implement the <strong>INotifyPropertyChanged</strong> interface in the <strong>MainPage</strong> class.
+	Then the code will fire the property changed event when the status changes, and when the frame description changes.
+	To set this up, first copy the following highlighted code in the relevant sections of the <strong>MainPage</strong> class to initialize and use changeable properties:
+	</li>
+	<br>
+	<pre>
+<hi>using System.ComponentModel;</hi>
+
+namespace Kinect2Sample
+{
+    public sealed partial class MainPage : Page<hi>, INotifyPropertyChanged</hi>
+    {
+        // ... consts and other private variables...
+        private KinectSensor kinectSensor = null;
+        <hi>private string statusText = null;</hi>
+        private WriteableBitmap bitmap = null;
+        <hi>private FrameDescription currentFrameDescription;</hi>
+	 //Infrared Frame variables...
+        <hi>public event PropertyChangedEventHandler PropertyChanged;</hi>
+        <hi>public string StatusText</hi>
+        <hi>{</hi>
+            <hi>get { return this.statusText; }</hi>
+            <hi>set</hi>
+            <hi>{</hi>
+                <hi>if (this.statusText != value)</hi>
+                <hi>{</hi>
+                    <hi>this.statusText = value;</hi>
+                    <hi>if (this.PropertyChanged != null)</hi>
+                    <hi>{</hi>
+                        <hi>this.PropertyChanged(this, new </hi>
+ 				<hi>PropertyChangedEventArgs("StatusText"));</hi>
+                    <hi>}</hi>
+                <hi>}</hi>
+            <hi>}</hi>
+        <hi>}</hi>
+
+        <hi>public FrameDescription CurrentFrameDescription</hi>
+        <hi>{</hi>
+            <hi>get { return this. currentFrameDescription; }</hi>
+            <hi>set</hi>
+            <hi>{</hi>
+                <hi>if (this. currentFrameDescription!= value)</hi>
+                <hi>{</hi>
+                    <hi>this. currentFrameDescription = value;</hi>
+                    <hi>if (this.PropertyChanged != null)</hi>
+                    <hi>{</hi>
+                        <hi>this.PropertyChanged(this, new </hi>
+ 		<hi>PropertyChangedEventArgs("CurrentFrameDescription"));</hi>
+                    <hi>}</hi>
+                <hi>}</hi>
+            <hi>}</hi>
+        <hi>} </hi>
+        // ...
+    }
+}
+</pre>
+<li>Now you can use these properties in code. Whenever the <strong>StatusText</strong> or <strong>CurrentFrameDescription</strong> is set, 
+the <strong>PropertyChanged</strong> event will fire and notify the xaml that it has changed, which refreshes the binding.
+To use these properties and get the status and resolution, copy the highlighted code below:
+</li>
+<br>
+<pre>
+public MainPage()
+        {
+	    // ...
+            // create the bitmap to display
+            this.bitmap = new WriteableBitmap(infraredFrameDescription.Width, 
+ 		infraredFrameDescription.Height);
+
+            <hi>this.CurrentFrameDescription = infraredFrameDescription;</hi>
+
+            <hi>// set IsAvailableChanged event notifier</hi>
+            <hi>this.kinectSensor.IsAvailableChanged += </hi>
+                <hi>this.Sensor_IsAvailableChanged;</hi>
+
+            <hi>// use the window object as the view model in this example</hi>
+            <hi>this.DataContext = this;</hi>
+
+            // open the sensor
+            this.kinectSensor.Open();
+
+            this.InitializeComponent();
+        }
+
+        <hi>private void Sensor_IsAvailableChanged(KinectSensor sender, </hi>
+ 		<hi>IsAvailableChangedEventArgs args)</hi>
+        <hi>{</hi>
+            <hi>this.StatusText = this.kinectSensor.IsAvailable ?</hi>
+                <hi> "Running" : "Not Available";</hi>
+        <hi>}</hi>
+</pre>
+<li>
+Finally, Open the <strong>MainPage.xaml</strong> and create some <strong>TextBlocks</strong> for labels, and TextBlocks for binding to the properties in the code behind <strong>MainPage.xaml.cs</strong>.
+When you do this you may notice that the xaml designer updates the design view as you write the code because earlier you switched to x86. Copy the highlighted code below:
+</li>
+<br>
+<pre>
+            &ltTextBlock Grid.Row="0" Style="{StaticResource SubheaderTextBlockStyle}"
+                       Text="Kinect For Windows 2"/&gt
+            <hi>&ltStackPanel Grid.Row="0" Orientation="Horizontal" </hi>
+                        <hi>HorizontalAlignment="Right" </hi>
+                        <hi>VerticalAlignment="Bottom"&gt</hi>
+                <hi>&ltTextBlock Text="Kinect Status:  "/&gt</hi>
+                <hi>&ltTextBlock Text="{Binding StatusText}"/&gt</hi>
+                <hi>&ltTextBlock Text=", FrameWidth =  "/&gt</hi>
+                <hi>&ltTextBlock Text=</hi>
+                    <hi>"{Binding CurrentFrameDescription.Width}"/&gt</hi>
+                <hi>&ltTextBlock Text=", FrameHeight =  "/&gt</hi>
+                <hi>&ltTextBlock Text=</hi>
+                    <hi>"{Binding CurrentFrameDescription.Height}"/&gt</hi>
+            <hi>&lt/StackPanel&gt</hi>
+            &ltImage x:Name="FrameDisplayImage" Grid.Row="1" Stretch="Uniform"/&gt
+</pre>
+<li><strong>Build and Run</strong> the application, and in the top right, the Status of the Kinect 2 is visible and the frame description shows the original resolution of the frame!
+<br><br>
+<img style="width: 100%;" alt="Build Image" src="images/lab02img03.png">
+</li>
+<p>
+Try unplugging the Kinect and see the status change. Then if you plug the Kinect back in, the status will update and the feed will come back.
+</p>
+</ol>
+
+<h2>
+<a id="summary" class="anchor" href="#summary" aria-hidden="true"><span class="octicon octicon-link"></span></a>Summary</h2>
+<p>This lab has taught you how to <strong>retrieve and use an infrared frame</strong> from the Kinect 2 device, and <strong>use that frame data to make a visible bitmap</strong> to be <strong>displayed in xaml</strong>.
+</p>
+<p>
+It is interesting to note that most of this process is manual. The data from the <strong>InfraredFrame</strong> is not usable until it’s converted to a bitmap. 
+This is by-design as there are many uses of infrared light beyond converting it to a visible image. The Kinect 2 uses the infrared camera to calculate known bodies and shapes in low light conditions. 
+That is why the resolution of the InfraredFrame is so low: <strong>it matches the resolution seen by the DepthFrame</strong> to calculate what is and isn’t a person. 
+</p>
+<p>
+In the next lab, you will see the resolution difference between the ColorFrame and the InfraredFrame now that you have displayed the frame data in xaml.
+</p>
+<p>
+There is code available which is the completed code solution of the work in this lab. The next lab will begin from this code.
+</p>
+	<li class="button">
+	<a class="buttons tag" href="https://github.com/Kinect/Tutorial/archive/lab02.zip">This Lab Code</a> 
+	</li>
+    <li class="button">
+	<a class="buttons feedback" href="https://github.com/Kinect/Tutorial/issues/">View Issues</a> </li>
+    <li class="button">
+	<a class="buttons feedback" href="https://github.com/Kinect/Tutorial/issues/new?labels=Infrared_Data">Give Feedback</a> </li>
+<a href="#" class="back-to-top"><i class="fa fa-chevron-up"> Back to Top</i></a>
+<footer> </footer>
+</div>
+
+<!--[if !IE]><script>fixScale(document);</script><![endif]-->
+</section></html>

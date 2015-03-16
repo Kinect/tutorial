@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html>
+	<head>
+	  <meta charset="utf-8">
+	  <meta http-equiv="X-UA-Compatible" content="chrome=1">
+	  <title>Kinect 2 for Windows - Introduction</title>
+	  <link rel="stylesheet" href="stylesheets/styles.css">
+	  <link rel="stylesheet" href="stylesheets/pygment_trac.css">
+	  <link rel="stylesheet" href="http://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.min.css">
+	  <script src="javascripts/scale.fix.js"></script>
+	  <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+	<!--[if lt IE 9]>
+		<script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+		<![endif]-->
+	</head>
+<body>
+<div class="wrapper">
+      <header>
+        <h1 class="header">Kinect 2 for Windows Demo App</h1>
+        <p class="header">The Hands On Labs to complete a sample application for Windows 8.1 and the Kinect 2 for Windows</p>
+        <ul>
+		  <li ><a class="buttons home" href="index.html">Home</a></li>
+		  <li class="download"><a class="buttons" href="https://github.com/MicrosoftKinect2/ms-Kinect2Demo-Win81/zipball/master">Complete App</a></li>
+          <li><a class="buttons github" href="https://github.com/MicrosoftKinect2/ms-Kinect2Demo-Win81">View On GitHub</a></li>
+        </ul>
+      </header>
+      <section>
+	  
+<div>  
+<nav id="labs_dropdown">
+<ul>
+  <li><a style="padding: 0px;"><h3 style="color:#FFF; padding: 10px;">Select a Lab:<i style="float:right; font-size: 16px; padding-top: 0.5%;" class="fa fa-chevron-down"></i></h3></a>
+    <ul>
+		<li class="download"><a href="./Lab01/index.html">1 - Project Setup</a></li>
+		<li class="download"><a href="./Lab02/index.html">2 - Infrared Data</a></li>
+		<li class="download"><a href="./Lab03/index.html">3 - Color Data</a></li>
+		<li class="download"><a href="./Lab04/index.html">4 - Depth Data</a></li>
+		<li class="download"><a href="./Lab05/index.html">5 - Body Mask</a></li>
+		<li class="download"><a href="./Lab06/index.html">6 - Body Data</a></li>
+		<li class="download"><a href="./Lab07/index.html">7 - Background Removal</a></li>
+		<li class="download"><a href="./Lab08/index.html">8 - Face Tracking</a></li>
+		<li class="download"><a href="./Lab09/index.html">9 - Face Game</a></li>
+		<li class="download"><a href="./Lab10/index.html">10 - Hand Cursor</a></li>
+		<li class="download"><a href="./Lab11/index.html">11 - Kinect Studio</a></li>
+		<li class="download"><a href="./Lab12/index.html">12 - Gesture Builder</a></li>
+		<li class="download"><a href="./Lab13/index.html">13 - Bing Speech</a></li>
+		<li class="download"><a href="./Lab14/index.html">14 - Tracking Strategies</a></li>
+	</ul>
+</ul>
+</div>
+
+<h1><a id="kinect-2-hands-on-labs" class="anchor" href="#kinect-2-hands-on-labs" aria-hidden="true"><span class="octicon octicon-link"></span></a>Kinect 2 Hands On Labs</h1>
+<p>Welcome to the <strong>Kinect 2 Hands on Labs</strong>!
+<br>
+This series will show you how to build a <strong>Windows 8.1 store app</strong> which uses almost every feature of the Kinect 2. The lessons in this series work the best when completed in order.
+<br>
+<br>
+You can download a master copy of the complete app and all labs and referenced libraries through the github links on the left. 
+<br>
+<br>
+Or if you know a bit about development with the Kinect 2 already, you can skip to a particular lab by navigating to it at the top of the page. The running codebase is available through a link at the bottom of each page, which is complete and runnable as if you have just finished that lab.
+<br>
+<br>
+If you have any suggestions or would like to report any bugs, please leave some feedback on the <a href="https://github.com/Kinect/Tutorial/issues/new">Kinect Tutorial GitHub Issues page</a>.
+<br>
+<br>
+Enjoy the labs and have fun!
+<p>
+<img style="width: 100%;" alt="App hero image" src="images/Kinect2LabsCollage.png">
+
+<h2>
+<a id="system-requirements" class="anchor" href="#system-requirements" aria-hidden="true"><span class="octicon octicon-link"></span></a>System
+Requirements</h2>
+<p>The target application is a Windows 8.1 Store application for
+x64 machines (not ARM or x86) so a machine with an x64 architecture is
+required for development.
+Supported Operating Systems and Architectures </p>
+<ul>
+  <li>Windows 8.1 
+  <li>Microsoft Visual Studio® 2013 Community Edition with Update 2 or
+higher.</li>
+  <li>Microsoft .NET Framework 4.5.</li>
+  <li>The Kinect 2 SDK (Currently at build 1409)
+  <li>Kinect 2.0 for Windows device.</li>
+  <li>USB 3.0</li>
+<br>
+</ul>
+
+<h2>
+    <a id="exercise-1---project-setup" class="anchor" href="#exercise-1---project-setup" aria-hidden="true"><span class="octicon octicon-link"></span></a> Debugging </h2>
+	<p>
+	Debugging the Kinect 2 requires that you meet the system requirements.
+	<br>
+	<br>
+	If you are unsure that the <strong>Kinect is plugged in properly</strong>, you can check a <strong>light indicator</strong> on the power box of the unit (the box which comes from the single cable in the Kinect 2)
+	and results in power and USB 3.0 connections. 
+	<img style="width: 100%;" alt="Kinect2 Indicator Light Image" src="images/Kinect2IndicatorLight.png">
+	<ul>
+	<li>If the light on the power-box is <strong>Orange</strong> then <strong>something is wrong</strong> with either the power, Kinect 2, or USB3.0 connection. 
+	<li>If the light is <strong>White</strong> then the <strong>Kinect is correctly registered</strong> with windows as a device to be used. 
+	</ul>
+	
+	The Kinect 2.0 itself does not turn on until it is required by an application.
+	</p>
+	<br>
+
+	<li class="button">
+	<a class="buttons feedback" href="https://github.com/Kinect/Tutorial/issues/">View Issues</a> </li>
+    <li class="button">
+	<a class="buttons feedback" href="https://github.com/Kinect/Tutorial/issues/new">Give Feedback</a> </li>
+
+<footer> </footer>
+</div>
+
+
+<!--[if !IE]><script>fixScale(document);</script><![endif]-->
+</body></html>
