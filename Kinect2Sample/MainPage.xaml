@@ -24,6 +24,7 @@
             <Setter Property="Margin" Value="6"/>
             <Setter Property="FontSize" Value="20"/>
         </Style>
+        <local:DisplayTypeToVisibilityConverter x:Key="DisplayTypeToVisibilityConverter"/>
     </Page.Resources>
 
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}" >
@@ -44,12 +45,22 @@
                 <TextBlock Text=", FrameHeight =  "/>
                 <TextBlock Text="{Binding CurrentFrameDescription.Height}"/>
             </StackPanel>
-            <!--...-->
+            <Image x:Name="FrameBackground" Source="Assets/Background.png" Grid.Row="1" Stretch="Fill" 
+                   Visibility="{Binding CurrentDisplayFrameType, 
+                   Converter={StaticResource DisplayTypeToVisibilityConverter}, 
+                   ConverterParameter=BackgroundRemoved }"/>
             <Image x:Name="FrameDisplayImage" Grid.Row="1" Stretch="Uniform"/>
             <Viewbox Grid.Row="1" HorizontalAlignment="Center">
                 <Grid x:Name="BodyJointsGrid" Background="Transparent" Width="512" Height="414"/>
             </Viewbox>
-            <!--...-->
+            <StackPanel Grid.Row="1" Orientation="Vertical" HorizontalAlignment="Left"
+                        Visibility="{Binding CurrentDisplayFrameType,
+                   Converter={StaticResource DisplayTypeToVisibilityConverter}, 
+                   ConverterParameter=BackgroundRemoved }">
+                <TextBlock Text="DepthMax"/>
+                <TextBlock Text="{Binding DepthMax}"/>
+                <Slider Width="250" Minimum="500" Maximum="8000" Value="{Binding DepthMax, Mode=TwoWay}"/>
+            </StackPanel>
             <ScrollViewer Grid.Row="2" ScrollViewer.HorizontalScrollBarVisibility="Auto" 
                           ScrollViewer.VerticalScrollBarVisibility="Auto">
                 <StackPanel Orientation="Horizontal">
@@ -66,6 +77,10 @@
                     <Button Style="{StaticResource FrameSelectorButtonStyle}"
                             Click="BodyJointsButton_Click">
                         <TextBlock Text="Body Joints" TextWrapping="Wrap"/>
+                    </Button>
+                    <Button Style="{StaticResource FrameSelectorButtonStyle}"
+                            Click="BackgroundButton_Click">
+                        <TextBlock Text="BG Removed" TextWrapping="Wrap" />
                     </Button>
                 </StackPanel>
             </ScrollViewer>

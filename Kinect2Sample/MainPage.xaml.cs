@@ -28,7 +28,8 @@ namespace Kinect2Sample
         Color,
         Depth,
         BodyMask,
-        BodyJoints
+        BodyJoints,
+        BackgroundRemoved
     }
 
     public sealed partial class MainPage : Page, INotifyPropertyChanged
@@ -92,13 +93,13 @@ namespace Kinect2Sample
         //Depth Frame
         private ushort[] depthFrameData = null;
         private byte[] depthPixels = null;
+        private ushort depthMax = 8000;
 
         //BodyMask Frames
         private DepthSpacePoint[] colorMappedToDepthPoints = null;
 
         //Body Joints are drawn here
         private Canvas drawingCanvas;
-
 
         public event PropertyChangedEventHandler PropertyChanged;
         public string StatusText
@@ -133,6 +134,38 @@ namespace Kinect2Sample
             }
         }
 
+        public DisplayFrameType CurrentDisplayFrameType
+        {
+            get { return this.currentDisplayFrameType; }
+            set
+            {
+                if (this.currentDisplayFrameType != value)
+                {
+                    this.currentDisplayFrameType = value;
+                    if (this.PropertyChanged != null)
+                    {
+                        this.PropertyChanged(this, new PropertyChangedEventArgs("CurrentDisplayFrameType"));
+                    }
+                }
+            }
+        }
+
+        public ushort DepthMax
+        {
+            get { return this.depthMax; }
+            set
+            {
+                if (this.depthMax != value)
+                {
+                    this.depthMax = value;
+                    if (this.PropertyChanged != null)
+                    {
+                        this.PropertyChanged(this, new PropertyChangedEventArgs("DepthMax"));
+                    }
+                }
+            }
+        }
+
         public MainPage()
         {
             // one sensor is currently supported
@@ -160,9 +193,10 @@ namespace Kinect2Sample
 
         private void SetupCurrentDisplay(DisplayFrameType newDisplayFrameType)
         {
-            currentDisplayFrameType = newDisplayFrameType;
+            CurrentDisplayFrameType = newDisplayFrameType;
             // Frames used by more than one type are declared outside the switch
             FrameDescription colorFrameDescription = null;
+            FrameDescription depthFrameDescription = null;
             // reset the display methods
             if (this.BodyJointsGrid != null)
             {
@@ -172,7 +206,7 @@ namespace Kinect2Sample
             {
                 this.FrameDisplayImage.Source = null;
             }
-            switch (currentDisplayFrameType)
+            switch (CurrentDisplayFrameType)
             {
                 case DisplayFrameType.Infrared:
                     FrameDescription infraredFrameDescription = this.kinectSensor.InfraredFrameSource.FrameDescription;
@@ -191,7 +225,7 @@ namespace Kinect2Sample
                     break;
 
                 case DisplayFrameType.Depth:
-                    FrameDescription depthFrameDescription = this.kinectSensor.DepthFrameSource.FrameDescription;
+                    depthFrameDescription = this.kinectSensor.DepthFrameSource.FrameDescription;
                     this.CurrentFrameDescription = depthFrameDescription;
                     // allocate space to put the pixels being received and converted
                     this.depthFrameData = new ushort[depthFrameDescription.Width * depthFrameDescription.Height];
@@ -222,6 +256,17 @@ namespace Kinect2Sample
                     this.BodyJointsGrid.Children.Add(this.drawingCanvas);
                     bodiesManager = new BodiesManager(this.coordinateMapper, this.drawingCanvas, this.kinectSensor.BodyFrameSource.BodyCount);
                     break;
+
+                case DisplayFrameType.BackgroundRemoved:
+                    colorFrameDescription = this.kinectSensor.ColorFrameSource.FrameDescription;
+                    depthFrameDescription = this.kinectSensor.DepthFrameSource.FrameDescription;
+                    // Actual current frame is going to be a map of depth and color, choosing the larger to display(color)
+                    this.CurrentFrameDescription = colorFrameDescription;
+                    // allocate space to put the pixels being received and converted
+                    this.depthFrameData = new ushort[depthFrameDescription.Width * depthFrameDescription.Height];
+                    this.colorMappedToDepthPoints = new DepthSpacePoint[colorFrameDescription.Width * colorFrameDescription.Height];
+                    this.bitmap = new WriteableBitmap(colorFrameDescription.Width, colorFrameDescription.Height);
+                    break;
                 default:
                     break;
             }
@@ -234,7 +279,6 @@ namespace Kinect2Sample
 
         private void Reader_MultiSourceFrameArrived(MultiSourceFrameReader sender, MultiSourceFrameArrivedEventArgs e)
         {
-            
             MultiSourceFrame multiSourceFrame = e.FrameReference.AcquireFrame();
 
             // If the Frame has expired by the time we process this event, return.
@@ -247,12 +291,12 @@ namespace Kinect2Sample
             InfraredFrame infraredFrame = null;
             BodyFrame bodyFrame = null;
             BodyIndexFrame bodyIndexFrame = null;
-            IBuffer depthFrameData = null;
+            IBuffer depthFrameDataBuffer = null;
             IBuffer bodyIndexFrameData = null;
             // Com interface for unsafe byte manipulation
-            IBufferByteAccess bodyIndexByteAccess = null;
+            IBufferByteAccess bufferByteAccess = null;
 
-            switch (currentDisplayFrameType)
+            switch (CurrentDisplayFrameType)
             {
                 case DisplayFrameType.Infrared:
                     using (infraredFrame = multiSourceFrame.InfraredFrameReference.AcquireFrame())
@@ -285,18 +329,16 @@ namespace Kinect2Sample
                         }
 
                         // Access the depth frame data directly via LockImageBuffer to avoid making a copy
-                        depthFrameData = depthFrame.LockImageBuffer();
-                        this.coordinateMapper.MapColorFrameToDepthSpaceUsingIBuffer(depthFrameData, this.colorMappedToDepthPoints);
+                        depthFrameDataBuffer = depthFrame.LockImageBuffer();
+                        this.coordinateMapper.MapColorFrameToDepthSpaceUsingIBuffer(depthFrameDataBuffer, this.colorMappedToDepthPoints);
                         // Process Color
                         colorFrame.CopyConvertedFrameDataToBuffer(this.bitmap.PixelBuffer, ColorImageFormat.Bgra);
                         // Access the body index frame data directly via LockImageBuffer to avoid making a copy
                         bodyIndexFrameData = bodyIndexFrame.LockImageBuffer();
-                        ShowMappedBodyFrame(depthFrame.FrameDescription.Width, depthFrame.FrameDescription.Height, bodyIndexFrameData, bodyIndexByteAccess);
-
+                        ShowMappedBodyFrame(depthFrame.FrameDescription.Width, depthFrame.FrameDescription.Height, bodyIndexFrameData, bufferByteAccess);
                     }
                     finally
                     {
-                        // ... disposing of depth, color and bodyIndex frames
                         if (depthFrame != null)
                         {
                             depthFrame.Dispose();
@@ -310,18 +352,18 @@ namespace Kinect2Sample
                             bodyIndexFrame.Dispose();
                         }
 
-                        if (depthFrameData != null)
+                        if (depthFrameDataBuffer != null)
                         {
                             // We must force a release of the IBuffer in order to ensure that we have dropped all references to it.
-                            System.Runtime.InteropServices.Marshal.ReleaseComObject(depthFrameData);
+                            System.Runtime.InteropServices.Marshal.ReleaseComObject(depthFrameDataBuffer);
                         }
                         if (bodyIndexFrameData != null)
                         {
                             System.Runtime.InteropServices.Marshal.ReleaseComObject(bodyIndexFrameData);
                         }
-                        if (bodyIndexByteAccess != null)
+                        if (bufferByteAccess != null)
                         {
-                            System.Runtime.InteropServices.Marshal.ReleaseComObject(bodyIndexByteAccess);
+                            System.Runtime.InteropServices.Marshal.ReleaseComObject(bufferByteAccess);
                         }
 
                     }
@@ -332,9 +374,87 @@ namespace Kinect2Sample
                         ShowBodyJoints(bodyFrame);
                     }
                     break;
+                case DisplayFrameType.BackgroundRemoved:
+                    // Put in a try catch to utilise finally() and clean up frames
+                    try
+                    {
+                        depthFrame = multiSourceFrame.DepthFrameReference.AcquireFrame();
+                        colorFrame = multiSourceFrame.ColorFrameReference.AcquireFrame();
+                        if ((depthFrame == null) || (colorFrame == null))
+                        {
+                            return;
+                        }
+                        depthFrame.CopyFrameDataToArray(depthFrameData);
+                        this.coordinateMapper.MapColorFrameToDepthSpace(depthFrameData, this.colorMappedToDepthPoints);
+                        // Process Color.
+                        colorFrame.CopyConvertedFrameDataToBuffer(this.bitmap.PixelBuffer, ColorImageFormat.Bgra);
+
+                        ShowMappedColorBackgroundRemoved(colorMappedToDepthPoints, depthFrameData, depthFrame.FrameDescription);
+                    }
+                    finally
+                    {
+                        if (depthFrame != null)
+                        {
+                            depthFrame.Dispose();
+                        }
+                        if (colorFrame != null)
+                        {
+                            colorFrame.Dispose();
+                        }
+                    }
+                    break;
                 default:
                     break;
             }
+        }
+
+        unsafe private void ShowMappedColorBackgroundRemoved(DepthSpacePoint[] colorMappedToDepthPoints, ushort[] depthFrameData, FrameDescription frameDescription)
+        {
+            fixed (DepthSpacePoint* colorMappedToDepthPointsPointer = colorMappedToDepthPoints)
+            {
+                IBufferByteAccess bitmapBackBufferByteAccess = (IBufferByteAccess)this.bitmap.PixelBuffer;
+
+                byte* bitmapBackBufferBytes = null;
+                bitmapBackBufferByteAccess.Buffer(out bitmapBackBufferBytes);
+
+                // Treat the color data as 4-byte pixels
+                uint* bitmapPixelsPointer = (uint*)bitmapBackBufferBytes;
+
+                int depthWidth = frameDescription.Width;
+                int depthHeight = frameDescription.Height;
+
+                // Loop over each row and column of the color image
+                // Zero out any pixels that don't correspond to a body index
+                for (int colorIndex = 0; colorIndex < this.colorMappedToDepthPoints.Length; ++colorIndex)
+                {
+                    float colorMappedToDepthX = colorMappedToDepthPoints[colorIndex].X;
+                    float colorMappedToDepthY = colorMappedToDepthPoints[colorIndex].Y;
+
+                    // The sentinel value is -inf, -inf, meaning that no depth pixel corresponds to this color pixel.
+                    if (!float.IsNegativeInfinity(colorMappedToDepthX) &&
+                        !float.IsNegativeInfinity(colorMappedToDepthY))
+                    {
+                        // Make sure the depth pixel maps to a valid point in color space
+                        int depthX = (int)(colorMappedToDepthX + 0.5f);
+                        int depthY = (int)(colorMappedToDepthY + 0.5f);
+
+                        // If the point is not valid, there is no body index there.
+                        if ((depthX >= 0) && (depthX < depthWidth) && (depthY >= 0) && (depthY < depthHeight))
+                        {
+                            int depthIndex = (depthY * depthWidth) + depthX;
+
+                            if (depthFrameData[depthIndex] < DepthMax)
+                            {
+                                continue;
+                            }
+                        }
+                    }
+                // no matching depth. zero out the pixel.
+                bitmapPixelsPointer[colorIndex] = 0;
+                }
+            }
+            this.bitmap.Invalidate();
+            FrameDisplayImage.Source = this.bitmap;
         }
 
         private void ShowBodyJoints(BodyFrame bodyFrame)
@@ -589,6 +709,12 @@ namespace Kinect2Sample
         {
             SetupCurrentDisplay(DisplayFrameType.BodyJoints);
         }
+
+        private void BackgroundButton_Click(object sender, RoutedEventArgs e)
+        {
+            SetupCurrentDisplay(DisplayFrameType.BackgroundRemoved);
+        }
+
 
         [Guid("905a0fef-bc53-11df-8c49-001e4fc686da"), InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
         interface IBufferByteAccess
