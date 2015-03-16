@@ -99,17 +99,28 @@
                         <TextBlock Text="Infrared Face" TextWrapping="Wrap" />
                     </Button>
                     <Button Style="{StaticResource FrameSelectorButtonStyle}"
-                            Click="FaceGameButton_Click">
+                            Click="FaceGameButton_Click" x:Name="JessesButton">
                         <TextBlock Text="Face Game" TextWrapping="Wrap" />
                     </Button>
                 </StackPanel>
             </ScrollViewer>
+            <!--Lab13-->
+            <TextBlock x:Name="GestureVisual"
+                Grid.Row="1"
+                Text="Detecting Gesture"
+                FontSize="30"
+                Foreground="White"
+                HorizontalAlignment="Right"
+                VerticalAlignment="Top"
+                Opacity="0.0">
+            </TextBlock>
             <Button x:Name="FullScreenBackButton" Style="{StaticResource KinectBackButtonStyle}" 
                     Grid.Row="1"
                     HorizontalAlignment="Left"
                     VerticalAlignment="Top"
                     Click="FullScreenBackButton_Click"
                     Visibility="Collapsed"/>
+            
         </Grid>
     </Grid>
 </Page>

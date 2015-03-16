@@ -47,6 +47,8 @@
     <Compile Include="BodiesManager.cs" />
     <Compile Include="BodyInfo.cs" />
     <Compile Include="DisplayTypeToVisibilityConverter.cs" />
+    <Compile Include="GestureDetector.cs" />
+    <Compile Include="GestureResultView.cs" />
     <Compile Include="MainPage.xaml.cs">
       <DependentUpon>MainPage.xaml</DependentUpon>
     </Compile>
@@ -88,6 +90,9 @@
     <SDKReference Include="Microsoft.Kinect.Toolkit.Input, Version=2.0">
       <Name>Microsoft.Kinect.Toolkit.Input</Name>
     </SDKReference>
+    <SDKReference Include="Microsoft.Kinect.VisualGestureBuilder, Version=2.0">
+      <Name>Microsoft.Kinect.VisualGestureBuilder</Name>
+    </SDKReference>
     <SDKReference Include="Microsoft.Kinect.Xaml.Controls, Version=2.0">
       <Name>Microsoft.Kinect.Xaml.Controls</Name>
     </SDKReference>
@@ -99,6 +104,9 @@
     </SDKReference>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Database\HandsAboveHead.gbd">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <None Include="Kinect2Sample_TemporaryKey.pfx" />
   </ItemGroup>
   <ItemGroup>

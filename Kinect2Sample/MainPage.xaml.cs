@@ -23,6 +23,13 @@ using Windows.UI;
 using KinectFace;
 using Microsoft.Kinect.Face;
 
+//lab 13
+using Windows.Storage.Pickers;
+using Windows.Graphics.Imaging;
+using Windows.Graphics.Display;
+using Windows.Storage;
+
+
 namespace Kinect2Sample
 {
     public enum DisplayFrameType
@@ -42,7 +49,7 @@ namespace Kinect2Sample
     {
         private const DisplayFrameType DEFAULT_DISPLAYFRAMETYPE = DisplayFrameType.Infrared;
 
-        private const double FACE_AIMING_ACCURACY= 1.0;
+        private const double FACE_AIMING_ACCURACY = 1.0;
         private const double FACE_AIMING_SENSITIVITY = 0.01;
 
         /// <summary>
@@ -121,7 +128,13 @@ namespace Kinect2Sample
         private double prevPitch = 0.0f;
         private double prevYaw = 0.0f;
 
+        //lab 13
+        /// <summary> List of gesture detectors, there will be one detector created for each potential body (max of 6) </summary>
+        private List<GestureDetector> gestureDetectorList = null;
+        public bool isTakingScreenshot = false;
+
         public event PropertyChangedEventHandler PropertyChanged;
+
         public string StatusText
         {
             get { return this.statusText; }
@@ -228,6 +241,21 @@ namespace Kinect2Sample
             this.InitializeComponent();
 
             this.Loaded += MainPage_Loaded;
+
+            //lab 13
+            // Initialize the gesture detection objects for our gestures
+            this.gestureDetectorList = new List<GestureDetector>();
+
+            //lab 13
+            // Create a gesture detector for each body (6 bodies => 6 detectors)
+            int maxBodies = this.kinectSensor.BodyFrameSource.BodyCount;
+            for (int i = 0; i < maxBodies; ++i)
+            {
+                GestureResultView result = new GestureResultView(i, false, false, 0.0f);
+                GestureDetector detector = new GestureDetector(this.kinectSensor, result);
+                result.PropertyChanged += GestureResult_PropertyChanged;
+                this.gestureDetectorList.Add(detector);
+            }
         }
 
         void MainPage_Loaded(object sender, RoutedEventArgs e)
@@ -292,7 +320,7 @@ namespace Kinect2Sample
             if (isFullScreen)
             {
                 RootGrid.RowDefinitions.Clear();
-                RootGrid.RowDefinitions.Add(new RowDefinition() { Height = new GridLength(0)});
+                RootGrid.RowDefinitions.Add(new RowDefinition() { Height = new GridLength(0) });
                 RootGrid.RowDefinitions.Add(new RowDefinition() { Height = new GridLength(1, GridUnitType.Star) });
                 RootGrid.RowDefinitions.Add(new RowDefinition() { Height = new GridLength(0) });
                 FullScreenBackButton.Visibility = Windows.UI.Xaml.Visibility.Visible;
@@ -450,6 +478,14 @@ namespace Kinect2Sample
             IBuffer bodyIndexFrameData = null;
             // Com interface for unsafe byte manipulation
             IBufferByteAccess bufferByteAccess = null;
+
+            //lab 13
+            using (bodyFrame = multiSourceFrame.BodyFrameReference.AcquireFrame())
+            {
+                RegisterGesture(bodyFrame);
+            }
+
+
             switch (CurrentDisplayFrameType)
             {
                 case DisplayFrameType.Infrared:
@@ -579,6 +615,59 @@ namespace Kinect2Sample
             }
         }
 
+        //lab 13
+        void GestureResult_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            GestureResultView result = sender as GestureResultView;
+            this.GestureVisual.Opacity = result.Confidence;
+            if (result.Confidence > 0.8)
+            {
+                Screenshot();
+            }
+        }
+
+        //lab 13
+        async private void Screenshot()
+        {
+            // Thread protetction on FileIO actions
+            if (!isTakingScreenshot)
+            {
+                isTakingScreenshot = true;
+                RenderTargetBitmap renderTargetBitmap = new RenderTargetBitmap();
+                await renderTargetBitmap.RenderAsync(RootGrid);
+                var pixelBuffer = await renderTargetBitmap.GetPixelsAsync();
+
+                var savePicker = new FileSavePicker();
+                savePicker.DefaultFileExtension = ".png";
+                savePicker.FileTypeChoices.Add(".png", new List<string> { ".png" });
+                savePicker.SuggestedStartLocation = PickerLocationId.PicturesLibrary;
+                savePicker.SuggestedFileName = "snapshot.png";
+
+                // Prompt the user to select a file
+                var saveFile = await savePicker.PickSaveFileAsync();
+
+                // Verify the user selected a file
+                if (saveFile != null)
+                {
+                    // Encode the image to the selected file on disk
+                    using (var fileStream = await saveFile.OpenAsync(FileAccessMode.ReadWrite))
+                    {
+                        var encoder = await BitmapEncoder.CreateAsync(BitmapEncoder.PngEncoderId, fileStream);
+                        encoder.SetPixelData(
+                            BitmapPixelFormat.Bgra8,
+                            BitmapAlphaMode.Ignore,
+                            (uint)renderTargetBitmap.PixelWidth,
+                            (uint)renderTargetBitmap.PixelHeight,
+                            DisplayInformation.GetForCurrentView().LogicalDpi,
+                            DisplayInformation.GetForCurrentView().LogicalDpi,
+                            pixelBuffer.ToArray());
+                        await encoder.FlushAsync();
+                    }
+                }
+                isTakingScreenshot = false;
+            }
+        }
+
         private void FaceGameLookUpdate()
         {
             this.FacePointsCanvas.Children.Clear();
@@ -614,7 +703,7 @@ namespace Kinect2Sample
                         yawDiff > FACE_AIMING_ACCURACY)
                     {
                         this.DXScenePanel.SetYawPitch(
-                            -(float)(yaw * FACE_AIMING_SENSITIVITY), 
+                            -(float)(yaw * FACE_AIMING_SENSITIVITY),
                             (float)(pitch * FACE_AIMING_SENSITIVITY));
                         prevPitch = pitch;
                         prevYaw = yaw;
@@ -913,6 +1002,52 @@ namespace Kinect2Sample
             {
                 this.ConvertInfraredDataToPixels();
                 this.RenderPixelArray(this.infraredPixels);
+            }
+        }
+
+        //lab 13
+        private void RegisterGesture(BodyFrame bodyFrame)
+        {
+            bool dataReceived = false;
+            Body[] bodies = null;
+
+            if (bodyFrame != null)
+            {
+                if (bodies == null)
+                {
+                    // Creates an array of 6 bodies, which is the max number of bodies that Kinect can track simultaneously
+                    bodies = new Body[bodyFrame.BodyCount];
+                }
+
+                // The first time GetAndRefreshBodyData is called, Kinect will allocate each Body in the array.
+                // As long as those body objects are not disposed and not set to null in the array,
+                // those body objects will be re-used.
+                bodyFrame.GetAndRefreshBodyData(bodies);
+                dataReceived = true;
+            }
+
+            if (dataReceived)
+            {
+                // We may have lost/acquired bodies, so update the corresponding gesture detectors
+                if (bodies != null)
+                {
+                    // Loop through all bodies to see if any of the gesture detectors need to be updated
+                    for (int i = 0; i < bodyFrame.BodyCount; ++i)
+                    {
+                        Body body = bodies[i];
+                        ulong trackingId = body.TrackingId;
+
+                        // If the current body TrackingId changed, update the corresponding gesture detector with the new value
+                        if (trackingId != this.gestureDetectorList[i].TrackingId)
+                        {
+                            this.gestureDetectorList[i].TrackingId = trackingId;
+
+                            // If the current body is tracked, unpause its detector to get VisualGestureBuilderFrameArrived events
+                            // If the current body is not tracked, pause its detector so we don't waste resources trying to get invalid gesture results
+                            this.gestureDetectorList[i].IsPaused = trackingId == 0;
+                        }
+                    }
+                }
             }
         }
 
