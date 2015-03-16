@@ -25,7 +25,7 @@
             <Setter Property="FontSize" Value="20"/>
         </Style>
     </Page.Resources>
-    
+
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}" >
         <Grid Margin="30">
             <Grid.RowDefinitions>
@@ -54,6 +54,10 @@
                             Click="ColorButton_Click"/>
                     <Button Content="Depth" Style="{StaticResource FrameSelectorButtonStyle}"
                             Click="DepthButton_Click"/>
+                    <Button Style="{StaticResource FrameSelectorButtonStyle}"
+                            Click="BodyMaskButton_Click">
+                        <TextBlock Text="Body Mask" TextWrapping="Wrap"/>
+                    </Button>
                 </StackPanel>
             </ScrollViewer>
         </Grid>
