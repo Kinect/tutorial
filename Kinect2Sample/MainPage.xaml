@@ -5,6 +5,7 @@
     xmlns:local="using:Kinect2Sample"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:dx="using:DirectXSceneStore"
     mc:Ignorable="d">
     <Page.Resources>
         <LinearGradientBrush x:Key="ButtonGradientBrush" StartPoint="0,0" EndPoint="0,1" >
@@ -53,6 +54,10 @@
             <Viewbox Grid.Row="1" HorizontalAlignment="Center">
                 <Grid x:Name="BodyJointsGrid" Background="Transparent" Width="512" Height="414"/>
             </Viewbox>
+            <dx:ScenePanel x:Name="DXScenePanel" Grid.Row="1" Margin="20"
+                   Visibility="{Binding CurrentDisplayFrameType, 
+                   Converter={StaticResource DisplayTypeToVisibilityConverter}, 
+                   ConverterParameter=FaceGame }" />
             <Viewbox Grid.Row="1" HorizontalAlignment="Center">
                 <Canvas x:Name="FacePointsCanvas"/>
             </Viewbox>
@@ -90,8 +95,12 @@
                         <TextBlock Text="Color Face" TextWrapping="Wrap" />
                     </Button>
                     <Button Style="{StaticResource FrameSelectorButtonStyle}"
-                            Click="InfraredFaceButton_Click" x:Name="InfraredFaceButton">
+                            Click="InfraredFaceButton_Click">
                         <TextBlock Text="Infrared Face" TextWrapping="Wrap" />
+                    </Button>
+                    <Button Style="{StaticResource FrameSelectorButtonStyle}"
+                            Click="FaceGameButton_Click">
+                        <TextBlock Text="Face Game" TextWrapping="Wrap" />
                     </Button>
                 </StackPanel>
             </ScrollViewer>

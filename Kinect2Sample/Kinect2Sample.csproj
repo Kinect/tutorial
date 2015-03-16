@@ -92,6 +92,9 @@
     <None Include="Kinect2Sample_TemporaryKey.pfx" />
   </ItemGroup>
   <ItemGroup>
+    <Reference Include="DirectXSceneStore">
+      <HintPath>Libraries\x64\DirectXSceneStore.winmd</HintPath>
+    </Reference>
     <Reference Include="KinectFaceStore">
       <HintPath>Libraries\x64\KinectFaceStore.dll</HintPath>
     </Reference>

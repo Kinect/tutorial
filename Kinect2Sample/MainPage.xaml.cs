@@ -34,12 +34,16 @@ namespace Kinect2Sample
         BodyJoints,
         BackgroundRemoved,
         FaceOnColor,
-        FaceOnInfrared
+        FaceOnInfrared,
+        FaceGame
     }
 
     public sealed partial class MainPage : Page, INotifyPropertyChanged
     {
         private const DisplayFrameType DEFAULT_DISPLAYFRAMETYPE = DisplayFrameType.Infrared;
+
+        private const double FACE_AIMING_ACCURACY= 1.0;
+        private const double FACE_AIMING_SENSITIVITY = 0.01;
 
         /// <summary>
         /// The highest value that can be returned in the InfraredFrame.
@@ -112,6 +116,10 @@ namespace Kinect2Sample
 
         //Cat assets
         private Image[] catEyeRightOpen, catEyeRightClosed, catEyeLeftOpen, catEyeLeftClosed, catNose;
+
+        //Face Orientation Shaping
+        private double prevPitch = 0.0f;
+        private double prevYaw = 0.0f;
 
         public event PropertyChangedEventHandler PropertyChanged;
         public string StatusText
@@ -391,6 +399,13 @@ namespace Kinect2Sample
                     this.FacePointsCanvas.Height = infraredFrameDescription.Height;
                     break;
 
+                case DisplayFrameType.FaceGame:
+                    colorFrameDescription = this.kinectSensor.ColorFrameSource.FrameDescription;
+                    this.CurrentFrameDescription = colorFrameDescription;
+                    this.FacePointsCanvas.Width = colorFrameDescription.Width;
+                    this.FacePointsCanvas.Height = colorFrameDescription.Height;
+                    break;
+
                 default:
                     break;
             }
@@ -540,8 +555,61 @@ namespace Kinect2Sample
                         DrawFaceOnInfrared();
                     }
                     break;
+                case DisplayFrameType.FaceGame:
+                    FaceGameLookUpdate();
+                    break;
                 default:
                     break;
+            }
+        }
+
+        private void FaceGameLookUpdate()
+        {
+            this.FacePointsCanvas.Children.Clear();
+            FaceFrameResult[] results = faceManager.GetLatestFaceFrameResults();
+            for (int i = 0; i < results.Count(); i++)
+            {
+                if (results[i] != null)
+                {
+                    foreach (KeyValuePair<FacePointType, Point> facePointKVP in
+                        results[i].FacePointsInColorSpace)
+                    {
+                        if (facePointKVP.Value.X == 0.0 || facePointKVP.Value.Y == 0.0)
+                        {
+                            break;
+                        }
+                        Size ellipseSize = new Size(10, 10);
+                        Ellipse ellipse = new Ellipse();
+                        ellipse.Width = ellipseSize.Width;
+                        ellipse.Height = ellipseSize.Height;
+                        ellipse.Fill = new SolidColorBrush(Colors.Red);
+                        Canvas.SetLeft(ellipse, facePointKVP.Value.X - (ellipseSize.Width / 2));
+                        Canvas.SetTop(ellipse, facePointKVP.Value.Y - (ellipseSize.Height / 2));
+                        this.FacePointsCanvas.Children.Add(ellipse);
+                    }
+
+                    double pitch, roll, yaw = 0;
+
+                    ExtractFaceRotationInDegrees(results[i].FaceRotationQuaternion, out pitch, out yaw, out roll);
+
+                    double pitchDiff = Math.Abs(pitch - prevPitch);
+                    double yawDiff = Math.Abs(yaw - prevYaw);
+                    if (pitchDiff > FACE_AIMING_ACCURACY ||
+                        yawDiff > FACE_AIMING_ACCURACY)
+                    {
+                        this.DXScenePanel.SetYawPitch(
+                            -(float)(yaw * FACE_AIMING_SENSITIVITY), 
+                            (float)(pitch * FACE_AIMING_SENSITIVITY));
+                        prevPitch = pitch;
+                        prevYaw = yaw;
+                    }
+
+                    if (results[i].FaceProperties[FaceProperty.MouthOpen] == DetectionResult.Yes)
+                    {
+                        this.DXScenePanel.Fire();
+                    }
+                    break;
+                }
             }
         }
 
@@ -549,7 +617,7 @@ namespace Kinect2Sample
         {
             FacePointsCanvas.Children.Clear();
             FaceFrameResult[] results = faceManager.GetLatestFaceFrameResults();
-            for (int i = 0; i < results.Count(); i++ )
+            for (int i = 0; i < results.Count(); i++)
             {
                 if (results[i] != null)
                 {
@@ -869,6 +937,19 @@ namespace Kinect2Sample
             this.FrameDisplayImage.Source = this.bitmap;
         }
 
+        private static void ExtractFaceRotationInDegrees(Vector4 rotQuaternion, out double pitch, out double yaw, out double roll)
+        {
+            double x = rotQuaternion.X;
+            double y = rotQuaternion.Y;
+            double z = rotQuaternion.Z;
+            double w = rotQuaternion.W;
+
+            // convert face rotation quaternion to Euler angles in degrees
+            pitch = Math.Atan2(2 * ((y * z) + (w * x)), (w * w) - (x * x) - (y * y) + (z * z)) / Math.PI * 180.0;
+            yaw = Math.Asin(2 * ((w * y) - (x * z))) / Math.PI * 180.0;
+            roll = Math.Atan2(2 * ((x * y) + (w * z)), (w * w) + (x * x) - (y * y) - (z * z)) / Math.PI * 180.0;
+        }
+
         private void InfraredButton_Click(object sender, RoutedEventArgs e)
         {
             SetupCurrentDisplay(DisplayFrameType.Infrared);
@@ -913,6 +994,11 @@ namespace Kinect2Sample
         interface IBufferByteAccess
         {
             unsafe void Buffer(out byte* pByte);
+        }
+
+        private void FaceGameButton_Click(object sender, RoutedEventArgs e)
+        {
+            SetupCurrentDisplay(DisplayFrameType.FaceGame);
         }
     }
 }
