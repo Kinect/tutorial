@@ -29,7 +29,7 @@
     </Page.Resources>
 
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}" >
-        <Grid Margin="30">
+        <Grid x:Name="RootGrid" Margin="30">
             <Grid.RowDefinitions>
                 <RowDefinition Height="70"/>
                 <RowDefinition Height="*"/>
@@ -104,6 +104,12 @@
                     </Button>
                 </StackPanel>
             </ScrollViewer>
+            <Button x:Name="FullScreenBackButton" Style="{StaticResource KinectBackButtonStyle}" 
+                    Grid.Row="1"
+                    HorizontalAlignment="Left"
+                    VerticalAlignment="Top"
+                    Click="FullScreenBackButton_Click"
+                    Visibility="Collapsed"/>
         </Grid>
     </Grid>
 </Page>

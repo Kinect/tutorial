@@ -227,13 +227,12 @@ namespace Kinect2Sample
 
             this.InitializeComponent();
 
-            // new
             this.Loaded += MainPage_Loaded;
         }
 
         void MainPage_Loaded(object sender, RoutedEventArgs e)
         {
-            SetupCurrentDisplay(DEFAULT_DISPLAYFRAMETYPE);
+            SetupCurrentDisplay(DEFAULT_DISPLAYFRAMETYPE, false);
 
             SetupCatAssets();
         }
@@ -288,8 +287,25 @@ namespace Kinect2Sample
             }
         }
 
-        private void SetupCurrentDisplay(DisplayFrameType newDisplayFrameType)
+        private void SetupCurrentDisplay(DisplayFrameType newDisplayFrameType, bool isFullScreen = true)
         {
+            if (isFullScreen)
+            {
+                RootGrid.RowDefinitions.Clear();
+                RootGrid.RowDefinitions.Add(new RowDefinition() { Height = new GridLength(0)});
+                RootGrid.RowDefinitions.Add(new RowDefinition() { Height = new GridLength(1, GridUnitType.Star) });
+                RootGrid.RowDefinitions.Add(new RowDefinition() { Height = new GridLength(0) });
+                FullScreenBackButton.Visibility = Windows.UI.Xaml.Visibility.Visible;
+            }
+            else
+            {
+                RootGrid.RowDefinitions.Clear();
+                RootGrid.RowDefinitions.Add(new RowDefinition() { Height = new GridLength(70) });
+                RootGrid.RowDefinitions.Add(new RowDefinition() { Height = new GridLength(1, GridUnitType.Star) });
+                RootGrid.RowDefinitions.Add(new RowDefinition() { Height = new GridLength(100) });
+                FullScreenBackButton.Visibility = Windows.UI.Xaml.Visibility.Collapsed;
+            }
+
             CurrentDisplayFrameType = newDisplayFrameType;
             // Frames used by more than one type are declared outside the switch
             FrameDescription colorFrameDescription = null;
@@ -990,15 +1006,20 @@ namespace Kinect2Sample
             SetupCurrentDisplay(DisplayFrameType.FaceOnInfrared);
         }
 
+        private void FaceGameButton_Click(object sender, RoutedEventArgs e)
+        {
+            SetupCurrentDisplay(DisplayFrameType.FaceGame);
+        }
+
+        private void FullScreenBackButton_Click(object sender, RoutedEventArgs e)
+        {
+            SetupCurrentDisplay(CurrentDisplayFrameType, false);
+        }
+
         [Guid("905a0fef-bc53-11df-8c49-001e4fc686da"), InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
         interface IBufferByteAccess
         {
             unsafe void Buffer(out byte* pByte);
-        }
-
-        private void FaceGameButton_Click(object sender, RoutedEventArgs e)
-        {
-            SetupCurrentDisplay(DisplayFrameType.FaceGame);
         }
     }
 }

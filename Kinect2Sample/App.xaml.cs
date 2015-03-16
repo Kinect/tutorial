@@ -14,6 +14,7 @@ using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
+using Microsoft.Kinect.Xaml.Controls;
 
 // The Blank Application template is documented at http://go.microsoft.com/fwlink/?LinkId=234227
 
@@ -24,6 +25,11 @@ namespace Kinect2Sample
     /// </summary>
     sealed partial class App : Application
     {
+        /// <summary>
+        /// Gets the app level KinectRegion element, which is created in App.xaml.cs
+        /// </summary>
+        public KinectRegion KinectRegion { get; private set; }
+
         /// <summary>
         /// Initializes the singleton application object.  This is the first line of authored code
         /// executed, and as such is the logical equivalent of main() or WinMain().
@@ -67,8 +73,13 @@ namespace Kinect2Sample
                     //TODO: Load state from previously suspended application
                 }
 
-                // Place the frame in the current Window
-                Window.Current.Content = rootFrame;
+                // Create a CursorLayer that listens to KinectPointerPoints/GestureRecognizers
+                // and works with the affected controls.
+                KinectRegion = new KinectRegion();
+                KinectRegion.Content = rootFrame;
+
+                // Place the frame in the current Window, with a Kinect cursor layer + user viewer control
+                Window.Current.Content = KinectRegion;
             }
 
             if (rootFrame.Content == null)
@@ -81,6 +92,7 @@ namespace Kinect2Sample
             // Ensure the current window is active
             Window.Current.Activate();
         }
+
 
         /// <summary>
         /// Invoked when Navigation to a certain page fails
