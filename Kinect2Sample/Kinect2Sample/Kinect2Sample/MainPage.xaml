@@ -1,0 +1,126 @@
+﻿<Page
+    x:Class="Kinect2Sample.MainPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:Kinect2Sample"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:dx="using:DirectXSceneStore"
+    mc:Ignorable="d">
+    <Page.Resources>
+        <LinearGradientBrush x:Key="ButtonGradientBrush" StartPoint="0,0" EndPoint="0,1" >
+            <GradientStopCollection>
+                <GradientStop Offset="0.0" Color="#3B78C8"/>
+                <GradientStop Offset="1.0" Color="#2C6199"/>
+            </GradientStopCollection>
+        </LinearGradientBrush>
+        <SolidColorBrush x:Key="ButtonBorderBrush" Color="#3B78C8"/>
+        <Style x:Key="FrameSelectorButtonStyle" TargetType="Button">
+            <Setter Property="Background" Value="{StaticResource ButtonGradientBrush}"/>
+            <Setter Property="BorderBrush" Value="{StaticResource ButtonBorderBrush}"/>
+            <Setter Property="BorderThickness" Value="2"/>
+            <Setter Property="Padding" Value="12,4,12,4"/>
+            <Setter Property="Width" Value="120"/>
+            <Setter Property="Height" Value="80"/>
+            <Setter Property="Margin" Value="6"/>
+            <Setter Property="FontSize" Value="20"/>
+        </Style>
+        <local:DisplayTypeToVisibilityConverter x:Key="DisplayTypeToVisibilityConverter"/>
+    </Page.Resources>
+
+    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}" >
+        <Grid x:Name="RootGrid" Margin="30">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="70"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="100"/>
+            </Grid.RowDefinitions>
+            <TextBlock Grid.Row="0" Style="{StaticResource SubheaderTextBlockStyle}"
+                       Text="Kinect For Windows 2"/>
+            <StackPanel Grid.Row="0" Orientation="Horizontal" 
+                        HorizontalAlignment="Right" VerticalAlignment="Bottom">
+                <TextBlock Text="Kinect Status:  "/>
+                <TextBlock Text="{Binding StatusText}"/>
+                <TextBlock Text=", FrameWidth =  "/>
+                <TextBlock Text="{Binding CurrentFrameDescription.Width}"/>
+                <TextBlock Text=", FrameHeight =  "/>
+                <TextBlock Text="{Binding CurrentFrameDescription.Height}"/>
+            </StackPanel>
+            <Image x:Name="FrameBackground" Source="Assets/Background.png" Grid.Row="1" Stretch="Fill" 
+                   Visibility="{Binding CurrentDisplayFrameType, 
+                   Converter={StaticResource DisplayTypeToVisibilityConverter}, 
+                   ConverterParameter=BackgroundRemoved }"/>
+            <Image x:Name="FrameDisplayImage" Grid.Row="1" Stretch="Uniform"/>
+            <Viewbox Grid.Row="1" HorizontalAlignment="Center">
+                <Grid x:Name="BodyJointsGrid" Background="Transparent" Width="512" Height="414"/>
+            </Viewbox>
+            <dx:ScenePanel x:Name="DXScenePanel" Grid.Row="1" Margin="20"
+                   Visibility="{Binding CurrentDisplayFrameType, 
+                   Converter={StaticResource DisplayTypeToVisibilityConverter}, 
+                   ConverterParameter=FaceGame }" />
+            <Viewbox Grid.Row="1" HorizontalAlignment="Center">
+                <Canvas x:Name="FacePointsCanvas"/>
+            </Viewbox>
+            <StackPanel Grid.Row="1" Orientation="Vertical" HorizontalAlignment="Left"
+                        Visibility="{Binding CurrentDisplayFrameType,
+                   Converter={StaticResource DisplayTypeToVisibilityConverter}, 
+                   ConverterParameter=BackgroundRemoved }">
+                <TextBlock Text="DepthMax"/>
+                <TextBlock Text="{Binding DepthMax}"/>
+                <Slider Width="250" Minimum="500" Maximum="8000" Value="{Binding DepthMax, Mode=TwoWay}"/>
+            </StackPanel>
+            <ScrollViewer Grid.Row="2" ScrollViewer.HorizontalScrollBarVisibility="Auto" 
+                          ScrollViewer.VerticalScrollBarVisibility="Auto">
+                <StackPanel Orientation="Horizontal">
+                    <Button Content="Infrared" Style="{StaticResource FrameSelectorButtonStyle}"
+                            Click="InfraredButton_Click"/>
+                    <Button Content="Color" Style="{StaticResource FrameSelectorButtonStyle}" 
+                            Click="ColorButton_Click"/>
+                    <Button Content="Depth" Style="{StaticResource FrameSelectorButtonStyle}"
+                            Click="DepthButton_Click"/>
+                    <Button Style="{StaticResource FrameSelectorButtonStyle}"
+                            Click="BodyMaskButton_Click">
+                        <TextBlock Text="Body Mask" TextWrapping="Wrap"/>
+                    </Button>
+                    <Button Style="{StaticResource FrameSelectorButtonStyle}"
+                            Click="BodyJointsButton_Click">
+                        <TextBlock Text="Body Joints" TextWrapping="Wrap"/>
+                    </Button>
+                    <Button Style="{StaticResource FrameSelectorButtonStyle}"
+                            Click="BackgroundButton_Click">
+                        <TextBlock Text="BG Removed" TextWrapping="Wrap" />
+                    </Button>
+                    <Button Style="{StaticResource FrameSelectorButtonStyle}"
+                            Click="ColorFaceButton_Click">
+                        <TextBlock Text="Color Face" TextWrapping="Wrap" />
+                    </Button>
+                    <Button Style="{StaticResource FrameSelectorButtonStyle}"
+                            Click="InfraredFaceButton_Click">
+                        <TextBlock Text="Infrared Face" TextWrapping="Wrap" />
+                    </Button>
+                    <Button Style="{StaticResource FrameSelectorButtonStyle}"
+                            Click="FaceGameButton_Click" x:Name="JessesButton">
+                        <TextBlock Text="Face Game" TextWrapping="Wrap" />
+                    </Button>
+                </StackPanel>
+            </ScrollViewer>
+            <!--Lab13-->
+            <TextBlock x:Name="GestureVisual"
+                Grid.Row="1"
+                Text="Detecting Gesture"
+                FontSize="30"
+                Foreground="White"
+                HorizontalAlignment="Right"
+                VerticalAlignment="Top"
+                Opacity="0.0">
+            </TextBlock>
+            <Button x:Name="FullScreenBackButton" Style="{StaticResource KinectBackButtonStyle}" 
+                    Grid.Row="1"
+                    HorizontalAlignment="Left"
+                    VerticalAlignment="Top"
+                    Click="FullScreenBackButton_Click"
+                    Visibility="Collapsed"/>
+            
+        </Grid>
+    </Grid>
+</Page>

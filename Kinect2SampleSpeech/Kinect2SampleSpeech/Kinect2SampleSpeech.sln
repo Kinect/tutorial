@@ -1,0 +1,28 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2013
+VisualStudioVersion = 12.0.31101.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kinect2SampleSpeech", "Kinect2SampleSpeech\Kinect2SampleSpeech.csproj", "{C0661BEF-6F7F-4179-BD18-69381D0CEF77}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x64 = Debug|x64
+		Debug|x86 = Debug|x86
+		Release|x64 = Release|x64
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{C0661BEF-6F7F-4179-BD18-69381D0CEF77}.Debug|x64.ActiveCfg = Debug|x64
+		{C0661BEF-6F7F-4179-BD18-69381D0CEF77}.Debug|x64.Build.0 = Debug|x64
+		{C0661BEF-6F7F-4179-BD18-69381D0CEF77}.Debug|x64.Deploy.0 = Debug|x64
+		{C0661BEF-6F7F-4179-BD18-69381D0CEF77}.Debug|x86.ActiveCfg = Debug|x64
+		{C0661BEF-6F7F-4179-BD18-69381D0CEF77}.Release|x64.ActiveCfg = Release|x64
+		{C0661BEF-6F7F-4179-BD18-69381D0CEF77}.Release|x64.Build.0 = Release|x64
+		{C0661BEF-6F7F-4179-BD18-69381D0CEF77}.Release|x64.Deploy.0 = Release|x64
+		{C0661BEF-6F7F-4179-BD18-69381D0CEF77}.Release|x86.ActiveCfg = Release|x64
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

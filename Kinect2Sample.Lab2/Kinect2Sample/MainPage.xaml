@@ -1,0 +1,31 @@
+﻿<Page
+    x:Class="Kinect2Sample.MainPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:Kinect2Sample"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d">
+
+    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}" >
+        <Grid Margin="30">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="70"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="100"/>
+            </Grid.RowDefinitions>
+            <TextBlock Grid.Row="0" Style="{StaticResource SubheaderTextBlockStyle}"
+                       Text="Kinect For Windows 2"/>
+            <StackPanel Grid.Row="0" Orientation="Horizontal" 
+                        HorizontalAlignment="Right" VerticalAlignment="Bottom">
+                <TextBlock Text="Kinect Status:  "/>
+                <TextBlock Text="{Binding StatusText}"/>
+                <TextBlock Text=", FrameWidth =  "/>
+                <TextBlock Text="{Binding CurrentFrameDescription.Width}"/>
+                <TextBlock Text=", FrameHeight =  "/>
+                <TextBlock Text="{Binding CurrentFrameDescription.Height}"/>
+            </StackPanel>
+            <Image x:Name="FrameDisplayImage" Grid.Row="1" Stretch="Uniform"/>
+        </Grid>
+    </Grid>
+</Page>
