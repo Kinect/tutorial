@@ -21,7 +21,8 @@ namespace Kinect2Sample
     public enum DisplayFrameType
     {
         Infrared,
-        Color
+        Color,
+        Depth
     }
 
     public sealed partial class MainPage : Page, INotifyPropertyChanged
@@ -80,6 +81,10 @@ namespace Kinect2Sample
         private ushort[] infraredFrameData = null;
         private byte[] infraredPixels = null;
 
+        //Depth Frame
+        private ushort[] depthFrameData = null;
+        private byte[] depthPixels = null;
+
         public event PropertyChangedEventHandler PropertyChanged;
         public string StatusText
         {
@@ -120,7 +125,7 @@ namespace Kinect2Sample
 
             SetupCurrentDisplay(DEFAULT_DISPLAYFRAMETYPE);
 
-            this.multiSourceFrameReader = this.kinectSensor.OpenMultiSourceFrameReader(FrameSourceTypes.Infrared | FrameSourceTypes.Color);
+            this.multiSourceFrameReader = this.kinectSensor.OpenMultiSourceFrameReader(FrameSourceTypes.Infrared | FrameSourceTypes.Color | FrameSourceTypes.Depth);
 
             this.multiSourceFrameReader.MultiSourceFrameArrived += this.Reader_MultiSourceFrameArrived;
 
@@ -157,6 +162,15 @@ namespace Kinect2Sample
                     this.bitmap = new WriteableBitmap(colorFrameDescription.Width, colorFrameDescription.Height);
                     break;
 
+                case DisplayFrameType.Depth:
+                    FrameDescription depthFrameDescription = this.kinectSensor.DepthFrameSource.FrameDescription;
+                    this.CurrentFrameDescription = depthFrameDescription;
+                    // allocate space to put the pixels being received and converted
+                    this.depthFrameData = new ushort[depthFrameDescription.Width * depthFrameDescription.Height];
+                    this.depthPixels = new byte[depthFrameDescription.Width * depthFrameDescription.Height * BytesPerPixel];
+                    this.bitmap = new WriteableBitmap(depthFrameDescription.Width, depthFrameDescription.Height);
+                    break;
+
                 default:
                     break;
             }
@@ -191,8 +205,73 @@ namespace Kinect2Sample
                         ShowColorFrame(colorFrame);
                     }
                     break;
+                case DisplayFrameType.Depth:
+                    using (DepthFrame depthFrame =
+                        multiSourceFrame.DepthFrameReference.AcquireFrame())
+                    {
+                        ShowDepthFrame(depthFrame);
+                    }
+                    break;
                 default:
                     break;
+            }
+        }
+
+        private void ShowDepthFrame(DepthFrame depthFrame)
+        {
+            bool depthFrameProcessed = false;
+            ushort minDepth = 0;
+            ushort maxDepth = 0;
+
+            if (depthFrame != null)
+            {
+                FrameDescription depthFrameDescription = depthFrame.FrameDescription;
+
+                // verify data and write the new infrared frame data to the display bitmap
+                if (((depthFrameDescription.Width * depthFrameDescription.Height)
+                    == this.infraredFrameData.Length) &&
+                    (depthFrameDescription.Width == this.bitmap.PixelWidth) &&
+                    (depthFrameDescription.Height == this.bitmap.PixelHeight))
+                {
+                    // Copy the pixel data from the image to a temporary array
+                    depthFrame.CopyFrameDataToArray(this.depthFrameData);
+
+                    minDepth = depthFrame.DepthMinReliableDistance;
+                    maxDepth = depthFrame.DepthMaxReliableDistance;
+                    //maxDepth = 8000;
+
+                    depthFrameProcessed = true;
+                }
+            }
+
+            // we got a frame, convert and render
+            if (depthFrameProcessed)
+            {
+                ConvertDepthDataToPixels(minDepth, maxDepth);
+                RenderPixelArray(this.depthPixels);
+            }
+        }
+
+        private void ConvertDepthDataToPixels(ushort minDepth, ushort maxDepth)
+        {
+            int colorPixelIndex = 0;
+            // Shape the depth to the range of a byte
+            int mapDepthToByte = maxDepth / 256;
+
+            for (int i = 0; i < this.depthFrameData.Length; ++i)
+            {
+                // Get the depth for this pixel
+                ushort depth = this.depthFrameData[i];
+
+                // To convert to a byte, we're mapping the depth value to the byte range.
+                // Values outside the reliable depth range are mapped to 0 (black).
+                byte intensity = (byte)(depth >= minDepth &&
+                    depth <= maxDepth ? (depth / mapDepthToByte) : 0);
+
+                this.depthPixels[colorPixelIndex++] = intensity; //Blue
+                this.depthPixels[colorPixelIndex++] = intensity; //Green
+                this.depthPixels[colorPixelIndex++] = intensity; //Red
+                this.depthPixels[colorPixelIndex++] = 255; //Alpha
             }
         }
 
@@ -236,7 +315,7 @@ namespace Kinect2Sample
                 FrameDescription infraredFrameDescription = infraredFrame.FrameDescription;
 
                 // verify data and write the new infrared frame data to the display bitmap
-                if (((infraredFrameDescription.Width * infraredFrameDescription.Height) 
+                if (((infraredFrameDescription.Width * infraredFrameDescription.Height)
                     == this.infraredFrameData.Length) &&
                     (infraredFrameDescription.Width == this.bitmap.PixelWidth) &&
                     (infraredFrameDescription.Height == this.bitmap.PixelHeight))
@@ -251,8 +330,8 @@ namespace Kinect2Sample
             // we got a frame, convert and render
             if (infraredFrameProcessed)
             {
-                ConvertInfraredDataToPixels();
-                RenderPixelArray(this.infraredPixels);
+                this.ConvertInfraredDataToPixels();
+                this.RenderPixelArray(this.infraredPixels);
             }
         }
 
@@ -301,6 +380,11 @@ namespace Kinect2Sample
         private void ColorButton_Click(object sender, RoutedEventArgs e)
         {
             SetupCurrentDisplay(DisplayFrameType.Color);
+        }
+
+        private void DepthButton_Click(object sender, RoutedEventArgs e)
+        {
+            SetupCurrentDisplay(DisplayFrameType.Depth);
         }
 
     }

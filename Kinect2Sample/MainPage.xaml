@@ -52,6 +52,8 @@
                             Click="InfraredButton_Click"/>
                     <Button Content="Color" Style="{StaticResource FrameSelectorButtonStyle}" 
                             Click="ColorButton_Click"/>
+                    <Button Content="Depth" Style="{StaticResource FrameSelectorButtonStyle}"
+                            Click="DepthButton_Click"/>
                 </StackPanel>
             </ScrollViewer>
         </Grid>
