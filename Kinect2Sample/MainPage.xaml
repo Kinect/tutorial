@@ -53,6 +53,9 @@
             <Viewbox Grid.Row="1" HorizontalAlignment="Center">
                 <Grid x:Name="BodyJointsGrid" Background="Transparent" Width="512" Height="414"/>
             </Viewbox>
+            <Viewbox Grid.Row="1" HorizontalAlignment="Center">
+                <Canvas x:Name="FacePointsCanvas"/>
+            </Viewbox>
             <StackPanel Grid.Row="1" Orientation="Vertical" HorizontalAlignment="Left"
                         Visibility="{Binding CurrentDisplayFrameType,
                    Converter={StaticResource DisplayTypeToVisibilityConverter}, 
@@ -81,6 +84,14 @@
                     <Button Style="{StaticResource FrameSelectorButtonStyle}"
                             Click="BackgroundButton_Click">
                         <TextBlock Text="BG Removed" TextWrapping="Wrap" />
+                    </Button>
+                    <Button Style="{StaticResource FrameSelectorButtonStyle}"
+                            Click="ColorFaceButton_Click">
+                        <TextBlock Text="Color Face" TextWrapping="Wrap" />
+                    </Button>
+                    <Button Style="{StaticResource FrameSelectorButtonStyle}"
+                            Click="InfraredFaceButton_Click" x:Name="InfraredFaceButton">
+                        <TextBlock Text="Infrared Face" TextWrapping="Wrap" />
                     </Button>
                 </StackPanel>
             </ScrollViewer>

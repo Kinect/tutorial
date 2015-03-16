@@ -19,6 +19,9 @@ using Windows.Storage.Streams;
 using System.Runtime.InteropServices;
 using System.Diagnostics;
 using Windows.UI.Xaml.Shapes;
+using Windows.UI;
+using KinectFace;
+using Microsoft.Kinect.Face;
 
 namespace Kinect2Sample
 {
@@ -29,7 +32,9 @@ namespace Kinect2Sample
         Depth,
         BodyMask,
         BodyJoints,
-        BackgroundRemoved
+        BackgroundRemoved,
+        FaceOnColor,
+        FaceOnInfrared
     }
 
     public sealed partial class MainPage : Page, INotifyPropertyChanged
@@ -101,6 +106,13 @@ namespace Kinect2Sample
         //Body Joints are drawn here
         private Canvas drawingCanvas;
 
+        //FaceManager library
+        private FaceManager faceManager;
+        private FaceFrameFeatures faceFrameFeatures;
+
+        //Cat assets
+        private Image[] catEyeRightOpen, catEyeRightClosed, catEyeLeftOpen, catEyeLeftClosed, catNose;
+
         public event PropertyChangedEventHandler PropertyChanged;
         public string StatusText
         {
@@ -171,13 +183,30 @@ namespace Kinect2Sample
             // one sensor is currently supported
             this.kinectSensor = KinectSensor.GetDefault();
 
-            SetupCurrentDisplay(DEFAULT_DISPLAYFRAMETYPE);
-
             this.coordinateMapper = this.kinectSensor.CoordinateMapper;
 
             this.multiSourceFrameReader = this.kinectSensor.OpenMultiSourceFrameReader(FrameSourceTypes.Infrared | FrameSourceTypes.Color | FrameSourceTypes.Depth | FrameSourceTypes.BodyIndex | FrameSourceTypes.Body);
 
             this.multiSourceFrameReader.MultiSourceFrameArrived += this.Reader_MultiSourceFrameArrived;
+
+            // specify the required face frame results
+            // init with all the features so they are accessible later.
+            this.faceFrameFeatures =
+                FaceFrameFeatures.BoundingBoxInColorSpace
+                | FaceFrameFeatures.PointsInColorSpace
+                | FaceFrameFeatures.BoundingBoxInInfraredSpace
+                | FaceFrameFeatures.PointsInInfraredSpace
+                | FaceFrameFeatures.RotationOrientation
+                | FaceFrameFeatures.FaceEngagement
+                | FaceFrameFeatures.Glasses
+                | FaceFrameFeatures.Happy
+                | FaceFrameFeatures.LeftEyeClosed
+                | FaceFrameFeatures.RightEyeClosed
+                | FaceFrameFeatures.LookingAway
+                | FaceFrameFeatures.MouthMoved
+                | FaceFrameFeatures.MouthOpen;
+
+            this.faceManager = new FaceManager(this.kinectSensor, this.faceFrameFeatures);
 
             // set IsAvailableChanged event notifier
             this.kinectSensor.IsAvailableChanged += this.Sensor_IsAvailableChanged;
@@ -189,6 +218,66 @@ namespace Kinect2Sample
             this.kinectSensor.Open();
 
             this.InitializeComponent();
+
+            // new
+            this.Loaded += MainPage_Loaded;
+        }
+
+        void MainPage_Loaded(object sender, RoutedEventArgs e)
+        {
+            SetupCurrentDisplay(DEFAULT_DISPLAYFRAMETYPE);
+
+            SetupCatAssets();
+        }
+
+        private void SetupCatAssets()
+        {
+            ScaleTransform flipTransform = new ScaleTransform() { ScaleX = -1.0 };
+            int bodyCount = kinectSensor.BodyFrameSource.BodyCount;
+            catEyeRightOpen = new Image[bodyCount];
+            catEyeRightClosed = new Image[bodyCount];
+            catEyeLeftOpen = new Image[bodyCount];
+            catEyeLeftClosed = new Image[bodyCount];
+            catNose = new Image[bodyCount];
+
+            for (int i = 0; i < kinectSensor.BodyFrameSource.BodyCount; i++)
+            {
+                catEyeRightOpen[i] = new Image()
+                {
+                    Source = new BitmapImage(new Uri(this.BaseUri, "Assets/CatEye_left_open.png")),
+                    Width = 30,
+                    Height = 20,
+                    RenderTransformOrigin = new Point(0.5, 0.5),
+                    RenderTransform = flipTransform
+                };
+                catEyeRightClosed[i] = new Image()
+                {
+                    Source = new BitmapImage(new Uri(this.BaseUri, "Assets/CatEye_left_closed.png")),
+                    Width = 30,
+                    Height = 20,
+                    RenderTransformOrigin = new Point(0.5, 0.5),
+                    RenderTransform = flipTransform
+                };
+                catEyeLeftOpen[i] = new Image()
+                {
+                    Source = new BitmapImage(new Uri(this.BaseUri, "Assets/CatEye_left_open.png")),
+                    Width = 30,
+                    Height = 20
+                };
+                catEyeLeftClosed[i] = new Image()
+                {
+                    Source = new BitmapImage(new Uri(this.BaseUri, "Assets/CatEye_left_closed.png")),
+                    Width = 30,
+                    Height = 20
+                };
+                catEyeLeftClosed[i].RenderTransformOrigin = new Point(0.5, 0.5);
+                catNose[i] = new Image()
+                {
+                    Source = new BitmapImage(new Uri(this.BaseUri, "Assets/CatNose.png")),
+                    Width = 40,
+                    Height = 25
+                };
+            }
         }
 
         private void SetupCurrentDisplay(DisplayFrameType newDisplayFrameType)
@@ -197,7 +286,9 @@ namespace Kinect2Sample
             // Frames used by more than one type are declared outside the switch
             FrameDescription colorFrameDescription = null;
             FrameDescription depthFrameDescription = null;
+            FrameDescription infraredFrameDescription = null;
             // reset the display methods
+            FacePointsCanvas.Children.Clear();
             if (this.BodyJointsGrid != null)
             {
                 this.BodyJointsGrid.Visibility = Visibility.Collapsed;
@@ -209,7 +300,7 @@ namespace Kinect2Sample
             switch (CurrentDisplayFrameType)
             {
                 case DisplayFrameType.Infrared:
-                    FrameDescription infraredFrameDescription = this.kinectSensor.InfraredFrameSource.FrameDescription;
+                    infraredFrameDescription = this.kinectSensor.InfraredFrameSource.FrameDescription;
                     this.CurrentFrameDescription = infraredFrameDescription;
                     // allocate space to put the pixels being received and converted
                     this.infraredFrameData = new ushort[infraredFrameDescription.Width * infraredFrameDescription.Height];
@@ -242,6 +333,7 @@ namespace Kinect2Sample
                     break;
 
                 case DisplayFrameType.BodyJoints:
+                    depthFrameDescription = this.kinectSensor.DepthFrameSource.FrameDescription;
                     // instantiate a new Canvas
                     this.drawingCanvas = new Canvas();
                     // set the clip rectangle to prevent rendering outside the canvas
@@ -267,6 +359,38 @@ namespace Kinect2Sample
                     this.colorMappedToDepthPoints = new DepthSpacePoint[colorFrameDescription.Width * colorFrameDescription.Height];
                     this.bitmap = new WriteableBitmap(colorFrameDescription.Width, colorFrameDescription.Height);
                     break;
+                case DisplayFrameType.FaceOnColor:
+                    colorFrameDescription = this.kinectSensor.ColorFrameSource.FrameDescription;
+                    this.CurrentFrameDescription = colorFrameDescription;
+                    // create the bitmap to display
+                    this.bitmap = new WriteableBitmap(colorFrameDescription.Width, colorFrameDescription.Height);
+                    this.FacePointsCanvas.Width = colorFrameDescription.Width;
+                    this.FacePointsCanvas.Height = colorFrameDescription.Height;
+                    this.faceFrameFeatures =
+                            FaceFrameFeatures.BoundingBoxInColorSpace
+                            | FaceFrameFeatures.PointsInColorSpace
+                            | FaceFrameFeatures.RotationOrientation
+                            | FaceFrameFeatures.FaceEngagement
+                            | FaceFrameFeatures.Glasses
+                            | FaceFrameFeatures.Happy
+                            | FaceFrameFeatures.LeftEyeClosed
+                            | FaceFrameFeatures.RightEyeClosed
+                            | FaceFrameFeatures.LookingAway
+                            | FaceFrameFeatures.MouthMoved
+                            | FaceFrameFeatures.MouthOpen;
+                    break;
+
+                case DisplayFrameType.FaceOnInfrared:
+                    infraredFrameDescription = this.kinectSensor.InfraredFrameSource.FrameDescription;
+                    this.CurrentFrameDescription = infraredFrameDescription;
+                    // allocate space to put the pixels being received and converted
+                    this.infraredFrameData = new ushort[infraredFrameDescription.Width * infraredFrameDescription.Height];
+                    this.infraredPixels = new byte[infraredFrameDescription.Width * infraredFrameDescription.Height * BytesPerPixel];
+                    this.bitmap = new WriteableBitmap(infraredFrameDescription.Width, infraredFrameDescription.Height);
+                    this.FacePointsCanvas.Width = infraredFrameDescription.Width;
+                    this.FacePointsCanvas.Height = infraredFrameDescription.Height;
+                    break;
+
                 default:
                     break;
             }
@@ -295,7 +419,6 @@ namespace Kinect2Sample
             IBuffer bodyIndexFrameData = null;
             // Com interface for unsafe byte manipulation
             IBufferByteAccess bufferByteAccess = null;
-
             switch (CurrentDisplayFrameType)
             {
                 case DisplayFrameType.Infrared:
@@ -403,8 +526,71 @@ namespace Kinect2Sample
                         }
                     }
                     break;
+                case DisplayFrameType.FaceOnColor:
+                    using (colorFrame = multiSourceFrame.ColorFrameReference.AcquireFrame())
+                    {
+                        ShowColorFrame(colorFrame);
+                        this.faceManager.DrawLatestFaceResults(this.FacePointsCanvas, this.faceFrameFeatures);
+                    }
+                    break;
+                case DisplayFrameType.FaceOnInfrared:
+                    using (infraredFrame = multiSourceFrame.InfraredFrameReference.AcquireFrame())
+                    {
+                        ShowInfraredFrame(infraredFrame);
+                        DrawFaceOnInfrared();
+                    }
+                    break;
                 default:
                     break;
+            }
+        }
+
+        private void DrawFaceOnInfrared()
+        {
+            FacePointsCanvas.Children.Clear();
+            FaceFrameResult[] results = faceManager.GetLatestFaceFrameResults();
+            for (int i = 0; i < results.Count(); i++ )
+            {
+                if (results[i] != null)
+                {
+                    Point rightEyePoint = results[i].FacePointsInInfraredSpace[FacePointType.EyeRight];
+                    Point leftEyePoint = results[i].FacePointsInInfraredSpace[FacePointType.EyeLeft];
+                    Point nosePoint = results[i].FacePointsInInfraredSpace[FacePointType.Nose];
+                    bool rightEyeIsClosed = results[i].FaceProperties[FaceProperty.RightEyeClosed] == DetectionResult.Yes ||
+                        results[i].FaceProperties[FaceProperty.RightEyeClosed] == DetectionResult.Maybe;
+                    bool leftEyeIsClosed = results[i].FaceProperties[FaceProperty.LeftEyeClosed] == DetectionResult.Yes ||
+                        results[i].FaceProperties[FaceProperty.LeftEyeClosed] == DetectionResult.Maybe;
+
+                    if (leftEyeIsClosed)
+                    {
+                        Canvas.SetLeft(catEyeLeftClosed[i], leftEyePoint.X - (catEyeLeftClosed[i].Width / 2));
+                        Canvas.SetTop(catEyeLeftClosed[i], leftEyePoint.Y - (catEyeLeftClosed[i].Height / 2));
+                        this.FacePointsCanvas.Children.Add(catEyeLeftClosed[i]);
+                    }
+                    else
+                    {
+                        Canvas.SetLeft(catEyeLeftOpen[i], leftEyePoint.X - (catEyeLeftOpen[i].Width / 2));
+                        Canvas.SetTop(catEyeLeftOpen[i], leftEyePoint.Y - (catEyeLeftOpen[i].Height / 2));
+                        this.FacePointsCanvas.Children.Add(catEyeLeftOpen[i]);
+                    }
+
+                    if (rightEyeIsClosed)
+                    {
+                        Canvas.SetLeft(catEyeRightClosed[i], rightEyePoint.X - (catEyeRightClosed[i].Width / 2));
+                        Canvas.SetTop(catEyeRightClosed[i], rightEyePoint.Y - (catEyeRightClosed[i].Height / 2));
+                        this.FacePointsCanvas.Children.Add(catEyeRightClosed[i]);
+                    }
+                    else
+                    {
+                        Canvas.SetLeft(catEyeRightOpen[i], rightEyePoint.X - (catEyeRightOpen[i].Width / 2));
+                        Canvas.SetTop(catEyeRightOpen[i], rightEyePoint.Y - (catEyeRightOpen[i].Height / 2));
+                        this.FacePointsCanvas.Children.Add(catEyeRightOpen[i]);
+                    }
+
+                    Canvas.SetLeft(catNose[i], nosePoint.X - (catNose[i].Width / 2));
+                    Canvas.SetTop(catNose[i], nosePoint.Y);
+                    this.FacePointsCanvas.Children.Add(catNose[i]);
+                }
             }
         }
 
@@ -449,8 +635,8 @@ namespace Kinect2Sample
                             }
                         }
                     }
-                // no matching depth. zero out the pixel.
-                bitmapPixelsPointer[colorIndex] = 0;
+                    // no matching depth. zero out the pixel.
+                    bitmapPixelsPointer[colorIndex] = 0;
                 }
             }
             this.bitmap.Invalidate();
@@ -683,8 +869,6 @@ namespace Kinect2Sample
             this.FrameDisplayImage.Source = this.bitmap;
         }
 
-
-
         private void InfraredButton_Click(object sender, RoutedEventArgs e)
         {
             SetupCurrentDisplay(DisplayFrameType.Infrared);
@@ -715,14 +899,20 @@ namespace Kinect2Sample
             SetupCurrentDisplay(DisplayFrameType.BackgroundRemoved);
         }
 
+        private void ColorFaceButton_Click(object sender, RoutedEventArgs e)
+        {
+            SetupCurrentDisplay(DisplayFrameType.FaceOnColor);
+        }
+
+        private void InfraredFaceButton_Click(object sender, RoutedEventArgs e)
+        {
+            SetupCurrentDisplay(DisplayFrameType.FaceOnInfrared);
+        }
 
         [Guid("905a0fef-bc53-11df-8c49-001e4fc686da"), InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
         interface IBufferByteAccess
         {
             unsafe void Buffer(out byte* pByte);
         }
-
-
-
     }
 }
