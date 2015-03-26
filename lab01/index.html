@@ -1,181 +1,224 @@
 ﻿<!DOCTYPE html>
 <html>
-	<head>
-	  <meta charset="utf-8">
-	  <meta http-equiv="X-UA-Compatible" content="chrome=1">
-	  <title>Kinect 2 for Windows - Hands On Lab 1</title>
-	  <link rel="stylesheet" href="../stylesheets/styles.css">
-	  <link rel="stylesheet" href="../stylesheets/pygment_trac.css">
-	  <link rel="stylesheet" href="http://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.min.css">
-	  <script src="../javascripts/scale.fix.js"></script>
-	  <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
-	<!--[if lt IE 9]>
-		<script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
-		<![endif]-->
-	</head>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Kinect 2 for Windows - Hands On Lab 1</title>
+    <link rel="stylesheet" href="../stylesheets/styles.css">
+    <link rel="stylesheet" href="../stylesheets/pygment_trac.css">
+    <link rel="stylesheet" href="http://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.min.css">
+    <script src="../javascripts/scale.fix.js"></script>
+    <!--<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">-->
+    <!--[if lt IE 9]>
+        <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+</head>
 <body>
-<div class="wrapper">
-      <header>
-        <h1 class="header">Kinect 2 for Windows Demo App</h1>
-        <p class="header">The Hands On Labs to complete a sample application for Windows 8.1 and the Kinect 2 for Windows</p>
-        <ul>
-		  <li ><a class="buttons home" href="../index.html">Home</a></li>
-		  <li class="download"><a class="buttons" href="https://github.com/MicrosoftKinect2/ms-Kinect2Demo-Win81/zipball/master">Complete App</a></li>
-          <li><a class="buttons github" href="https://github.com/MicrosoftKinect2/ms-Kinect2Demo-Win81">View On GitHub</a></li>
-        </ul>
-      </header>
-      <section>
-	  
-<div>  
-<nav id="labs_dropdown">
-<ul>
-  <li><a style="padding: 0px;"><h3 style="color:#FFF; padding: 10px;">Lab 01 - Project Setup<i style="float:right; font-size: 16px; padding-top: 0.5%;" class="fa fa-chevron-down"></i></h3></a>
-    <ul>
-		<li class="download"><a href="index.html">01 - Project Setup</a></li>
-		<li class="download"><a href="../lab02/index.html">02 - Infrared Data</a></li>
-		<li class="download"><a href="../lab03/index.html">03 - Color Data</a></li>
-		<li class="download"><a href="../lab04/index.html">04 - Depth Data</a></li>
-		<li class="download"><a href="../lab05/index.html">05 - Body Mask</a></li>
-		<li class="download"><a href="../lab06/index.html">06 - Body Data</a></li>
-		<li class="download"><a href="../lab07/index.html">07 - Background Removal</a></li>
-		<li class="download"><a href="../lab08/index.html">08 - Face Tracking</a></li>
-		<li class="download"><a href="../lab09/index.html">09 - Face Game</a></li>
-		<li class="download"><a href="../lab10/index.html">10 - Hand Cursor</a></li>
-		<li class="download"><a href="../lab11/index.html">11 - Kinect Studio</a></li>
-		<li class="download"><a href="../lab12/index.html">12 - Gesture Builder</a></li>
-		<li class="download"><a href="../lab13/index.html">13 - Bing Speech</a></li>
-		<li class="download"><a href="../lab14/index.html">14 - Tracking Strategies</a></li>
-	</ul>
-</ul>
-</div>
+    <div class="wrapper">
+        <header>
+            <h1 class="header">Kinect 2 for Windows Demo App</h1>
+            <p class="header">The Hands On Labs to complete a sample application for Windows 8.1 and the Kinect 2 for Windows</p>
+            <ul>
+                <li><a class="buttons home" href="../index.html">Home</a></li>
+                <li class="download"><a class="buttons" href="https://github.com/MicrosoftKinect2/ms-Kinect2Demo-Win81/zipball/master">Complete App</a></li>
+                <li><a class="buttons github" href="https://github.com/MicrosoftKinect2/ms-Kinect2Demo-Win81">View On GitHub</a></li>
+            </ul>
+        </header>
+        <section>
 
-<h1><a id="kinect-2-hands-on-labs" class="anchor" href="#kinect-2-hands-on-labs" aria-hidden="true"><span class="octicon octicon-link"></span></a>Kinect 2 Hands On Labs</h1>
-	<img alt="Kinect On Image" src="images/lab01img08.jpg">
-<h2>
-<a id="lab-1-initial-kinect20-project-setup" class="anchor" href="#lab-1-initial-kinect20-project-setup" aria-hidden="true"><span class="octicon octicon-link"></span></a>Lab 1: Initial Kinect2.0
-Project Setup</h2>
-<p><strong>Estimated Time to Complete</strong>: 10min</p>
-<p>This lab is part of a series which takes you through the creation
-process of a Windows 8.1 Store Application which uses every available
-feature of the Kinect 2. This is the first lab in the series, and it
-shows you how to set up the initial development environment to build an
-app using Kinect 2.</p>
-<p>This lab will explain the following:
-<ol>
-<li>How to make a new project for Windows 8.1
-<li>How to download and reference the Kinect 2.0 SDK.
-<li>How to get the Kinect 2 sensor in code and build a successful app.
-<li>How to open the sensor and turn on the Kinect 2 from code.
-</ol></p>
-<p>This lab comes with a starting point solution and a completed
-solution of the covered exercises if required.</p>
+            <div>
+                <nav id="labs_dropdown">
+                    <ul>
+                        <li>
+                            <a style="padding: 0px;"><h3 style="color:#FFF; padding: 10px;">Lab 01 - Project Setup<i style="float:right; font-size: 16px; padding-top: 0.5%;" class="fa fa-chevron-down"></i></h3></a>
+                            <ul>
+                                <li class="download"><a href="index.html">01 - Project Setup</a></li>
+                                <li class="download"><a href="../lab02/index.html">02 - Infrared Data</a></li>
+                                <li class="download"><a href="../lab03/index.html">03 - Color Data</a></li>
+                                <li class="download"><a href="../lab04/index.html">04 - Depth Data</a></li>
+                                <li class="download"><a href="../lab05/index.html">05 - Body Mask</a></li>
+                                <li class="download"><a href="../lab06/index.html">06 - Body Data</a></li>
+                                <li class="download"><a href="../lab07/index.html">07 - Background Removal</a></li>
+                                <li class="download"><a href="../lab08/index.html">08 - Face Tracking</a></li>
+                                <li class="download"><a href="../lab09/index.html">09 - Face Game</a></li>
+                                <li class="download"><a href="../lab10/index.html">10 - Hand Cursor</a></li>
+                                <li class="download"><a href="../lab11/index.html">11 - Kinect Studio</a></li>
+                                <li class="download"><a href="../lab12/index.html">12 - Gesture Builder</a></li>
+                                <li class="download"><a href="../lab13/index.html">13 - Bing Speech</a></li>
+                                <li class="download"><a href="../lab14/index.html">14 - Tracking Strategies</a></li>
+                            </ul>
+                    </ul>
+            </div>
 
-<h1>
-<a id="exercise-1---project-setup" class="anchor" href="#exercise-1---project-setup" aria-hidden="true"><span class="octicon octicon-link"></span></a>Exercise 1 - Project Setup</h1>
-<p>This exercise will show you how to set up the development
-environment for building a Kinect for Windows 2 application in Windows
-8.1, and how to access the <strong>Default Sensor</strong> in code.
-This lab and all subsequent labs in this series are built using C# and
-assume you have a fundamental knowledge of the language.
-The screenshots here are from <strong>Visual Studio Pro 2013 Update 2</strong>
-but Community Edition is identical.</p>
-<ol>
-  <li>
-    <p>Open Visual Studio 2013 and create a new project in a directory
-you can access. Click <strong>File &gt; New &gt; Project</strong> and select a <strong>Blank App</strong>
-for Windows in <strong>C#</strong>. Name the project <strong>Kinect2Sample</strong>. Then click <strong>OK</strong> to
-create the project: <br>
-    <img style="width: 100%;" alt="New Project Image" src="images/lab01img01.jpg"></p>
+            <h1><a id="kinect-2-hands-on-labs" class="anchor" href="#kinect-2-hands-on-labs" aria-hidden="true"><span class="octicon octicon-link"></span></a>Kinect 2 Hands On Labs</h1>
+            <img alt="Kinect On Image" src="images/lab01img08.jpg">
+            <h2>
+                <a id="lab-1-initial-kinect20-project-setup" class="anchor" href="#lab-1-initial-kinect20-project-setup" aria-hidden="true"><span class="octicon octicon-link"></span></a>Lab 1: Initial Kinect2.0
+                Project Setup
+            </h2>
+            <p><strong>Estimated Time to Complete</strong>: 10min</p>
+            <p>
+                This lab is part of a series which takes you through the creation
+                process of a Windows 8.1 Store Application which uses every available
+                feature of the Kinect 2. This is the first lab in the series, and it
+                shows you how to set up the initial development environment to build an
+                app using Kinect 2.
+            </p>
+            <p>
+                This lab will explain the following:
+                <ol>
+                    <li>How to make a new project for Windows 8.1
+                    <li>How to download and reference the Kinect 2.0 SDK.
+                    <li>How to get the Kinect 2 sensor in code and build a successful app.
+                    <li>How to open the sensor and turn on the Kinect 2 from code.
+                </ol>
+            </p>
+            <p>
+                This lab comes with a starting point solution and a completed
+                solution of the covered exercises if required.
+            </p>
 
-  </li>
+            <h1>
+                <a id="exercise-1---project-setup" class="anchor" href="#exercise-1---project-setup" aria-hidden="true"><span class="octicon octicon-link"></span></a>Exercise 1 - Project Setup
+            </h1>
+            <p>
+                This exercise will show you how to set up the development
+                environment for building a Kinect for Windows 2 application in Windows
+                8.1, and how to access the <strong>Default Sensor</strong> in code.
+                This lab and all subsequent labs in this series are built using C# and
+                assume you have a fundamental knowledge of the language.
+                The screenshots here are from <strong>Visual Studio Pro 2013 Update 2</strong>
+                but Community Edition is identical.
+            </p>
+            <ol>
+                <li>
+                    <p>
+                        Open Visual Studio 2013 and create a new project in a directory
+                        you can access. Click <strong>File &gt; New &gt; Project</strong> and select a <strong>Blank App</strong>
+                        for Windows in <strong>C#</strong>. Name the project <strong>Kinect2Sample</strong>. Then click <strong>OK</strong> to
+                        create the project: <br>
+                        <img style="width: 100%;" alt="New Project Image" src="images/lab01img01.jpg">
+                    </p>
 
-  <li>
-    <p>The project will be created with the default MainPage.xaml and
-App.xaml, and added to the project in the Solution Explorer on the right: 
-<br>
-<img  alt="Solution Explorer" src="images/lab01img02.jpg"></p>
-  </li>
-  <li>
-    <p>If you have not downloaded the public Kinect 2 SDK, you should
-download it and install it before proceeding: <a href="http://www.microsoft.com/en-us/download/details.aspx?id=44561">http://www.microsoft.com/en-us/download/details.aspx?id=44561</a>
-~280MB</p>
-  </li>
-  <li>
-    <p>Once installed, the Kinect 2 SDK can be referenced for use in
-the new project. In the Solution Explorer, right click References and
-click <strong>Add Reference…</strong> to open the Reference Manager.</p>
-  </li>
-  <li>
-    <p>To add the <strong>WindowsPreview.Kinect.dll</strong> which uses the .NetCore
-library (suitable for Windows Store apps), follow these steps:
-<ul>
-<li>a. Click <strong>Extensions</strong> on the left.
-<li>b. In the center panel, scroll down to the bottom and check
-<strong>WindowsPreview.Kinect</strong>. <br>
-    <img style="width: 100%; " alt="Reference Manager Image" src="images/lab01img03.jpg">
-<li>c. Click <strong>OK</strong> to add the reference.
-</ul>
-</p>
-  </li>
-  <li>
-    <p>Kinect 2.0 applications are compatible with x86 and x64
-architectures, but are <strong>not</strong> compatible with ARM systems. This dependency
-from the Kinect 2.0 library means that you must change the project
-configuration to either <strong>x86 or x64</strong> instead of the currently set <strong>“Any
-CPU”</strong>. 
-<ul>
-<li>a. Click <strong>BUILD</strong> then <strong>Configuration Manager…</strong> to open the
-Configuration Manager.
-<li>b. Click the dropdown box under <strong>Active Solution Platform</strong>: and select
-<strong>x64</strong>. <br>
-    <img style="width: 100%; " alt="Configuration Manager Image" src="images/lab01img04.jpg">
-<li>c. Click <strong>Close</strong>.
-<li>d. Open the project properties by right Clicking the Kinect2Sample
-project in the solution explorer, then clicking <strong>Properties</strong>.
-<li>e. Click the <strong>Build</strong> tab on the left, then beside <strong>Platform</strong>: select <strong>x64</strong>
-from the dropdown.
-<li>f. Click <strong>FILE</strong>, then <strong>Save All</strong> or hit <strong>Ctrl + Shift + S</strong> to save all files.
-</ul>
-</p>
-  </li>
-  <li>
-    <p>Now you can build and run the application to make sure the
-references work and are compatible. Click <strong>BUILD</strong> then <strong>Build Solution</strong>,
-then the project will build and should present no errors. To <strong>Run</strong> or <strong>Debug</strong> the
-application you can either:
-<ul>
+                </li>
 
-<li>a. Click <strong>DEBUG</strong> then <strong>Start Debugging</strong>, or
-<li>b. In the <strong>Debug</strong> toolbar, click the <strong>Green Play Arrow</strong> button next to the
-target environment which should be set to <strong>Local Machine</strong>. 
-<br>
-    <img  alt="Debug Toolbar Image" src="images/lab01img05.jpg">
-<br>
-The application will install on the <strong>Local Machine</strong> as a <strong>Windows 8.1
-Store app</strong> and launch itself with Visual Studio as the attached
-debugger. </p>
-</ul>
+                <li>
+                    <p>
+                        The project will be created with the default MainPage.xaml and
+                        App.xaml, and added to the project in the Solution Explorer on the right:
+                        <br>
+                        <img alt="Solution Explorer" src="images/lab01img02.jpg">
+                    </p>
+                </li>
+                <li>
+                    <p>
+                        If you have not downloaded the public Kinect 2 SDK, you should
+                        download it and install it before proceeding: <a href="http://www.microsoft.com/en-us/download/details.aspx?id=44561">http://www.microsoft.com/en-us/download/details.aspx?id=44561</a>
+                        ~280MB
+                    </p>
+                </li>
+                <li>
+                    <p>
+                        Once installed, the Kinect 2 SDK can be referenced for use in
+                        the new project. In the Solution Explorer, right click References and
+                        click <strong>Add Reference…</strong> to open the Reference Manager.
+                    </p>
+                </li>
+                <li>
+                    <p>
+                        To add the <strong>WindowsPreview.Kinect.dll</strong> which uses the .NetCore
+                        library (suitable for Windows Store apps), follow these steps:
+                        <ul>
+                            <li>a. Click <strong>Extensions</strong> on the left.
+                            <li>
+                                b. In the center panel, scroll down to the bottom and check
+                                <strong>WindowsPreview.Kinect</strong>. <br>
+                                <img style="width: 100%; " alt="Reference Manager Image" src="images/lab01img03.jpg">
+                            <li>c. Click <strong>OK</strong> to add the reference.
+                        </ul>
+                    </p>
+                </li>
+                <li>
+                    <p>
+                        Kinect 2.0 applications are compatible with x86 and x64
+                        architectures, but are <strong>not</strong> compatible with ARM systems. This dependency
+                        from the Kinect 2.0 library means that you must change the project
+                        configuration to either <strong>x86 or x64</strong> instead of the currently set <strong>
+                            “Any
+                            CPU”
+                        </strong>.
+                        <ul>
+                            <li>
+                                a. Click <strong>BUILD</strong> then <strong>Configuration Manager…</strong> to open the
+                                Configuration Manager.
+                            <li>
+                                b. Click the dropdown box under <strong>Active Solution Platform</strong>: and select
+                                <strong>x64</strong>. <br>
+                                <img style="width: 100%; " alt="Configuration Manager Image" src="images/lab01img04.jpg">
+                            <li>c. Click <strong>Close</strong>.
+                            <li>
+                                d. Open the project properties by right Clicking the Kinect2Sample
+                                project in the solution explorer, then clicking <strong>Properties</strong>.
+                            <li>
+                                e. Click the <strong>Build</strong> tab on the left, then beside <strong>Platform</strong>: select <strong>x64</strong>
+                                from the dropdown.
+                            <li>f. Click <strong>FILE</strong>, then <strong>Save All</strong> or hit <strong>Ctrl + Shift + S</strong> to save all files.
+                        </ul>
+                    </p>
+                </li>
+                <li>
+                    <p>
+                        Now you can build and run the application to make sure the
+                        references work and are compatible. Click <strong>BUILD</strong> then <strong>Build Solution</strong>,
+                        then the project will build and should present no errors. To <strong>Run</strong> or <strong>Debug</strong> the
+                        application you can either:
+                        <ul>
 
-  <li>Upon running or debugging the application, you will see a gray
-screen, because there is nothing yet in the application to show. Back
-in Visual Studio, select the menu <strong>DEBUG, Stop Debugging</strong> or click the
-<strong>Red Stop Square</strong> in the <strong>Debugging toolbar</strong>.
-<p>
-</p>
+                            <li>a. Click <strong>DEBUG</strong> then <strong>Start Debugging</strong>, or
+                            <li>
+                                b. In the <strong>Debug</strong> toolbar, click the <strong>Green Play Arrow</strong> button next to the
+                                target environment which should be set to <strong>Local Machine</strong>.
+                                <br>
+                                <img alt="Debug Toolbar Image" src="images/lab01img05.jpg">
+                                <br>
+                                The application will install on the <strong>Local Machine</strong> as a <strong>
+                                    Windows 8.1
+                                    Store app
+                                </strong> and launch itself with Visual Studio as the attached
+                                debugger.
+                    </p>
+                    </ul>
 
-<p>In the future, the steps 7 and 8 are required when asked to <strong>Build
-and Run</strong> the application.</p>
-</li>
-  <li>
-    <p>Open the <strong>MainPage.xaml.cs</strong> code behind file in Visual Studio by
-double clicking it.</p>
-  </li>
-  <li>
-    <p>To get the default sensor for the Kinect, add the
-<strong>WindowsPreview.Kinect</strong> namespace, and a private class level variable for
-the <strong>KinectSensor</strong>. Then in the constructor of <strong>MainPage</strong> class select the
-default sensor and open it. To do this, add the highlighted code below:</p>
-  </li>
+                <li>
+                    Upon running or debugging the application, you will see a gray
+                    screen, because there is nothing yet in the application to show. Back
+                    in Visual Studio, select the menu <strong>DEBUG, Stop Debugging</strong> or click the
+                    <strong>Red Stop Square</strong> in the <strong>Debugging toolbar</strong>.
+                    <p>
+                    </p>
+
+                    <p>
+                        In the future, the steps 7 and 8 are required when asked to <strong>
+                            Build
+                            and Run
+                        </strong> the application.
+                    </p>
+                </li>
+                <li>
+                    <p>
+                        Open the <strong>MainPage.xaml.cs</strong> code behind file in Visual Studio by
+                        double clicking it.
+                    </p>
+                </li>
+                <li>
+                    <p>
+                        To get the default sensor for the Kinect, add the
+                        <strong>WindowsPreview.Kinect</strong> namespace, and a private class level variable for
+                        the <strong>KinectSensor</strong>. Then in the constructor of <strong>MainPage</strong> class select the
+                        default sensor and open it. To do this, add the highlighted code below:
+                    </p>
+                </li>
 <pre>
 // ... other namespaces
 <hi>using WindowsPreview.Kinect;</hi>
@@ -183,95 +226,118 @@ namespace Kinect2Sample
 {
     public sealed partial class MainPage : Page
     {
-        <hi>private KinectSensor kinectSensor = null;</hi>
-
+                <hi>private KinectSensor kinectSensor = null;</hi>
         public MainPage()
         {
-            <hi>// one sensor is currently supported</hi>
-            <hi>this.kinectSensor = KinectSensor.GetDefault();</hi>
-
-            <hi>// open the sensor</hi>
-            <hi>this.kinectSensor.Open();</hi>
-
+                <hi>// one sensor is currently supported</hi>
+                <hi>this.kinectSensor = KinectSensor.GetDefault();</hi>
+                <hi>// open the sensor</hi>
+                <hi>this.kinectSensor.Open();</hi>
             this.InitializeComponent();
         }
     }
 }
 </pre>
-  <li>
-    <p>Now add the Capability for the application to use the Kinect as
-a webcam and microphone device. Open the <strong>Package.appxmanifest</strong> by double
-clicking it in the <strong>Solution Explorer</strong>. Navigate to the <strong>Capabilities</strong>
-tab, then tick the <strong>Microphone</strong> and <strong>Webcam</strong> capabilities:</p>
-<img alt="Capabilities Image" src="images/lab01img06.jpg">
-  </li>
-  <li>
-    <p>Make sure the Kinect 2.0 device is now plugged into both power
-and a USB3.0 port on the machine.</p>
-  </li>
-  <li>
-    <p><strong>Build and Run</strong> the application, and you will be prompted to allow
-the Kinect: 
-<br>
-    <img alt="Permissions Prompt Image" src="images/lab01img07.jpg">
-<br>
-Click <strong>Allow</strong>.
-<br>
-NOTE: if you click <strong>Block</strong> by accident, then you can re-enable the
-microphone and camera through settings for the app in the charms bar.</p>
-  </li>
-  <li>
-    <p>The same black screen will appear in the application but the
-infrared depth lights and the white status led of the Kinect 2 will
-turn on! <br>
-    <img alt="Kinect On Image" src="images/lab01img08.jpg"></p>
-  </li>
-  <li>
-    <p>Stop debugging now. The Kinect 2.0 is ready to be used and this
-is the end of the first exercise.</p>
-  </li>
-</ol>
-<h2>
-<a id="summary" class="anchor" href="#summary" aria-hidden="true"><span class="octicon octicon-link"></span></a>Summary</h2>
-<p>This lab has taught you how to create a Windows 8.1 Store
-application to work with Kinect for Windows 2.0. The code references
-the SDK within <strong>WindowsPreview</strong> which is a <strong>Windows 8.1 extension SDK</strong>.</p>
-<p>If you wish to make a Windows 8.1 <strong>desktop application</strong> (a non-store
-application) with full access to the .Net Framework, then there is a
-different Kinect reference to can use. To use the desktop Kinect
-library reference, follow these steps:
-To add The Microsoft.Kinect.dll which uses the full .NetFramework
-library, follow these steps in the <strong>Reference Manager</strong>.
-<ol>
-<li>Click <strong>Browse…</strong> to browse to the installed location of the Kinect
-library.
-<li>Navigate to the following path: <strong>C:\Program Files\Microsoft
-SDKs\Kinect\v2.0_1409\Assemblies</strong>
-<li>Highlight the <strong>Microsoft.Kinect.dll</strong> library there and Click <strong>Add</strong>.
-The Microsoft.Kinect.dll will be added in the reference manager already
-checked, so Click <strong>OK</strong>. <br>
-    <img alt="Reference Manager Image" src="images/lab01img09.jpg">
-	</ol></p>
-<p>Currently the Kinect is simply turning on in the application, and
-with this confirmation you know that the application is activating the
-Kinect.</p>
-<p>
-There is code available for the completed solution of the
-project in this lab. The next lab will begin from this code.</p>
-          <br />
-          <li class="button"><a class="buttons bullet" href="../lab02/index.html">Next Lab: 02</a></li>
+                <li>
+                    <p>
+                        Now add the Capability for the application to use the Kinect as
+                        a webcam and microphone device. Open the <strong>Package.appxmanifest</strong> by double
+                        clicking it in the <strong>Solution Explorer</strong>. Navigate to the <strong>Capabilities</strong>
+                        tab, then tick the <strong>Microphone</strong> and <strong>Webcam</strong> capabilities:
+                    </p>
+                    <img alt="Capabilities Image" src="images/lab01img06.jpg">
+                </li>
+                <li>
+                    <p>
+                        Make sure the Kinect 2.0 device is now plugged into both power
+                        and a USB3.0 port on the machine.
+                    </p>
+                </li>
+                <li>
+                    <p>
+                        <strong>Build and Run</strong> the application, and you will be prompted to allow
+                        the Kinect:
+                        <br>
+                        <img alt="Permissions Prompt Image" src="images/lab01img07.jpg">
+                        <br>
+                        Click <strong>Allow</strong>.
+                        <br>
+                        NOTE: if you click <strong>Block</strong> by accident, then you can re-enable the
+                        microphone and camera through settings for the app in the charms bar.
+                    </p>
+                </li>
+                <li>
+                    <p>
+                        The same black screen will appear in the application but the
+                        infrared depth lights and the white status led of the Kinect 2 will
+                        turn on! <br>
+                        <img alt="Kinect On Image" src="images/lab01img08.jpg">
+                    </p>
+                </li>
+                <li>
+                    <p>
+                        Stop debugging now. The Kinect 2.0 is ready to be used and this
+                        is the end of the first exercise.
+                    </p>
+                </li>
+            </ol>
+            <h2>
+                <a id="summary" class="anchor" href="#summary" aria-hidden="true"><span class="octicon octicon-link"></span></a>Summary
+            </h2>
+            <p>
+                This lab has taught you how to create a Windows 8.1 Store
+                application to work with Kinect for Windows 2.0. The code references
+                the SDK within <strong>WindowsPreview</strong> which is a <strong>Windows 8.1 extension SDK</strong>.
+            </p>
+            <p>
+                If you wish to make a Windows 8.1 <strong>desktop application</strong> (a non-store
+                application) with full access to the .Net Framework, then there is a
+                different Kinect reference to can use. To use the desktop Kinect
+                library reference, follow these steps:
+                To add The Microsoft.Kinect.dll which uses the full .NetFramework
+                library, follow these steps in the <strong>Reference Manager</strong>.
+                <ol>
+                    <li>
+                        Click <strong>Browse…</strong> to browse to the installed location of the Kinect
+                        library.
+                    <li>
+                        Navigate to the following path: <strong>
+                            C:\Program Files\Microsoft
+                            SDKs\Kinect\v2.0_1409\Assemblies
+                        </strong>
+                    <li>
+                        Highlight the <strong>Microsoft.Kinect.dll</strong> library there and Click <strong>Add</strong>.
+                        The Microsoft.Kinect.dll will be added in the reference manager already
+                        checked, so Click <strong>OK</strong>. <br>
+                        <img alt="Reference Manager Image" src="images/lab01img09.jpg">
+                </ol>
+            </p>
+            <p>
+                Currently the Kinect is simply turning on in the application, and
+                with this confirmation you know that the application is activating the
+                Kinect.
+            </p>
+            <p>
+                There is code available for the completed solution of the
+                project in this lab. The next lab will begin from this code.
+            </p>
+            <br />
+            <li class="button"><a class="buttons bullet" href="../lab02/index.html">Next Lab: 02</a></li>
 
-          <br />
-	<li class="button">
-	<a class="buttons tag" href="https://github.com/Kinect/Tutorial/archive/lab01.zip">This Lab Code</a> 
-	</li>
-    <li class="button">
-	<a class="buttons feedback" href="https://github.com/Kinect/Tutorial/issues/">View Issues</a> </li>
-    <li class="button">
-	<a class="buttons feedback" href="https://github.com/Kinect/Tutorial/issues/new?labels=Project_Setup">Give Feedback</a> </li>
-<a href="#" class="back-to-top"><i class="fa fa-chevron-up"> Back to Top</i></a>
-<footer> </footer>
-</div>
+            <br />
+            <li class="button">
+                <a class="buttons tag" href="https://github.com/Kinect/Tutorial/archive/lab01.zip">This Lab Code</a>
+            </li>
+            <li class="button">
+                <a class="buttons feedback" href="https://github.com/Kinect/Tutorial/issues/">View Issues</a>
+            </li>
+            <li class="button">
+                <a class="buttons feedback" href="https://github.com/Kinect/Tutorial/issues/new?labels=Project_Setup">Give Feedback</a>
+            </li>
+            <a href="#" class="back-to-top"><i class="fa fa-chevron-up"> Back to Top</i></a>
+            <footer> </footer>
+    </div>
 
-<!--[if !IE]><script>fixScale(document);</script><![endif]-->
-</body></html>
+    <!--[if !IE]><script>fixScale(document);</script><![endif]-->
+</body>
+</html>
