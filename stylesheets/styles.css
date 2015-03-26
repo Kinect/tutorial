@@ -359,6 +359,11 @@ a.feedback {
 	background: url(../images/speech-small.png) no-repeat 1px;
 }
 
+a.bullet {
+    color: #fff;
+    background: url(../images/bullet.png) no-repeat 1px;
+}
+
 a.tag{
     color: #fff;
 	background: url(../images/tag-small.png) no-repeat 1px;
