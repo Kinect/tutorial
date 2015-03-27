@@ -1,6 +1,8 @@
 # Tutorial
 Tutorial on the v2 Kinect platform
 
+Want to jump straight to the tutorial?  Go to http://kinect.github.io/tutorial
+
 #Complete CodeBase
 This is the accompanying complete codebase and resulting app from the Kinect 2 tutorials.
 
